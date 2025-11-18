@@ -56,7 +56,6 @@ public class User extends BaseEntity {
     private Membership membership;
 
 
-    // ==== 생성자 ====
     private User(String loginId, String password, String name, String email, String mobile,
                  Gender gender, LocalDate birthday, Role role, Membership membership) {
         this.loginId = loginId;
