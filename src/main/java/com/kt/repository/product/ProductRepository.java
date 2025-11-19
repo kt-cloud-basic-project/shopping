@@ -1,4 +1,4 @@
-package com.kt.repository;
+package com.kt.repository.product;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
