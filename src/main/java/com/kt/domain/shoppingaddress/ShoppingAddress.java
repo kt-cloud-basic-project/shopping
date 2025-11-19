@@ -1,0 +1,58 @@
+package com.kt.domain.shoppingaddress;
+
+import com.kt.domain.user.User;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class ShoppingAddress {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(nullable = false, length = 30)
+	private String name;
+
+	@Column(nullable = false, length = 256)
+	private String address;
+
+	@Column(nullable = false, length = 11)
+	private String mobile;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private ShoppingAddressType infoType;
+
+	@Column(length = 256)
+	private String infoDesc;
+
+	private boolean isDefault;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
+
+	public ShoppingAddress(User user, String address, boolean isDefault) {
+		this.user = user;
+		this.address = address;
+		this.isDefault = isDefault;
+	}
+
+	public void update(String address, boolean isDefault) {
+		this.address = address;
+		this.isDefault = isDefault;
+	}
+}
