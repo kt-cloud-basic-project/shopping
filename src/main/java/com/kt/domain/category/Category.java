@@ -26,6 +26,9 @@ public class Category {
 	@Enumerated(EnumType.STRING)
 	private CategoryType type;
 
+	@OneToMany(mappedBy = "category")
+	private final List<Product> products = new ArrayList<>();
+
 	public Category(CategoryType type) {
 		this.type = type;
 	}
