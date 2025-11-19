@@ -16,4 +16,8 @@ public class Membership {
     private Long id;
 
     private String level; // BASIC, SILVER, GOLD 등등
+
+    public Membership(String level) {
+        this.level = level;
+    }
 }
