@@ -40,7 +40,8 @@ public class SecurityConfiguration {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.sessionManagement(
+		// 기능 개발 및 테스트를 위해 주석처리
+        /*http.sessionManagement(
 				session ->
 					session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
@@ -54,7 +55,13 @@ public class SecurityConfiguration {
 					request.anyRequest().authenticated();
 				}
 			)
-			.csrf(AbstractHttpConfigurer::disable);
+			.csrf(AbstractHttpConfigurer::disable);*/
+        // csrf 기능off, 요청인가 -> 누구나 가능하게
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/users/auth/signup", "/users/auth/login").permitAll()
+                        .anyRequest().permitAll()
+                );
 
 		return http.build();
 	}
