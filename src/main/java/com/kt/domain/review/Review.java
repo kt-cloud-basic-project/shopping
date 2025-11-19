@@ -42,10 +42,13 @@ public class Review extends BaseEntity {
 		this.isDeleted = false;
 	}
 
-	public void update(String title, String description, Integer star, boolean isDeleted) {
+	public void update(String title, String description, Integer star) {
 		this.title = title;
 		this.description = description;
 		this.star = star;
-		this.isDeleted = isDeleted;
+	}
+
+	public void delete() {
+		this.isDeleted = true;
 	}
 }
