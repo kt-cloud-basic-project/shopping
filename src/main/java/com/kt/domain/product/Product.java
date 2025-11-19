@@ -9,7 +9,7 @@ import com.kt.common.BaseEntity;
 import com.kt.common.ErrorCode;
 import com.kt.common.Preconditions;
 import com.kt.domain.category.Category;
-import com.kt.domain.option.Variant;
+import com.kt.domain.variant.Variant;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

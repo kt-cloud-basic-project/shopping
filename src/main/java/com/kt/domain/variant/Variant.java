@@ -1,4 +1,4 @@
-package com.kt.domain.option;
+package com.kt.domain.variant;
 
 import com.kt.domain.product.Product;
 
@@ -22,7 +22,7 @@ public class Variant {
     private Long id;
 
 	@Enumerated(EnumType.STRING)
-	private OptionType type;
+	private VariantType type;
 
 	private String detail;
 
@@ -30,7 +30,7 @@ public class Variant {
 	@JoinColumn(name = "product_id")
 	private Product product;
 
-	public Variant(OptionType type, String detail,  Product product) {
+	public Variant(VariantType type, String detail,  Product product) {
 		this.type = type;
 		this.detail = detail;
 		this.product = product;
