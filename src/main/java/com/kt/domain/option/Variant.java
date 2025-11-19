@@ -1,18 +1,22 @@
 package com.kt.domain.option;
 
+import com.kt.domain.product.Product;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Option  {
+public class Variant {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,8 +26,13 @@ public class Option  {
 
 	private String detail;
 
-	public Option(OptionType type, String detail) {
+	@ManyToOne
+	@JoinColumn(name = "product_id")
+	private Product product;
+
+	public Variant(OptionType type, String detail,  Product product) {
 		this.type = type;
 		this.detail = detail;
+		this.product = product;
 	}
 }
