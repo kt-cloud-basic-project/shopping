@@ -16,12 +16,16 @@ public class ApiResult<T> {
 	private T data;
 	private LocalDateTime timestamp;
 
-	public ApiResult<Void> ok() {
-		return ApiResult.of("ok", "성공", null, this.timestamp);
+	public static ApiResult<Void> ok() {
+		return ApiResult.of("ok", "성공", null, LocalDateTime.now());
 	}
 
-	public <T> ApiResult<T> ok(T data) {
-		return ApiResult.of("ok", "성공", data, this.timestamp);
+	public static <T> ApiResult<T> ok(T data) {
+		return ApiResult.of("ok", "성공", data, LocalDateTime.now());
+	}
+
+	public static <T> ApiResult<T> error(String code, String message) {
+		return ApiResult.of(code, message, null, LocalDateTime.now());
 	}
 
 	private static <T> ApiResult<T> of(String code, String message, T data,  LocalDateTime timestamp) {
