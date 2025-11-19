@@ -45,13 +45,25 @@ public class ShoppingAddress {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public ShoppingAddress(User user, String address, boolean isDefault) {
+	public ShoppingAddress(
+		User user, String name, String address, String mobile,
+		ShoppingAddressType infoType, String infoDesc, boolean isDefault) {
+		this.name = name;
 		this.user = user;
+		this.mobile = mobile;
+		this.infoType = infoType;
+		this.infoDesc = infoDesc;
 		this.address = address;
 		this.isDefault = isDefault;
 	}
 
-	public void update(String address, boolean isDefault) {
+	public void update(User user, String name, String address, String mobile,
+		ShoppingAddressType infoType, String infoDesc, boolean isDefault) {
+		this.name = name;
+		this.user = user;
+		this.mobile = mobile;
+		this.infoType = infoType;
+		this.infoDesc = infoDesc;
 		this.address = address;
 		this.isDefault = isDefault;
 	}
