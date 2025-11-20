@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.ApiResult;
 import com.kt.common.Paging;
 import com.kt.common.SwaggerAssistance;
-import com.kt.dto.review.ReviewReqeust;
-import com.kt.dto.review.ReviewResponse;
+import com.kt.dto.review.ReviewCreateRequest;
+import com.kt.dto.review.ReviewListResponse;
+import com.kt.dto.review.ReviewUpdateRequest;
 import com.kt.service.review.ReviewService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,21 +36,21 @@ public class ReviewController extends SwaggerAssistance {
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> create(
 		@PathVariable Long productId,
-		@Valid @RequestBody ReviewReqeust.Create reqeust
+		@Valid @RequestBody ReviewCreateRequest request
 	) {
 
-		reviewService.create(productId, reqeust);
+		reviewService.create(productId, request);
 
 		return ApiResult.ok();
 	}
 
 	@GetMapping("/reviews/me")
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<Page<ReviewResponse.ReviewList>> myReviewList(
+	public ApiResult<Page<ReviewListResponse>> myReviewList(
 		Paging paging
 	) {
 
-		Page<ReviewResponse.ReviewList> reviews = reviewService.myReviewList(2L, paging.toPageable());
+		Page<ReviewListResponse> reviews = reviewService.myReviewList(2L, paging.toPageable());
 
 		return ApiResult.ok(reviews);
 	}
@@ -58,7 +59,7 @@ public class ReviewController extends SwaggerAssistance {
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> update(
 		@PathVariable Long reviewId,
-		@Valid @RequestBody ReviewReqeust.Update request
+		@Valid @RequestBody ReviewUpdateRequest.Update request
 	) {
 
 		reviewService.update(reviewId, request);
