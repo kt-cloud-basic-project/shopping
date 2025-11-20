@@ -1,7 +1,7 @@
 package com.kt.controller.cart;
 
 import com.kt.common.ApiResult;
-import com.kt.dto.cart.CartUpdateRequest;
+import com.kt.dto.cart.CartCreateRequest;
 import com.kt.service.cart.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class CartController {
 
     @PostMapping("/items")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResult<Void> create(@Valid @RequestBody CartUpdateRequest request) {
+    public ApiResult<Void> create(@Valid @RequestBody CartCreateRequest request) {
         cartService.create(request);
 
         return ApiResult.ok();
