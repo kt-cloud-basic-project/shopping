@@ -9,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.ErrorCode;
 import com.kt.common.Preconditions;
 import com.kt.domain.review.Review;
-import com.kt.dto.review.ReviewReqeust;
-import com.kt.dto.review.ReviewResponse;
+import com.kt.dto.review.ReviewCreateRequest;
+import com.kt.dto.review.ReviewListResponse;
+import com.kt.dto.review.ReviewUpdateRequest;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
+import com.kt.repository.review.ReviewRepositoryCustom;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,11 +25,12 @@ import lombok.RequiredArgsConstructor;
 public class ReviewService {
 
 	private final ReviewRepository reviewRepository;
+	private final ReviewRepositoryCustom reviewRepositoryCustom;
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
 	//private final OrderProductRepository orderProductRepository;
 
-	public void create(Long productId, ReviewReqeust.Create reqeust) {
+	public void create(Long productId, ReviewCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(2L, ErrorCode.NOT_FOUND_USER);
 
 		//var orderProduct = productRepository.findById(productId);
@@ -36,27 +39,27 @@ public class ReviewService {
 
 		Review review = new Review(
 			user,
-			reqeust.title(),
-			reqeust.description(),
-			reqeust.star()
+			request.title(),
+			request.description(),
+			request.star()
 		);
 
 		reviewRepository.save(review);
 
 	}
 
-	public Page<ReviewResponse.ReviewList> myReviewList(Long userId, Pageable pageable) {
+	public Page<ReviewListResponse> myReviewList(Long userId, Pageable pageable) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
-		Page<Review> reviewList = reviewRepository.findReviewsByUserId(user.getId(), pageable);
-
-		return ReviewResponse.ReviewList.fromList(reviewList);
+		return reviewRepositoryCustom.myReviewList(user.getId(), pageable);
 	}
 
-	public void update(Long reviewId, ReviewReqeust.Update request) {
+	public void update(Long reviewId, ReviewUpdateRequest.Update request) {
 		var user = userRepository.findByIdOrThrow(2L, ErrorCode.NOT_FOUND_USER);
 
 		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
+
+		Preconditions.validate(review.getUser().getId().equals(user.getId()), ErrorCode.NOT_REVIEW_AUTHOR);
 
 		review.update(
 			user,
@@ -70,7 +73,16 @@ public class ReviewService {
 
 		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
 
-		review.delete(user);
+		Preconditions.validate(review.getUser().getId().equals(user.getId()), ErrorCode.NOT_REVIEW_AUTHOR);
+
+		review.delete();
+
+	}
+
+	public void hide(Long reviewId) {
+		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
+
+		review.delete();
 
 	}
 
