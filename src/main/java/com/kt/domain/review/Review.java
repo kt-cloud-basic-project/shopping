@@ -38,10 +38,8 @@ public class Review extends BaseEntity {
 	@JoinColumn(name = "order_product_id")
 	private OrderProduct orderProduct;*/
 
-	public Review(User user, String title, String description, int star) {
-		Preconditions.validate(!title.isBlank(), ErrorCode.INVALID_PARAMETER);
-		Preconditions.validate(!description.isBlank(), ErrorCode.INVALID_PARAMETER);
-		Preconditions.validate(star >= 1 && star <= 5, ErrorCode.INVALID_REVIEW_STAR);
+	public Review(User user, String title, String description, Integer star) {
+		userParamCheck(user, description, star);
 
 		this.user = user;
 		this.title = title;
@@ -51,17 +49,13 @@ public class Review extends BaseEntity {
 	}
 
 	public void update(User user, String description, Integer star) {
-		Preconditions.validate(this.user.getId().equals(user.getId()), ErrorCode.NOT_REVIEW_AUTHOR);
-		Preconditions.validate(!description.isBlank(), ErrorCode.INVALID_PARAMETER);
-		Preconditions.validate(star >= 1 && star <= 5, ErrorCode.INVALID_REVIEW_STAR);
+		userParamCheck(user, description, star);
 
 		this.description = description;
 		this.star = star;
 	}
 
-	public void delete(User user) {
-		Preconditions.validate(this.user.getId().equals(user.getId()), ErrorCode.NOT_REVIEW_AUTHOR);
-
+	public void delete() {
 		this.isDeleted = true;
 	}
 }
