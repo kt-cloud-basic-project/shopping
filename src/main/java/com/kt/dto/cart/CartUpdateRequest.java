@@ -11,8 +11,6 @@ public record CartUpdateRequest(
     @NotBlank
     String productOption,
     @NotNull
-    Long userId,
-    @NotNull
     Long productId
 ){
 }
