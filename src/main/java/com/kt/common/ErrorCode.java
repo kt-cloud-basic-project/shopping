@@ -26,6 +26,7 @@ public enum ErrorCode {
 	REQUIRED_DEFAULT_ADDRESS(HttpStatus.BAD_REQUEST, "기본 배송지는 최소 1개 이상 필요합니다."),
 	CANNOT_DELETE_DEFAULT_ADDRESS(HttpStatus.BAD_REQUEST, "기본 배송지는 삭제할 수 없습니다. 다른 배송지를 기본으로 설정 후 삭제해주세요."),
 
+	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),
 	;
 
 	private final HttpStatus status;
