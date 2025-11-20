@@ -6,6 +6,6 @@ services:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: shopping
     ports:
-      - "3308:3306"
+      - "3306:3306"
     platform: linux/arm64
 
