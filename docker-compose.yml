@@ -1,16 +1,16 @@
 services:
-  local-mysql:
+  local-mysql-aa:
     image: mysql
-    container_name: techup-mysql
+    container_name: techup-mysql-aa
     environment:
       MYSQL_ROOT_PASSWORD: 1234
     ports:
-      - "3306:3306"
-    platform: linux/arm64
+      - "3307:3306"
+    platform: linux/amd64
 
-  local-redis:
+  local-redis-aa:
     image: redis
-    container_name: techup-redis
+    container_name: techup-redis-aa
     ports:
-      - "6379:6379"
-    platform: linux/arm64
+      - "6378:6379"
+    platform: linux/amd64
