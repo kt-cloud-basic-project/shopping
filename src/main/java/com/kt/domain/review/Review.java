@@ -8,6 +8,7 @@ import com.kt.domain.user.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -29,12 +30,12 @@ public class Review extends BaseEntity {
 
 	private boolean isDeleted;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	//TODO: OrderProduct와의 연관관계 설정
-	/*@ManyToOne
+	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_product_id")
 	private OrderProduct orderProduct;*/
 
