@@ -59,7 +59,7 @@ public class ReviewController extends SwaggerAssistance {
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> update(
 		@PathVariable Long reviewId,
-		@Valid @RequestBody ReviewUpdateRequest.Update request
+		@Valid @RequestBody ReviewUpdateRequest request
 	) {
 
 		reviewService.update(reviewId, request);

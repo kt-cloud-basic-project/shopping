@@ -54,7 +54,7 @@ public class ReviewService {
 		return reviewRepositoryCustom.myReviewList(user.getId(), pageable);
 	}
 
-	public void update(Long reviewId, ReviewUpdateRequest.Update request) {
+	public void update(Long reviewId, ReviewUpdateRequest request) {
 		var user = userRepository.findByIdOrThrow(2L, ErrorCode.NOT_FOUND_USER);
 
 		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
@@ -79,6 +79,14 @@ public class ReviewService {
 
 	}
 
+	public void hide(Long reviewId) {
+
+		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
+
+		review.delete();
+
+	}
+  
 	/*public Page<ReviewResponse.ReviewList> productReviewList(Long productId, Pageable pageable) {
 		//TODO: findByIdOrThrow 추가되면 수정
 		var product = productRepository.findById(productId);
