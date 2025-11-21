@@ -58,4 +58,9 @@ public class Review extends BaseEntity {
 	public void delete() {
 		this.isDeleted = true;
 	}
+
+	private void userParamCheck(User user, String description, Integer star) {
+		Preconditions.validate(!description.isBlank(), ErrorCode.INVALID_PARAMETER);
+		Preconditions.validate(star >= 1 && star <= 5, ErrorCode.INVALID_REVIEW_STAR);
+	}
 }
