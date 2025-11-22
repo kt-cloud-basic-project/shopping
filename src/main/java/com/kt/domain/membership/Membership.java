@@ -11,13 +11,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 public class Membership {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String level; // BASIC, SILVER, GOLD 등등
+	private String level; // BASIC, SILVER, GOLD 등등
 
-    public Membership(String level) {
-        this.level = level;
-    }
+	public Membership(String level) {
+			this.level = level;
+	}
+
+	public void update(String level) {
+		this.level = level;
+	}
 }
