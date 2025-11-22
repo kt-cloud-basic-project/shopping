@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Cart extends BaseEntity{
-    private int productCount;
+public class Cart extends BaseEntity {
+    @Column(nullable = false)
+    private Integer productCount;
 
     private String productOption;
 
@@ -22,4 +23,11 @@ public class Cart extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    public Cart(int productCount, String productOption, User user, Product product) {
+        this.productCount = productCount;
+        this.productOption = productOption;
+        this.user = user;
+        this.product = product;
+    }
 }
