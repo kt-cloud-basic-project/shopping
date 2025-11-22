@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.ErrorCode;
 import com.kt.domain.product.Product;
 import com.kt.dto.product.ProductCreateRequest;
-import com.kt.dto.product.ProductListResponse;
+import com.kt.dto.product.ProductResponse;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 
@@ -35,8 +35,13 @@ public class ProductService {
 		productRepository.save(newProduct);
 	}
 
-	public Page<ProductListResponse> getProductList(Pageable pageable) {
+	public Page<ProductResponse> getProductList(Pageable pageable) {
 		return productRepository.findAll(pageable)
-			.map(ProductListResponse::from);
+			.map(ProductResponse::from);
+	}
+
+	public ProductResponse getProduct(Long productId) {
+		var Product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		return ProductResponse.from(Product);
 	}
 }
