@@ -13,13 +13,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
     private final SecretKey key;
-    private final long accessTokenVaildityInMs;
+    private final long accessTokenValidityInMs;
     private final long refreshTokenValidityInMs;
 
     public JwtTokenProvider(@Value("${kt.jwt.secret:kt-cloud-tech-up-shopping-202511171107}") String secret,
@@ -27,17 +30,17 @@ public class JwtTokenProvider {
                             @Value("${kt.jwt.refresh-token-expiration:43200000}") long refreshTokenValidityInMs
     ) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.accessTokenVaildityInMs = accessTokenValidityInMs;
+        this.accessTokenValidityInMs = accessTokenValidityInMs;
         this.refreshTokenValidityInMs = refreshTokenValidityInMs;
     }
 
     public String generateAccessToken(User user){
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + accessTokenVaildityInMs);
+        Date expiry = new Date(now.getTime() + accessTokenValidityInMs);
 
         return Jwts.builder()
                 .subject(String.valueOf(user.getId()))
-                .claim("longId",user.getLoginId())
+                .claim("loginId",user.getLoginId())
                 .claim("role",user.getRole().name())
                 .issuedAt(now)
                 .expiration(expiry)
@@ -82,4 +85,12 @@ public class JwtTokenProvider {
 
         return Long.valueOf(claims.getSubject());
     }
+
+    public LocalDateTime getRefreshTokenExpiryDateTime() {
+        return LocalDateTime.ofInstant(
+                Instant.now().plusMillis(refreshTokenValidityInMs),
+                ZoneId.systemDefault()
+        );
+    }
+
 }
