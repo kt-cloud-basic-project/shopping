@@ -3,10 +3,7 @@ package com.kt.security;
 import com.kt.common.CustomException;
 import com.kt.common.ErrorCode;
 import com.kt.domain.user.User;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,26 +31,26 @@ public class JwtTokenProvider {
         this.refreshTokenValidityInMs = refreshTokenValidityInMs;
     }
 
-    public String generateAccessToken(User user){
+    public String generateAccessToken(User user) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenValidityInMs);
 
         return Jwts.builder()
-                .subject(String.valueOf(user.getId()))
-                .claim("loginId",user.getLoginId())
-                .claim("role",user.getRole().name())
+                .subject(user.getLoginId())
+                .claim("role", user.getRole().name())
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(key,Jwts.SIG.HS256)
                 .compact();
     }
 
+
     public String generateRefreshToken(User user){
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshTokenValidityInMs);
 
         return Jwts.builder()
-                .subject(String.valueOf(user.getId()))
+                .subject(user.getLoginId())
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(key,Jwts.SIG.HS256)
@@ -91,6 +88,21 @@ public class JwtTokenProvider {
                 Instant.now().plusMillis(refreshTokenValidityInMs),
                 ZoneId.systemDefault()
         );
+    }
+
+    private Jws<?> parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+    }
+
+    public String getLoginId(String token) {
+        try {
+            return parseClaims(token).getPayload().getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject(); // 만료됐어도 subject는 꺼낼 수 있음
+        }
     }
 
 }
