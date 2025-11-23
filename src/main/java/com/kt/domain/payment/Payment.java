@@ -1,7 +1,7 @@
 package com.kt.domain.payment;
 
 import com.kt.common.BaseEntity;
-// import com.kt.domain.order.Order;
+import com.kt.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,38 +15,43 @@ public class Payment extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	// 전체 금액
 	@Column(nullable = false)
 	private Integer totalPrice;
 
+	// 배달 금액
 	@Column(nullable = false)
 	private Integer deliveryFee;
 
+	// 최종 결제 금액
 	@Column(nullable = false)
 	private Integer finalPrice;
 
 	@Column(nullable = false)
 	private boolean isDeleted = false;
 
-	// @ManyToOne(fetch = FetchType.LAZY)
-	// @JoinColumn(name = "order_id", nullable = false)
-	// private Order order;
+	// 주문 FK
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id", nullable = false)
+	private Order order;
 
-	// @Enumerated(EnumType.STRING)
-	// @Column(name = "payment_type_id", nullable = false)
-	// private PaymentType paymentType;
+	// 결제 방식
+	@Enumerated(EnumType.STRING)
+	@Column(name = "payment_type_id", nullable = false)
+	private PaymentType paymentType;
 
 	public Payment(
-		//Order order,
+		Order order,
 		Integer totalPrice,
 		Integer deliveryFee,
-		Integer finalPrice
-		//PaymentType paymentType
+		Integer finalPrice,
+		PaymentType paymentType
 	) {
-		// this.order = order;
+		this.order = order;
 		this.totalPrice = totalPrice;
 		this.deliveryFee = deliveryFee;
 		this.finalPrice = finalPrice;
-		// this.paymentType = paymentType;
+		this.paymentType = paymentType;
 		this.isDeleted = false;
 	}
 
