@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.ObjectUtils;
+import com.kt.common.support.Preconditions;
 import com.kt.domain.product.Product;
+import com.kt.domain.product.ProductStatus;
 import com.kt.dto.product.request.ProductCreateRequest;
 import com.kt.dto.product.response.ProductListResponse;
 import com.kt.dto.product.response.ProductResponse;
@@ -71,5 +73,14 @@ public class ProductService {
 		product.updateCategory(
 			ObjectUtils.orElse(updateCategory, product.getCategory())
 		);
+	}
+
+
+	public void updateProductSoldOut(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(!product.getStatus().equals(ProductStatus.SOLD_OUT), ErrorCode.INVALID_PRODUCT_STATUS);
+
+		product.updateSoldOut();
+		//TODO : cart 결제 가능 여부 비활성화 처리
 	}
 }

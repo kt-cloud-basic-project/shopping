@@ -62,4 +62,8 @@ public class Product extends BaseEntity {
 		this.category = category;
 	}
 
+	public void updateSoldOut() {
+		this.status = ProductStatus.SOLD_OUT;
+	}
+
 }

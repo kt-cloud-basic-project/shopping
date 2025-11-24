@@ -3,6 +3,7 @@ package com.kt.controller.product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,6 +58,12 @@ public class AdminProductController {
 	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @RequestBody
 		ProductUpdateCategoryRequest request) {
 		productService.updateProductCategory(productId, request);
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{productId}/toggle-sold-out")
+	public ApiResult<Void> soldOut(@PathVariable("productId") Long productId) {
+		productService.updateProductSoldOut(productId);
 		return ApiResult.ok();
 	}
 }
