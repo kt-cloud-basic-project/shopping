@@ -1,10 +1,8 @@
 package com.kt.domain.user;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.kt.common.BaseEntity;
+import com.kt.common.support.BaseEntity;
 import com.kt.domain.membership.Membership; //멤버쉽 임의 생성
 
 import jakarta.persistence.*;
