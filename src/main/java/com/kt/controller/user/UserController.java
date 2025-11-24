@@ -4,6 +4,7 @@ import com.kt.common.ApiResult;
 import com.kt.dto.user.UserCreateRequest;
 import com.kt.dto.user.UserLoginRequest;
 import com.kt.dto.user.UserLoginResponse;
+import com.kt.dto.user.UserLogoutRequest;
 import com.kt.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,12 @@ public class UserController {
     public ApiResult<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request){
         UserLoginResponse response =  userService.login(request);
         return ApiResult.ok(response);
+    }
+
+    @PostMapping("auth/logout")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ApiResult<Void> logout(@RequestBody UserLogoutRequest request) {
+        userService.logout(request);
+        return ApiResult.ok();
     }
 }
