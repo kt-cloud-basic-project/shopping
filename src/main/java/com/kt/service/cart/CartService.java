@@ -13,8 +13,22 @@ import org.springframework.stereotype.Service;
 public class CartService {
     private final CartRepository cartRepository;
 
-    public void create(@Valid CartCreateRequest request) {
-        //TODO: create 함수 기능 구현
+    public void create(CartCreateRequest request) {
+        //TODO: create 기능 구현
     }
+
+	public void updateQuantity(Long cartId, Integer productCount) {
+		//TODO: updateQuantity 기능 구현
+	}
+
+	public void deleteCartItem(Long cartId) {
+		//TODO: deleteCartItem 기능 구현
+	}
+
+	public void clearCart() {
+		//TODO: clearCart 기능 구현
+	}
+
+
 
 }

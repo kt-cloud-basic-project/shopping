@@ -26,14 +26,16 @@ public enum ErrorCode {
 	INVALID_REVIEW_STAR(HttpStatus.BAD_REQUEST, "리뷰 평점은 1부터 5까지 가능합니다."),
 	NOT_REVIEW_AUTHOR(HttpStatus.FORBIDDEN, "리뷰 작성자만 수정가능합니다."),
 	NOT_FOUND_REVIEW(HttpStatus.BAD_REQUEST, "리뷰를 찾을 수 없습니다."),
-
 	NOT_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),
 	EXCEED_MAX_ADDRESS_COUNT(HttpStatus.BAD_REQUEST, "배송지는 최대 5개까지만 등록 가능합니다."),
 	REQUIRED_DEFAULT_ADDRESS(HttpStatus.BAD_REQUEST, "기본 배송지는 최소 1개 이상 필요합니다."),
 	CANNOT_DELETE_DEFAULT_ADDRESS(HttpStatus.BAD_REQUEST, "기본 배송지는 삭제할 수 없습니다. 다른 배송지를 기본으로 설정 후 삭제해주세요."),
 	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),
 	ALREADY_EXIST_MEMBERSHIP_LEVEL(HttpStatus.BAD_REQUEST, "이미 존재하는 멤버십 등급입니다."),
-	NOT_FOUND_MEMBERSHIP(HttpStatus.BAD_REQUEST, "멤버십을 찾을 수 없습니다.")
+	NOT_FOUND_MEMBERSHIP(HttpStatus.BAD_REQUEST, "멤버십을 찾을 수 없습니다."),
+	DISCOUNT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "해당 멤버십은 이미 할인 정책이 존재합니다"),
+	NOT_FOUND_DISCOUNT(HttpStatus.BAD_REQUEST, "할인 정책을 찾을 수 없습니다."),
+
 	;
 
 	private final HttpStatus status;

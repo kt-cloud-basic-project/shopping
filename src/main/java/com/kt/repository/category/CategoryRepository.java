@@ -8,7 +8,6 @@ import com.kt.domain.category.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 	default Category findByIdOrThrow(Long id, ErrorCode errorCode) {
-		System.out.print("id : " + id);
 		return findById(id).orElseThrow(() -> new CustomException(errorCode));
 	}
 }

@@ -33,8 +33,6 @@ public class Category {
 	private final List<Product> products = new ArrayList<>();
 
 	public Category(String type) {
-		Preconditions.validate(Strings.isNotBlank(type), ErrorCode.INVALID_PARAMETER);
-
 		this.type = type;
 	}
 }
