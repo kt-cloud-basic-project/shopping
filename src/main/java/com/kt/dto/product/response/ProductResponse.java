@@ -7,6 +7,7 @@ public record ProductResponse(
 	String description,
 	Long price,
 	Long stock,
+	String status,
 	String category
 ) {
 	public static ProductResponse from(Product product) {
@@ -15,6 +16,7 @@ public record ProductResponse(
 			product.getDescription(),
 			product.getPrice(),
 			product.getStock(),
+			product.getStatus().getDescription(),
 			product.getCategory().getType()
 		);
 	}
