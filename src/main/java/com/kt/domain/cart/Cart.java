@@ -24,7 +24,7 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public Cart(int productCount, String productOption, User user, Product product) {
+    public Cart(Integer productCount, String productOption, User user, Product product) {
         this.productCount = productCount;
         this.productOption = productOption;
         this.user = user;
