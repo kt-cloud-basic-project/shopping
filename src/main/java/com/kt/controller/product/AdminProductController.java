@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
-import com.kt.dto.product.ProductCreateRequest;
-import com.kt.dto.product.ProductListResponse;
-import com.kt.dto.product.ProductResponse;
-import com.kt.dto.product.ProductUpdateCategoryRequest;
-import com.kt.dto.product.ProductUpdateRequest;
+import com.kt.dto.product.request.ProductCreateRequest;
+import com.kt.dto.product.response.ProductListResponse;
+import com.kt.dto.product.response.ProductResponse;
+import com.kt.dto.product.request.ProductUpdateCategoryRequest;
+import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.service.product.ProductService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

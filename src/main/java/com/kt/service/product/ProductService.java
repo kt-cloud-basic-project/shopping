@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.ObjectUtils;
 import com.kt.domain.product.Product;
-import com.kt.dto.product.ProductCreateRequest;
-import com.kt.dto.product.ProductListResponse;
-import com.kt.dto.product.ProductResponse;
-import com.kt.dto.product.ProductUpdateCategoryRequest;
-import com.kt.dto.product.ProductUpdateRequest;
+import com.kt.dto.product.request.ProductCreateRequest;
+import com.kt.dto.product.response.ProductListResponse;
+import com.kt.dto.product.response.ProductResponse;
+import com.kt.dto.product.request.ProductUpdateCategoryRequest;
+import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 
