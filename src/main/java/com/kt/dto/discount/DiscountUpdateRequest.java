@@ -7,7 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record DiscountUpdateRequest(
-	@NotBlank(message = "멤버십 이름은 필수입니다")
+
+	@NotBlank(message = "할인 이름은 필수입니다")
 	String name,
 
 	@NotNull(message = "할인 타입은 필수입니다")
