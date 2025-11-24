@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.ApiResult;
 import com.kt.dto.product.ProductCreateRequest;
+import com.kt.dto.product.ProductListResponse;
 import com.kt.dto.product.ProductResponse;
 import com.kt.service.product.ProductService;
 
@@ -31,8 +32,8 @@ public class AdminProductController {
 	}
 
 	@GetMapping("")
-	public ApiResult<Page<ProductResponse>> getProductList(Pageable pageable) {
-		Page<ProductResponse> productList = productService.getProductList(pageable);
+	public ApiResult<Page<ProductListResponse>> getProductList(Pageable pageable) {
+		Page<ProductListResponse> productList = productService.getProductList(pageable);
 		return ApiResult.ok(productList);
 	}
 
