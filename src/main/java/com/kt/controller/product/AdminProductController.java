@@ -5,14 +5,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kt.common.ApiResult;
+import com.kt.common.response.ApiResult;
 import com.kt.dto.product.ProductCreateRequest;
 import com.kt.dto.product.ProductListResponse;
 import com.kt.dto.product.ProductResponse;
+import com.kt.dto.product.ProductUpdateRequest;
 import com.kt.service.product.ProductService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,5 +44,11 @@ public class AdminProductController {
 	public ApiResult<ProductResponse> getProductDetail(@PathVariable("productId") Long productId) {
 		var product = productService.getProductDetail(productId);
 		return ApiResult.ok(product);
+	}
+
+	@PutMapping("/{productId}")
+	public ApiResult<Void>  update(@PathVariable("productId") Long productId, @Valid @RequestBody ProductUpdateRequest request) {
+		productService.updateProduct(productId, request);
+		return ApiResult.ok();
 	}
 }

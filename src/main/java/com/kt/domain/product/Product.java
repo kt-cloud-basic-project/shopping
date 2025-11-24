@@ -3,11 +3,7 @@ package com.kt.domain.product;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.util.Strings;
-
-import com.kt.common.BaseEntity;
-import com.kt.common.ErrorCode;
-import com.kt.common.Preconditions;
+import com.kt.common.support.BaseEntity;
 import com.kt.domain.category.Category;
 import com.kt.domain.variant.Variant;
 
@@ -53,6 +49,13 @@ public class Product extends BaseEntity {
 		this.isDeleted = false;
 
 		this.category = category;
+	}
+
+	public void updateProduct(String name, String description, Long price, Long stock) {
+		this.name = name;
+		this.description = description;
+		this.price = price;
+		this.stock = stock;
 	}
 
 }
