@@ -14,6 +14,7 @@ import com.kt.common.response.ApiResult;
 import com.kt.dto.product.ProductCreateRequest;
 import com.kt.dto.product.ProductListResponse;
 import com.kt.dto.product.ProductResponse;
+import com.kt.dto.product.ProductUpdateCategoryRequest;
 import com.kt.dto.product.ProductUpdateRequest;
 import com.kt.service.product.ProductService;
 
@@ -47,8 +48,15 @@ public class AdminProductController {
 	}
 
 	@PutMapping("/{productId}")
-	public ApiResult<Void>  update(@PathVariable("productId") Long productId, @Valid @RequestBody ProductUpdateRequest request) {
+	public ApiResult<Void> update(@PathVariable("productId") Long productId, @Valid @RequestBody ProductUpdateRequest request) {
 		productService.updateProduct(productId, request);
+		return ApiResult.ok();
+	}
+
+	@PutMapping("/{productId}/category")
+	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @RequestBody
+		ProductUpdateCategoryRequest request) {
+		productService.updateProductCategory(productId, request);
 		return ApiResult.ok();
 	}
 }

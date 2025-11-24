@@ -51,11 +51,15 @@ public class Product extends BaseEntity {
 		this.category = category;
 	}
 
-	public void updateProduct(String name, String description, Long price, Long stock) {
+	public void update(String name, String description, Long price, Long stock) {
 		this.name = name;
 		this.description = description;
 		this.price = price;
 		this.stock = stock;
+	}
+
+	public void updateCategory(Category category) {
+		this.category = category;
 	}
 
 }
