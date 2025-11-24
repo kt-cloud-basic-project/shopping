@@ -41,8 +41,8 @@ public class ProductService {
 			.map(ProductListResponse::from);
 	}
 
-	public ProductResponse getProduct(Long productId) {
-		var Product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
-		return ProductResponse.from(Product);
+	public ProductResponse getProductDetail(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		return ProductResponse.from(product);
 	}
 }

@@ -39,8 +39,8 @@ public class AdminProductController {
 	}
 
 	@GetMapping("/{productId}")
-	public ApiResult<ProductResponse> getProductById(@PathVariable("productId") Long productId) {
-		var product = productService.getProduct(productId);
+	public ApiResult<ProductResponse> getProductDetail(@PathVariable("productId") Long productId) {
+		var product = productService.getProductDetail(productId);
 		return ApiResult.ok(product);
 	}
 }
