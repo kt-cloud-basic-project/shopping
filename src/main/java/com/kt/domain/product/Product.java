@@ -45,11 +45,6 @@ public class Product extends BaseEntity {
 	private final List<Variant> variants = new ArrayList<>();
 
 	public Product(String name, String description, Long price, Long stock, Category category) {
-		Preconditions.validate(Strings.isNotBlank(name), ErrorCode.INVALID_PARAMETER);
-		Preconditions.validate(Strings.isNotBlank(description), ErrorCode.INVALID_PARAMETER);
-		Preconditions.validate(price >= 0, ErrorCode.INVALID_PARAMETER);
-		Preconditions.validate(stock >= 0, ErrorCode.INVALID_PARAMETER);
-
 		this.name = name;
 		this.description = description;
 		this.price = price;
