@@ -26,7 +26,6 @@ public enum ErrorCode {
 	INVALID_REVIEW_STAR(HttpStatus.BAD_REQUEST, "리뷰 평점은 1부터 5까지 가능합니다."),
 	NOT_REVIEW_AUTHOR(HttpStatus.FORBIDDEN, "리뷰 작성자만 수정가능합니다."),
 	NOT_FOUND_REVIEW(HttpStatus.BAD_REQUEST, "리뷰를 찾을 수 없습니다."),
-
 	NOT_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),
 	EXCEED_MAX_ADDRESS_COUNT(HttpStatus.BAD_REQUEST, "배송지는 최대 5개까지만 등록 가능합니다."),
 	REQUIRED_DEFAULT_ADDRESS(HttpStatus.BAD_REQUEST, "기본 배송지는 최소 1개 이상 필요합니다."),
