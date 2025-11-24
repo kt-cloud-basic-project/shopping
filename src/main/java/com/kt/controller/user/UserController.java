@@ -1,14 +1,13 @@
 package com.kt.controller.user;
 
 import com.kt.common.ApiResult;
-import com.kt.dto.user.UserCreateRequest;
-import com.kt.dto.user.UserLoginRequest;
-import com.kt.dto.user.UserLoginResponse;
-import com.kt.dto.user.UserLogoutRequest;
+import com.kt.dto.user.*;
+import com.kt.security.CustomUserDetails;
 import com.kt.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,8 +33,15 @@ public class UserController {
 
     @PostMapping("auth/logout")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ApiResult<Void> logout(@RequestBody UserLogoutRequest request) {
+    public ApiResult<Void> logout(@Valid @RequestBody UserLogoutRequest request) {
         userService.logout(request);
         return ApiResult.ok();
+    }
+
+    @GetMapping("/me")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResult<UserInfoResponse> getMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+       UserInfoResponse userInfoResponse = userService.getMyInfo(userDetails);
+        return ApiResult.ok(userInfoResponse);
     }
 }

@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader(AUTH_HEADER);
 
         if (!StringUtils.hasText(header) || !header.startsWith(BEARER_PREFIX)) {
-            throw new CustomException(ErrorCode.MALFORMED_JWT_TOKEN);
+            return null; // jwt가 없어야하는 회원가입등의 기능도 jwt에러를 뱉어서 수정
         }
 
         return header.substring(BEARER_PREFIX.length());
