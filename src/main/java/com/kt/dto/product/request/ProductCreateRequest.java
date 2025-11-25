@@ -1,4 +1,4 @@
-package com.kt.dto.product;
+package com.kt.dto.product.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

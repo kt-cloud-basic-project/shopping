@@ -5,8 +5,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.ErrorCode;
-import com.kt.common.Preconditions;
+import com.kt.common.exception.ErrorCode;
+import com.kt.common.support.Preconditions;
 import com.kt.domain.discount.Discount;
 import com.kt.dto.discount.DiscountCreateRequest;
 import com.kt.dto.discount.DiscountDetailResponse;

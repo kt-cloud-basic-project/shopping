@@ -29,11 +29,11 @@ public class ShoppingAddress {
 	@Column(nullable = false, length = 256)
 	private String address;
 
-	@Column(nullable = false, length = 11)
+	@Column(nullable = false, length = 13)
 	private String mobile;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(nullable = false, length = 100)
 	private ShoppingAddressType infoType;
 
 	@Column(length = 256)
@@ -66,5 +66,13 @@ public class ShoppingAddress {
 		this.infoDesc = infoDesc;
 		this.address = address;
 		this.isDefault = isDefault;
+	}
+
+	public void setDefault() {
+		this.isDefault = true;
+	}
+
+	public void unsetDefault() {
+		this.isDefault = false;
 	}
 }
