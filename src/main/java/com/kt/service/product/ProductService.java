@@ -78,9 +78,14 @@ public class ProductService {
 
 	public void updateProductSoldOut(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
-		Preconditions.validate(!product.getStatus().equals(ProductStatus.SOLD_OUT), ErrorCode.INVALID_PRODUCT_STATUS);
 
-		product.updateSoldOut();
+		if (product.getStatus().equals(ProductStatus.SOLD_OUT)) {
+			Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
+			product.updateActive();
+		} else {
+			product.updateSoldOut();
+		}
+
 		//TODO : cart 결제 가능 여부 비활성화 처리
 	}
 
@@ -90,6 +95,7 @@ public class ProductService {
 
 		product.updateInActive();
 	}
+
 
 	public void updateProductActive(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
