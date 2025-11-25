@@ -1,5 +1,6 @@
 package com.kt.controller.user;
 
+import com.kt.dto.user.UserInfoResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.common.response.ApiResult;
 import com.kt.dto.user.UserCreateRequest;
