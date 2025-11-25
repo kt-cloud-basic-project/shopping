@@ -1,5 +1,6 @@
 package com.kt.domain.membership;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,9 +12,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 public class Membership {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String level; // BASIC, SILVER, GOLD 등등
+	@Column(nullable = false, length = 30)
+	private String level; // BASIC, SILVER, GOLD 등등
+
+	public Membership(String level) {
+			this.level = level;
+	}
+
+	public void update(String level) {
+		this.level = level;
+	}
 }
