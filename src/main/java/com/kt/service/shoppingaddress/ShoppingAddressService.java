@@ -135,9 +135,6 @@ public class ShoppingAddressService {
 
 		Preconditions.validate(addressList.size() > 1, ErrorCode.CANNOT_DELETE_DEFAULT_ADDRESS);
 
-		shoppingAddressRepository.delete(address);
-
-
 		// 삭제하는 주소가 기본 배송지였다면 나머지 주소 중에서 가장 최근에 등록된 주소를 기본 배송지로 설정
 		if(address.isDefault()) {
 			if(!addressList.isEmpty()) {
@@ -150,5 +147,6 @@ public class ShoppingAddressService {
 			}
 		}
 
+		shoppingAddressRepository.delete(address);
 	}
 }

@@ -35,7 +35,7 @@ public enum ErrorCode {
 	NOT_SHOPPING_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),
 	EXCEED_MAX_ADDRESS_COUNT(HttpStatus.BAD_REQUEST, "배송지는 최대 5개까지만 등록 가능합니다."),
 	CANNOT_DELETE_DEFAULT_ADDRESS(HttpStatus.BAD_REQUEST, "배송지가 최소 1개 이상 필요합니다. 다른 배송지를 기본으로 설정 후 삭제해주세요."),
-	DELIVERY_INFO_REQUIRED_FOR_CUSTOM(HttpStatus.BAD_REQUEST, "직접 입력 선택 시 배송 요청사항을 입력해야 합니다"),
+	DELIVERY_INFO_REQUIRED_FOR_CUSTOM(HttpStatus.BAD_REQUEST, "직접 입력 선택 시 배송 요청사항을 입력해야 합니다."),
 	NOT_FOUND_SHOPPING_ADDRESS(HttpStatus.BAD_REQUEST, "배송지를 찾을 수 없습니다."),
 
 	//review
