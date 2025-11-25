@@ -10,7 +10,7 @@ public record CartCreateRequest(
     Integer productCount,
     @NotBlank(message = "상품 옵션은 필수 값입니다")
     String productOption,
-	@NotNull(message = "상품 수량은 필수 값입니다")
+	@NotNull(message = "상품 아이디는 필수 값입니다")
     Long productId
 ){
 }

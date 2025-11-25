@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class CartController extends SwaggerAssistance {
     private final CartService cartService;
 
-    // CRUD: 장바구니 조회 (페이징), 수량 변경
+    // CRUD: 장바구니 조회 (페이징)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
