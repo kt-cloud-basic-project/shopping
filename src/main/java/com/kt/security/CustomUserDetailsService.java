@@ -5,9 +5,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.kt.common.ErrorCode;
+import com.kt.common.exception.CustomException;
+import com.kt.common.exception.ErrorCode;
 import com.kt.domain.user.User;
-import com.kt.common.CustomException;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
