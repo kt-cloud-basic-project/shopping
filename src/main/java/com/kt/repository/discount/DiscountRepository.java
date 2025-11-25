@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.kt.common.CustomException;
-import com.kt.common.ErrorCode;
+import com.kt.common.exception.CustomException;
+import com.kt.common.exception.ErrorCode;
 import com.kt.domain.discount.Discount;
 
 public interface DiscountRepository extends JpaRepository<Discount, Long> {

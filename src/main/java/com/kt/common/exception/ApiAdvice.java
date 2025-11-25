@@ -1,4 +1,4 @@
-package com.kt.common;
+package com.kt.common.exception;
 
 import java.util.Arrays;
 
@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.kt.common.response.ErrorResponse;
 
 import io.swagger.v3.oas.annotations.Hidden;
 

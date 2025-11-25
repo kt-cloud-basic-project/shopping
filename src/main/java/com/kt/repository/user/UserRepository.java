@@ -1,7 +1,7 @@
 package com.kt.repository.user;
 
-import com.kt.common.CustomException;
-import com.kt.common.ErrorCode;
+import com.kt.common.exception.CustomException;
+import com.kt.common.exception.ErrorCode;
 import com.kt.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

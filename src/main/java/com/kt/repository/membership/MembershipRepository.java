@@ -2,8 +2,8 @@ package com.kt.repository.membership;
 
 import java.util.Optional;
 
-import com.kt.common.CustomException;
-import com.kt.common.ErrorCode;
+import com.kt.common.exception.CustomException;
+import com.kt.common.exception.ErrorCode;
 import com.kt.domain.membership.Membership;
 
 import org.springframework.data.jpa.repository.JpaRepository;

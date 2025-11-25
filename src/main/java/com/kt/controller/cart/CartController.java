@@ -1,7 +1,7 @@
 package com.kt.controller.cart;
 
-import com.kt.common.ApiResult;
-import com.kt.common.SwaggerAssistance;
+import com.kt.common.response.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.cart.CartCreateRequest;
 import com.kt.dto.cart.CartUpdateQuantityRequest;
 import com.kt.service.cart.CartService;
