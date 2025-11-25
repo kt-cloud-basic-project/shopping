@@ -1,4 +1,4 @@
-package com.kt.dto.product;
+package com.kt.dto.product.response;
 
 import com.kt.domain.product.Product;
 

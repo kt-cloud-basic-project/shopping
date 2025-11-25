@@ -1,4 +1,4 @@
-package com.kt.common;
+package com.kt.common.response;
 
 import java.time.LocalDateTime;
 
