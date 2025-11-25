@@ -4,12 +4,15 @@ import com.kt.common.response.ApiResult;
 import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.cart.CartCreateRequest;
 import com.kt.dto.cart.CartUpdateQuantityRequest;
+import com.kt.security.CustomUserDetails;
 import com.kt.service.cart.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Carts", description = "장바구니 관련 API")
@@ -24,8 +27,10 @@ public class CartController extends SwaggerAssistance {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "장바구니 생성")
-    public ApiResult<Void> create(@Valid @RequestBody CartCreateRequest request) {
-        cartService.create(request);
+    public ApiResult<Void> create(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@Valid @RequestBody CartCreateRequest request) {
+        cartService.create(currentUser.getId(), request);
 
         return ApiResult.ok();
     }
@@ -53,8 +58,8 @@ public class CartController extends SwaggerAssistance {
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "장바구니 전체 삭제")
-    public ApiResult<Void> clearCart() {
-        cartService.clearCart();
+    public ApiResult<Void> clearCart(@AuthenticationPrincipal CustomUserDetails currentUser) {
+        cartService.clearCart(currentUser.getId());
 
         return ApiResult.ok();
     }

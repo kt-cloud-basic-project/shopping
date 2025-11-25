@@ -30,4 +30,8 @@ public class Cart extends BaseEntity {
         this.user = user;
         this.product = product;
     }
+
+	public void updateQuantity(Integer productCount) {
+		this.productCount = productCount;
+	}
 }
