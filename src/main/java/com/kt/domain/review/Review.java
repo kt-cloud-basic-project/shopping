@@ -1,9 +1,9 @@
 package com.kt.domain.review;
 
 
-import com.kt.common.BaseEntity;
-import com.kt.common.ErrorCode;
-import com.kt.common.Preconditions;
+import com.kt.common.support.BaseEntity;
+import com.kt.common.exception.ErrorCode;
+import com.kt.common.support.Preconditions;
 import com.kt.domain.user.User;
 
 import jakarta.persistence.Column;

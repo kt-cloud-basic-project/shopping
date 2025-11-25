@@ -1,6 +1,6 @@
 package com.kt.domain.cart;
 
-import com.kt.common.BaseEntity;
+import com.kt.common.support.BaseEntity;
 import com.kt.domain.product.Product;
 import com.kt.domain.user.User;
 import jakarta.persistence.*;

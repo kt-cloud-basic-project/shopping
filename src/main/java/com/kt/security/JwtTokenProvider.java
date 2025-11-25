@@ -1,95 +1,105 @@
 package com.kt.security;
 
-import com.kt.common.CustomException;
-import com.kt.common.ErrorCode;
+import com.kt.common.exception.CustomException;
+import com.kt.common.exception.ErrorCode;
 import com.kt.domain.user.User;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import java.nio.charset.StandardCharsets;
+
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final SecretKey key;
-    private final long accessTokenValidityInMs;
-    private final long refreshTokenValidityInMs;
+    @Value("${jwt.secret}")
+    private String secretKey;
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenValidityInMs;
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenValidityInMs;
 
-    public JwtTokenProvider(@Value("${kt.jwt.secret:kt-cloud-tech-up-shopping-202511171107}") String secret,
-                            @Value("${kt.jwt.access-token-expiration:300000}") long accessTokenValidityInMs,
-                            @Value("${kt.jwt.refresh-token-expiration:43200000}") long refreshTokenValidityInMs
-    ) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.accessTokenValidityInMs = accessTokenValidityInMs;
-        this.refreshTokenValidityInMs = refreshTokenValidityInMs;
+    private final CustomUserDetailsService userDetailsService;
+
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String generateAccessToken(User user){
+
+    public String generateAccessToken(User user) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenValidityInMs);
 
         return Jwts.builder()
-                .subject(String.valueOf(user.getId()))
-                .claim("loginId",user.getLoginId())
-                .claim("role",user.getRole().name())
+                .subject(user.getLoginId())
+                .claim("role", user.getRole().name())
                 .issuedAt(now)
                 .expiration(expiry)
-                .signWith(key,Jwts.SIG.HS256)
+                .signWith(getSigningKey())
                 .compact();
     }
+
 
     public String generateRefreshToken(User user){
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshTokenValidityInMs);
 
         return Jwts.builder()
-                .subject(String.valueOf(user.getId()))
+                .subject(user.getLoginId())
                 .issuedAt(now)
                 .expiration(expiry)
-                .signWith(key,Jwts.SIG.HS256)
+                .signWith(getSigningKey())
                 .compact();
     }
 
-    public void validateToken(String token){
+    public LocalDateTime getRefreshTokenExpiryDateTime() {
+        Instant expiresAt = Instant.now().plusMillis(refreshTokenValidityInMs);
+        return LocalDateTime.ofInstant(expiresAt, ZoneId.systemDefault());
+    }
+
+    private Jws<Claims> parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+    }
+
+    public String getLoginId(String token) {
         try {
-            Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(token);
-        } catch (MalformedJwtException | DecodingException | UnsupportedJwtException e) {
-            throw new CustomException(ErrorCode.MALFORMED_JWT_TOKEN);
+            return parseClaims(token).getPayload().getSubject();
         } catch (ExpiredJwtException e) {
-            throw new CustomException(ErrorCode.EXPIRED_JWT_TOKEN);
-        } catch (IllegalArgumentException e) {
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+            return e.getClaims().getSubject();
         }
     }
 
-
-    public Long getUserId(String token) {
-        var claims = Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-        return Long.valueOf(claims.getSubject());
+    public boolean validateToken(String token) {
+        try {
+            parseClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
-    public LocalDateTime getRefreshTokenExpiryDateTime() {
-        return LocalDateTime.ofInstant(
-                Instant.now().plusMillis(refreshTokenValidityInMs),
-                ZoneId.systemDefault()
+    public Authentication getAuthentication(String token) {
+        String loginId = getLoginId(token);
+        var userDetails = userDetailsService.loadUserByUsername(loginId);
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
         );
     }
 

@@ -1,26 +1,22 @@
 package com.kt.service.user;
 
-import com.kt.common.CustomException;
-import com.kt.common.ErrorCode;
+import com.kt.common.exception.CustomException;
+import com.kt.common.exception.ErrorCode;
 import com.kt.domain.auth.RefreshToken;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.user.User;
-import com.kt.dto.user.UserCreateRequest;
-import com.kt.dto.user.UserLoginRequest;
-import com.kt.dto.user.UserLoginResponse;
-import com.kt.dto.user.UserLogoutRequest;
+import com.kt.dto.user.*;
 import com.kt.repository.auth.RefreshTokenRepository;
 import com.kt.repository.membership.MembershipRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.security.CustomUserDetails;
 import com.kt.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
@@ -99,5 +95,13 @@ public class UserService {
         refreshTokenRepository.findByToken(request.refreshToken())
                 .ifPresent(token -> refreshTokenRepository.delete(token));
 
+    }
+
+    public UserInfoResponse getMyInfo(CustomUserDetails customUserDetails){
+        String loginId = customUserDetails.getUsername();
+        var user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        return UserInfoResponse.from(user);
     }
 }
