@@ -42,10 +42,10 @@ public enum ErrorCode {
 	INVALID_REVIEW_STAR(HttpStatus.BAD_REQUEST, "리뷰 평점은 1부터 5까지 가능합니다."),
 	NOT_REVIEW_AUTHOR(HttpStatus.FORBIDDEN, "리뷰 작성자만 수정가능합니다."),
 	NOT_FOUND_REVIEW(HttpStatus.BAD_REQUEST, "리뷰를 찾을 수 없습니다."),
-
-	//membership
-	ALREADY_EXIST_MEMBERSHIP_LEVEL(HttpStatus.BAD_REQUEST, "이미 존재하는 멤버십 등급입니다."),
-	NOT_FOUND_MEMBERSHIP(HttpStatus.BAD_REQUEST, "멤버십을 찾을 수 없습니다.")
+  
+  //membership
+	DISCOUNT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "해당 멤버십은 이미 할인 정책이 존재합니다"),
+	NOT_FOUND_DISCOUNT(HttpStatus.BAD_REQUEST, "할인 정책을 찾을 수 없습니다."),
 
 	;
 
