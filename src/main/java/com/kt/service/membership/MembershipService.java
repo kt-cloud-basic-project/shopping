@@ -1,14 +1,12 @@
 package com.kt.service.membership;
 
-import java.util.ArrayList;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.ErrorCode;
-import com.kt.common.Preconditions;
+import com.kt.common.exception.ErrorCode;
+import com.kt.common.support.Preconditions;
 import com.kt.domain.membership.Membership;
 import com.kt.dto.membership.MembershipCreateRequest;
 import com.kt.dto.membership.MembershipListResponse;
