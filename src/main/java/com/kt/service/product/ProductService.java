@@ -90,4 +90,11 @@ public class ProductService {
 
 		product.updateInActive();
 	}
+
+	public void updateProductActive(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
+
+		product.updateActive();
+	}
 }

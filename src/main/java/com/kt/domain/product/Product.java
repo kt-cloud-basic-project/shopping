@@ -66,4 +66,6 @@ public class Product extends BaseEntity {
 
 	public void updateInActive() {	this.status = ProductStatus.IN_ACTIVATED;  }
 
+	public void updateActive() {  this.status = ProductStatus.ACTIVATED;  }
+
 }

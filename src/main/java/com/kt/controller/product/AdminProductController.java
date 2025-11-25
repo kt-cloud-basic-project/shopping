@@ -55,7 +55,7 @@ public class AdminProductController {
 	}
 
 	@PutMapping("/{productId}/category")
-	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @RequestBody
+	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @Valid @RequestBody
 		ProductUpdateCategoryRequest request) {
 		productService.updateProductCategory(productId, request);
 		return ApiResult.ok();
@@ -70,6 +70,12 @@ public class AdminProductController {
 	@PatchMapping("/{productId}/in-activate")
 	public ApiResult<Void> inActivate(@PathVariable("productId") Long productId) {
 		productService.updateProductInActive(productId);
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{productId}/activate")
+	public ApiResult<Void> activate(@PathVariable("productId") Long productId) {
+		productService.updateProductActive(productId);
 		return ApiResult.ok();
 	}
 }
