@@ -11,6 +11,7 @@ import com.kt.common.support.Preconditions;
 import com.kt.domain.product.Product;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.product.request.ProductCreateRequest;
+import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
 import com.kt.dto.product.response.ProductListResponse;
 import com.kt.dto.product.response.ProductResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
@@ -76,7 +77,7 @@ public class ProductService {
 	}
 
 
-	public void updateProductSoldOut(Long productId) {
+	public void updateProductSoldOutWithToggle(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 
 		if (product.getStatus().equals(ProductStatus.SOLD_OUT)) {
@@ -102,5 +103,15 @@ public class ProductService {
 		Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
 
 		product.updateActive();
+	}
+
+
+	public void updateProductsSoldOut(ProductUpdateSoldOutReqeust request) {
+
+		request.productIds().forEach(productId -> {
+			var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+
+			product.updateSoldOut();
+		});
 	}
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
 import com.kt.dto.product.request.ProductCreateRequest;
+import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
 import com.kt.dto.product.response.ProductListResponse;
 import com.kt.dto.product.response.ProductResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
@@ -64,8 +65,8 @@ public class AdminProductController {
 	}
 
 	@PatchMapping("/{productId}/toggle-sold-out")
-	public ApiResult<Void> soldOut(@PathVariable("productId") Long productId) {
-		productService.updateProductSoldOut(productId);
+	public ApiResult<Void> soldOutWithToggle(@PathVariable("productId") Long productId) {
+		productService.updateProductSoldOutWithToggle(productId);
 		return ApiResult.ok();
 	}
 
@@ -78,6 +79,12 @@ public class AdminProductController {
 	@PatchMapping("/{productId}/activate")
 	public ApiResult<Void> activate(@PathVariable("productId") Long productId) {
 		productService.updateProductActive(productId);
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/sold-out")
+	public ApiResult<Void> soldOut(@RequestBody ProductUpdateSoldOutReqeust request) {
+		productService.updateProductsSoldOut(request);
 		return ApiResult.ok();
 	}
 }
