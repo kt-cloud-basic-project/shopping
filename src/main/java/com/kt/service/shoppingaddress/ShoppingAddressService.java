@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.ErrorCode;
-import com.kt.common.Preconditions;
+import com.kt.common.exception.ErrorCode;
+import com.kt.common.support.Preconditions;
 import com.kt.domain.shoppingaddress.ShoppingAddress;
 import com.kt.domain.shoppingaddress.ShoppingAddressType;
 import com.kt.dto.shoppingaddress.ShoppingAddressCreateRequest;
