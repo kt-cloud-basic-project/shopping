@@ -66,4 +66,10 @@ public class AdminProductController {
 		productService.updateProductSoldOut(productId);
 		return ApiResult.ok();
 	}
+
+	@PatchMapping("/{productId}/in-activate")
+	public ApiResult<Void> inActivate(@PathVariable("productId") Long productId) {
+		productService.updateProductInActive(productId);
+		return ApiResult.ok();
+	}
 }

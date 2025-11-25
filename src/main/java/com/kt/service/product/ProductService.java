@@ -83,4 +83,11 @@ public class ProductService {
 		product.updateSoldOut();
 		//TODO : cart 결제 가능 여부 비활성화 처리
 	}
+
+
+	public void updateProductInActive(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+
+		product.updateInActive();
+	}
 }
