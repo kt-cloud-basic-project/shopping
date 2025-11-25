@@ -63,6 +63,7 @@ public class ReviewService {
 
 		review.update(
 			user,
+			request.title(),
 			request.description(),
 			request.star()
 		);

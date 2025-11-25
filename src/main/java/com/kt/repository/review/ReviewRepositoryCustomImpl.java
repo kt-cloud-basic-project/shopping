@@ -25,7 +25,6 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
 		var content = queryFactory
 			.select(new QReviewListResponse(
 				review.id,
-				review.user.loginId,
 				review.title,
 				review.description,
 				review.star,
