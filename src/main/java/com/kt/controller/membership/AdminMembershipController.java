@@ -2,6 +2,7 @@ package com.kt.controller.membership;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
 import com.kt.common.request.Paging;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.membership.MembershipCreateRequest;
 import com.kt.dto.membership.MembershipListResponse;
 import com.kt.dto.membership.MembershipUpdateRequest;
@@ -23,11 +25,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Admin Membership", description = "관리자 멤버쉽 기능 관리  API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/memberships")
-public class AdminMembershipController {
+public class AdminMembershipController extends SwaggerAssistance {
 
 	private final MembershipService membershipService;
 
