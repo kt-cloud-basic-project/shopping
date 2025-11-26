@@ -55,6 +55,9 @@ public enum ErrorCode {
 	//discount
 	NOT_FOUND_DISCOUNT(HttpStatus.BAD_REQUEST, "할인 정책을 찾을 수 없습니다."),
 
+	//cart
+	NOT_FOUND_CART(HttpStatus.BAD_REQUEST, "해당 장바구니를 찾을 수 없습니다.")
+
 	;
 
 	private final HttpStatus status;
