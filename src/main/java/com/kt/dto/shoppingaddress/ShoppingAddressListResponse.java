@@ -19,7 +19,7 @@ public record ShoppingAddressListResponse(
 			shoppingAddress.getAddress(),
 			shoppingAddress.getMobile(),
 			shoppingAddress.getInfoType(),
-			shoppingAddress.getInfoDesc(),
+			shoppingAddress.getInfoType().equals(ShoppingAddressType.ETC) ? shoppingAddress.getInfoDesc() : "",
 			shoppingAddress.isDefault()
 		);
 	}
