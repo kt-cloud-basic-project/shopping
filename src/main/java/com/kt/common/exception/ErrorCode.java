@@ -28,6 +28,8 @@ public enum ErrorCode {
 
 	//product
 	NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "상품을 찾을 수 없습니다."),
+	INVALID_PRODUCT_STATUS(HttpStatus.BAD_REQUEST, "상품 상태 변경이 이미 적용되었습니다"),
+	INVALID_PRODUCT_STOCK(HttpStatus.BAD_REQUEST, "상품 수량이 부족합니다"),
 	CAN_NOT_PURCHASE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 구매할 수 없습니다"),
 
 	//category
@@ -48,13 +50,16 @@ public enum ErrorCode {
 	NOT_REVIEW_AUTHOR(HttpStatus.FORBIDDEN, "리뷰 작성자만 수정가능합니다."),
 	NOT_FOUND_REVIEW(HttpStatus.BAD_REQUEST, "리뷰를 찾을 수 없습니다."),
   
-  //membership
+    //membership
 	DISCOUNT_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "해당 멤버십은 이미 할인 정책이 존재합니다"),
 	NOT_FOUND_MEMBERSHIP(HttpStatus.BAD_REQUEST, "멤버십을 찾을 수 없습니다."),
 	ALREADY_EXIST_MEMBERSHIP_LEVEL(HttpStatus.BAD_REQUEST, "이미 존재하는 멤버십 등급입니다."),
 
 	//discount
 	NOT_FOUND_DISCOUNT(HttpStatus.BAD_REQUEST, "할인 정책을 찾을 수 없습니다."),
+
+	//cart
+	NOT_FOUND_CART(HttpStatus.BAD_REQUEST, "해당 장바구니를 찾을 수 없습니다.")
 
 	;
 
