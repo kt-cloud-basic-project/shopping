@@ -7,8 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.ObjectUtils;
+import com.kt.common.support.Preconditions;
 import com.kt.domain.product.Product;
+import com.kt.domain.product.ProductStatus;
 import com.kt.dto.product.request.ProductCreateRequest;
+import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
 import com.kt.dto.product.response.ProductListResponse;
 import com.kt.dto.product.response.ProductResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
@@ -71,5 +74,44 @@ public class ProductService {
 		product.updateCategory(
 			ObjectUtils.orElse(updateCategory, product.getCategory())
 		);
+	}
+
+
+	public void updateProductSoldOutWithToggle(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+
+		if (product.getStatus().equals(ProductStatus.SOLD_OUT)) {
+			Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
+			product.updateActive();
+		} else {
+			product.updateSoldOut();
+		}
+
+		//TODO : cart 결제 가능 여부 비활성화 처리
+	}
+
+
+	public void updateProductInActive(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+
+		product.updateInActive();
+	}
+
+
+	public void updateProductActive(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
+
+		product.updateActive();
+	}
+
+
+	public void updateProductsSoldOut(ProductUpdateSoldOutReqeust request) {
+
+		request.productIds().forEach(productId -> {
+			var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+
+			product.updateSoldOut();
+		});
 	}
 }
