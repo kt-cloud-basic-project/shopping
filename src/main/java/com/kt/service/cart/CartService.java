@@ -2,18 +2,21 @@ package com.kt.service.cart;
 
 import java.util.List;
 
-import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
+import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.cart.Cart;
 import com.kt.domain.product.Product;
 import com.kt.dto.cart.CartCreateRequest;
+import com.kt.dto.cart.response.CartResponse;
 import com.kt.repository.cart.CartRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,12 +39,18 @@ public class CartService {
 
 		var newCart = new Cart(
 			request.productCount(),
-			request.productOption(),
+			request.variant(),
 			user,
 			product
 		);
 		cartRepository.save(newCart);
     }
+
+	public Page<CartResponse> getCartList(Long userId, Paging paging) {
+		Page<Cart> carts = cartRepository.findByUserId(userId, paging.toPageable());
+
+		return carts.map(CartResponse::from);
+	}
 
 	public void updateQuantity(Long cartId, Integer productCount) {
 		Cart cart = cartRepository.findByIdOrThrow(cartId, ErrorCode.NOT_FOUND_CART);

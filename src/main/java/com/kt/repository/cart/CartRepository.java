@@ -1,11 +1,13 @@
 package com.kt.repository.cart;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.domain.cart.Cart;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
@@ -14,4 +16,6 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 	}
 
 	List<Cart> findByUserId(Long userId);
+
+	Page<Cart> findByUserId(Long userId, Pageable pageable);
 }

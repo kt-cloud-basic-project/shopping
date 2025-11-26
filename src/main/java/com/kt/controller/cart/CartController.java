@@ -1,9 +1,11 @@
 package com.kt.controller.cart;
 
+import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
 import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.cart.CartCreateRequest;
 import com.kt.dto.cart.CartUpdateQuantityRequest;
+import com.kt.dto.cart.response.CartResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.cart.CartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,18 +13,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Carts", description = "장바구니 관련 API")
+@Tag(name = "Cart", description = "장바구니 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/carts")
 public class CartController extends SwaggerAssistance {
     private final CartService cartService;
-
-    // CRUD: 장바구니 조회 (페이징)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -34,6 +35,17 @@ public class CartController extends SwaggerAssistance {
 
         return ApiResult.ok();
     }
+
+	@GetMapping
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "장바구니 조회")
+	public ApiResult<Page<CartResponse>> getCart(
+		Paging paging,
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		Page<CartResponse> carts = cartService.getCartList(currentUser.getId(), paging);
+		return ApiResult.ok(carts);
+	}
 
     @PatchMapping("/{cartId}")
     @ResponseStatus(HttpStatus.OK)
@@ -63,6 +75,4 @@ public class CartController extends SwaggerAssistance {
 
         return ApiResult.ok();
     }
-
-	//TODO: 조회 + 페이징 api 개발
 }
