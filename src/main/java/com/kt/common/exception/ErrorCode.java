@@ -28,6 +28,7 @@ public enum ErrorCode {
 
 	//product
 	NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "상품을 찾을 수 없습니다."),
+	CAN_NOT_PURCHASE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 구매할 수 없습니다"),
 
 	//category
 	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),

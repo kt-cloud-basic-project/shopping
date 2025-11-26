@@ -66,4 +66,6 @@ public class Product extends BaseEntity {
 		this.category = category;
 	}
 
+	public void updateStock(Long stock) {  this.stock = stock;  }
+
 }
