@@ -56,7 +56,7 @@ public class ShoppingAddressService {
 	}
 
 	public void create(Long userId, ShoppingAddressCreateRequest request) {
-		var user = userRepository.findByIdOrThrow(2L, ErrorCode.NOT_FOUND_USER);
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var addressList = shoppingAddressRepository.findByUserId(user.getId());
 		Preconditions.validate(!(addressList.size() >= 5), ErrorCode.EXCEED_MAX_ADDRESS_COUNT);
