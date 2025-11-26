@@ -28,7 +28,7 @@ public class Order extends BaseEntity {
 
 	String receiverAddress;
 
-	String orderStatus;
+	OrderStatus orderStatus;
 
 	LocalDate deliveredAt;
 
