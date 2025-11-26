@@ -30,8 +30,8 @@ public class ReviewService {
 	private final ProductRepository productRepository;
 	//private final OrderProductRepository orderProductRepository;
 
-	public void create(Long productId, ReviewCreateRequest request) {
-		var user = userRepository.findByIdOrThrow(2L, ErrorCode.NOT_FOUND_USER);
+	public void create(Long userId, Long productId, ReviewCreateRequest request) {
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		//var orderProduct = productRepository.findById(productId);
 
@@ -54,8 +54,8 @@ public class ReviewService {
 		return reviewRepositoryCustom.myReviewList(user.getId(), pageable);
 	}
 
-	public void update(Long reviewId, ReviewUpdateRequest request) {
-		var user = userRepository.findByIdOrThrow(2L, ErrorCode.NOT_FOUND_USER);
+	public void update(Long userId, Long reviewId, ReviewUpdateRequest request) {
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
 
@@ -63,13 +63,14 @@ public class ReviewService {
 
 		review.update(
 			user,
+			request.title(),
 			request.description(),
 			request.star()
 		);
 	}
 
-	public void delete(Long reviewId) {
-		var user = userRepository.findByIdOrThrow(2L, ErrorCode.NOT_FOUND_USER);
+	public void delete(Long userId, Long reviewId) {
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
 

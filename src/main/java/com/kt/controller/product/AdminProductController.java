@@ -2,7 +2,9 @@ package com.kt.controller.product;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
 import com.kt.dto.product.request.ProductCreateRequest;
+import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
 import com.kt.dto.product.response.ProductListResponse;
 import com.kt.dto.product.response.ProductResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
@@ -22,6 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Product", description = "Product 관리자용 API")
 @RestController
 @RequestMapping("/api/admin/products")
@@ -54,9 +58,33 @@ public class AdminProductController {
 	}
 
 	@PutMapping("/{productId}/category")
-	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @RequestBody
+	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @Valid @RequestBody
 		ProductUpdateCategoryRequest request) {
 		productService.updateProductCategory(productId, request);
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{productId}/toggle-sold-out")
+	public ApiResult<Void> soldOutWithToggle(@PathVariable("productId") Long productId) {
+		productService.updateProductSoldOutWithToggle(productId);
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{productId}/in-activate")
+	public ApiResult<Void> inActivate(@PathVariable("productId") Long productId) {
+		productService.updateProductInActive(productId);
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{productId}/activate")
+	public ApiResult<Void> activate(@PathVariable("productId") Long productId) {
+		productService.updateProductActive(productId);
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/sold-out")
+	public ApiResult<Void> soldOut(@RequestBody ProductUpdateSoldOutReqeust request) {
+		productService.updateProductsSoldOut(request);
 		return ApiResult.ok();
 	}
 }

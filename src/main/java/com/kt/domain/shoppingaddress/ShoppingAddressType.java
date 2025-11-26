@@ -14,7 +14,7 @@ public enum ShoppingAddressType {
 	DIRECT_OR_SECURITY("직접 받고 부재 시 경비실"),
 	DIRECT_OR_DELIVERY_BOX("직접 받고 부재 시 택배함"),
 	CONTACT_BEFORE_DELIVERY("배송 전 연락 바랍니다"),
-	CUSTOM("기타 (직접 입력)");
+	ETC("기타 (직접 입력)");
 
 	private final String description;
 }

@@ -1,9 +1,18 @@
 package com.kt.service.cart;
 
+import java.util.List;
+
+import com.kt.common.exception.CustomException;
+import com.kt.common.exception.ErrorCode;
+import com.kt.common.support.Preconditions;
+import com.kt.domain.cart.Cart;
+import com.kt.domain.product.Product;
 import com.kt.dto.cart.CartCreateRequest;
 import com.kt.repository.cart.CartRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.user.UserRepository;
+
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,23 +21,48 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CartService {
     private final CartRepository cartRepository;
+	private final UserRepository userRepository;
+	private final ProductRepository productRepository;
 
-    public void create(CartCreateRequest request) {
-        //TODO: create 기능 구현
+    public void create(Long userId, CartCreateRequest request) {
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
+		var product = productRepository.findByIdOrThrow(request.productId(), ErrorCode.NOT_FOUND_PRODUCT);
+
+		// 장바구니에 담을 상품의 재고가 0보다 큰 지 검증
+		Preconditions.validate(product.getStock() > 0, ErrorCode.NOT_ENOUGH_STOCK);
+
+		// 상품의 재고보다 구매할 상품 수량이 적은지 검증
+		Preconditions.validate(product.getStock() >= request.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
+
+		var newCart = new Cart(
+			request.productCount(),
+			request.productOption(),
+			user,
+			product
+		);
+		cartRepository.save(newCart);
     }
 
 	public void updateQuantity(Long cartId, Integer productCount) {
-		//TODO: updateQuantity 기능 구현
+		Cart cart = cartRepository.findByIdOrThrow(cartId, ErrorCode.NOT_FOUND_CART);
+		Product product = productRepository.findByIdOrThrow(cart.getProduct().getId(), ErrorCode.NOT_FOUND_PRODUCT);
+
+		// 변경할 수량이 상품의 재고보다 적은지 확인
+		Preconditions.validate(productCount <= product.getStock(),ErrorCode.NOT_ENOUGH_STOCK);
+
+		cart.updateQuantity(productCount);
 	}
 
 	public void deleteCartItem(Long cartId) {
-		//TODO: deleteCartItem 기능 구현
+		Cart cart = cartRepository.findByIdOrThrow(cartId, ErrorCode.NOT_FOUND_CART);
+
+		cartRepository.deleteById(cartId);
 	}
 
-	public void clearCart() {
-		//TODO: clearCart 기능 구현
+	public void clearCart(Long userId) {
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
+		List<Cart> carts = cartRepository.findByUserId(userId);
+
+		cartRepository.deleteAll(carts);
 	}
-
-
-
 }

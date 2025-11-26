@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,6 +36,16 @@ public class ApiAdvice {
 		var message = details.split(",", 2)[1].replace("]", "").trim();
 
 		return ErrorResponse.error(HttpStatus.BAD_REQUEST, message);
+	}
+
+	@ExceptionHandler(AuthorizationDeniedException.class)
+	public ResponseEntity<ErrorResponse.ErrorData> authorizationDeniedException(AuthorizationDeniedException e) {
+		return ErrorResponse.error(HttpStatus.FORBIDDEN, "접근 권한이 없습니다.");
+	}
+
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<ErrorResponse.ErrorData> authenticationException(AuthenticationException e) {
+		return ErrorResponse.error(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다.");
 	}
 
 }

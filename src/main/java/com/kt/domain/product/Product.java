@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.kt.common.support.BaseEntity;
 import com.kt.domain.category.Category;
+import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.variant.Variant;
 
 import jakarta.persistence.Entity;
@@ -37,8 +38,11 @@ public class Product extends BaseEntity {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
-	@OneToMany
-	private final List<Variant> variants = new ArrayList<>();
+	@OneToMany(mappedBy = "product")
+	private List<Variant> variants = new ArrayList<>();
+
+	@OneToMany(mappedBy = "product")
+	private List<OrderProduct> orderProducts = new ArrayList<>();
 
 	public Product(String name, String description, Long price, Long stock, Category category) {
 		this.name = name;
@@ -61,5 +65,11 @@ public class Product extends BaseEntity {
 	public void updateCategory(Category category) {
 		this.category = category;
 	}
+
+	public void updateSoldOut() {  this.status = ProductStatus.SOLD_OUT;  }
+
+	public void updateInActive() {	this.status = ProductStatus.IN_ACTIVATED;  }
+
+	public void updateActive() {  this.status = ProductStatus.ACTIVATED;  }
 
 }
