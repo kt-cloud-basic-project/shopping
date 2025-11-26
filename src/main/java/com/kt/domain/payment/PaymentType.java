@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class  PaymentType {
+public class PaymentType {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
