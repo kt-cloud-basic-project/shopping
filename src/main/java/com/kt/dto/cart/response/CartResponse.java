@@ -5,17 +5,17 @@ import com.kt.domain.cart.Cart;
 public record CartResponse(
 	Long cartId,
 	String name,
-	Long variant,
+	Long variantId,
 	Integer productCount,
-	Long productId
+	Long price
 ) {
 	public static CartResponse from(Cart cart) {
 		return new CartResponse(
 			cart.getId(),
 			cart.getProduct().getName(),
-			cart.getVariant(),
+			cart.getVariantId(),
 			cart.getProductCount(),
-			cart.getProduct().getId()
+			cart.getProduct().getPrice()
 		);
 	}
 }
