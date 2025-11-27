@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import com.kt.dto.membership.MembershipListResponse;
 
 public interface MembershipRepositoryCustom {
-	Page<MembershipListResponse> membershipAllList(Pageable pageable);
+	Page<MembershipListResponse> getAllMembership(Pageable pageable);
 }

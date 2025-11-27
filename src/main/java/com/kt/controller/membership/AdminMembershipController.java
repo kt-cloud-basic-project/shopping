@@ -47,11 +47,11 @@ public class AdminMembershipController extends SwaggerAssistance {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<Page<MembershipListResponse>> membershipAllList(
+	public ApiResult<Page<MembershipListResponse>> getAllMembership(
 		Paging paging
 	) {
 
-		Page<MembershipListResponse> memberships = membershipService.membershipAllList(paging.toPageable());
+		Page<MembershipListResponse> memberships = membershipService.getAllMembership(paging.toPageable());
 
 		return ApiResult.ok(memberships);
 	}
