@@ -9,6 +9,8 @@ import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.user.User;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -28,7 +30,8 @@ public class Order extends BaseEntity {
 
 	String receiverAddress;
 
-	String orderStatus;
+	@Enumerated(EnumType.STRING)
+	OrderStatus orderStatus;
 
 	LocalDate deliveredAt;
 
@@ -47,7 +50,7 @@ public class Order extends BaseEntity {
 		this.receiverName = receiverName;
 		this.receiverPhone = receiverPhone;
 		this.receiverAddress = receiverAddress;
-		this.orderStatus = null;
+		this.orderStatus = OrderStatus.ORDERED;
 		this.isDeleted = false;
 
 		this.user = user;

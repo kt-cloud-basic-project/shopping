@@ -22,6 +22,8 @@ public class OrderProduct {
 
 	Long count;
 
+	Long variantId;
+
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;

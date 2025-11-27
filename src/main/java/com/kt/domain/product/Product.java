@@ -72,4 +72,6 @@ public class Product extends BaseEntity {
 
 	public void updateActive() {  this.status = ProductStatus.ACTIVATED;  }
 
+	public void updateStock(Long stock) {  this.stock = stock;  }
+
 }
