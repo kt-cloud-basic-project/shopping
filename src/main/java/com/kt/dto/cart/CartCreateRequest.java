@@ -9,7 +9,7 @@ public record CartCreateRequest(
     @Positive(message = "상품 수량은 최소 1개 이상이어야 합니다")
     Integer productCount,
     @NotNull(message = "상품 옵션은 필수 값입니다")
-    Long variant,
+    Long variantId,
 	@NotNull(message = "상품 아이디는 필수 값입니다")
     Long productId
 ){

@@ -39,7 +39,7 @@ public class CartService {
 
 		var newCart = new Cart(
 			request.productCount(),
-			request.variant(),
+			request.variantId(),
 			user,
 			product
 		);
@@ -51,6 +51,7 @@ public class CartService {
 
 		return carts.map(CartResponse::from);
 	}
+	//TODO: 유저가 장바구니 여러개 가지고 있을시 N+1 문제 발생 > 추후 수정
 
 	public void updateQuantity(Long cartId, Integer productCount) {
 		Cart cart = cartRepository.findByIdOrThrow(cartId, ErrorCode.NOT_FOUND_CART);
