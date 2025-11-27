@@ -1,6 +1,5 @@
 package com.kt.service.variant;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import com.kt.domain.variant.Variant;
 import com.kt.domain.variant.VariantType;
 import com.kt.dto.variant.VariantCreateRequest;
 import com.kt.dto.variant.VariantListResponse;
+import com.kt.dto.variant.VariantUpdateRequest;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.variant.VariantRepository;
 
@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class VariantService {
 	private final ProductRepository productRepository;
 	private final VariantRepository variantRepository;
+
 
 	public void create(Long productId, List<VariantCreateRequest> requests) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
@@ -52,5 +53,12 @@ public class VariantService {
 				groupedVariants.getOrDefault(type, List.of())
 			))
 			.toList();
+	}
+
+
+	public void updateVariant(Long variantId, VariantUpdateRequest request) {
+		 var variant = variantRepository.findByIdOrThrow(variantId, ErrorCode.NOT_FOUND_VARIANT);
+
+		 variant.updateDetail(request.detail());
 	}
 }
