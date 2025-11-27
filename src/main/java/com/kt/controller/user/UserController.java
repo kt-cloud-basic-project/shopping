@@ -46,10 +46,16 @@ public class UserController {
         return ApiResult.ok(userInfoResponse);
     }
 
-    @PutMapping("/update/myinfo")
+    @PatchMapping("/update/myinfo")
     @ResponseStatus(HttpStatus.OK)
     public ApiResult<Void> updateMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody UserUpdateRequest request){
         userService.updateMyInfo(userDetails,request);
+        return ApiResult.ok();
+    }
+    @PatchMapping("/update/password")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResult<Void> changePassword(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody UserChangePassword request){
+        userService.ChangePassword(userDetails, request);
         return ApiResult.ok();
     }
 }
