@@ -18,7 +18,13 @@ public class PaymentType {
 
 	private String name;
 
+	private boolean isDeleted;
+
 	public PaymentType(String name) {
 		this.name = name;
+	}
+
+	public void delete(){
+		this.isDeleted=true;
 	}
 }
