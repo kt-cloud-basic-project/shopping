@@ -16,9 +16,10 @@ public record UserInfoResponse(
         LocalDate birthday,
         String membershipLevel,
         Long money,
-        Role role
+        Role role,
+        String address
 ) {
-    public static UserInfoResponse from(User user) {
+    public static UserInfoResponse from(User user,String address) {
         return new UserInfoResponse(
                 user.getId(),
                 user.getLoginId(),
@@ -29,7 +30,8 @@ public record UserInfoResponse(
                 user.getBirthday(),
                 user.getMembership().getLevel(),
                 user.getMoney(),
-                user.getRole()
+                user.getRole(),
+                address
         );
     }
 }
