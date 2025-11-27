@@ -34,27 +34,28 @@ public class ReviewController extends SwaggerAssistance {
 
 	private final ReviewService reviewService;
 
-	@PostMapping("/products/{productId}/reviews")
+	// review와 orderProduct는 종속관계가 아니다..
+	@PostMapping("/order-product/{orderProductId}/reviews")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> create(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
-		@PathVariable Long productId,
+		@PathVariable Long orderProductId,
 		@Valid @RequestBody ReviewCreateRequest request
 	) {
 
-		reviewService.create(currentUser.getId(), productId, request);
+		reviewService.create(currentUser.getId(), orderProductId, request);
 
 		return ApiResult.ok();
 	}
 
 	@GetMapping("/reviews/me")
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<Page<ReviewListResponse>> myReviewList(
+	public ApiResult<Page<ReviewListResponse>> getMyAllReview(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		Paging paging
 	) {
 
-		Page<ReviewListResponse> reviews = reviewService.myReviewList(currentUser.getId(), paging.toPageable());
+		Page<ReviewListResponse> reviews = reviewService.getMyAllReview(currentUser.getId(), paging.toPageable());
 
 		return ApiResult.ok(reviews);
 	}
@@ -84,16 +85,16 @@ public class ReviewController extends SwaggerAssistance {
 		return ApiResult.ok();
 	}
 
-	/*@GetMapping("/products/{productId}/reviews")
+	@GetMapping("/products/{productId}/reviews")
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<Page<ReviewResponse.ReviewList>> productReviewList(
+	public ApiResult<Page<ReviewListResponse>> getProductAllReview(
 		@PathVariable Long productId,
 		Paging paging
 	) {
 
-		Page<ReviewResponse.ReviewList> reviews = reviewService.productReviewList(productId, paging.toPageable());
+		Page<ReviewListResponse> reviews = reviewService.getProductAllReview(productId, paging.toPageable());
 
 		return ApiResult.ok(reviews);
-	}*/
+	}
 
 }
