@@ -3,6 +3,7 @@ package com.kt.controller.variant;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
 import com.kt.dto.variant.VariantCreateRequest;
+import com.kt.dto.variant.VariantListResponse;
 import com.kt.service.variant.VariantService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,5 +31,10 @@ public class AdminVariantController {
 	public ApiResult<Void> create(@PathVariable Long productId, @Valid @RequestBody List<VariantCreateRequest> requests) {
 		variantService.create(productId, requests);
 		return ApiResult.ok();
+	}
+
+	@GetMapping("/{productId}/variants")
+	public ApiResult<List<VariantListResponse>> getVariantList(@PathVariable Long productId) {
+		return ApiResult.ok(variantService.getVariantList(productId));
 	}
 }
