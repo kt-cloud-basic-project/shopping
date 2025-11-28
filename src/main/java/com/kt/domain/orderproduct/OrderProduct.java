@@ -1,10 +1,9 @@
-package com.kt.domain.variant;
+package com.kt.domain.orderproduct;
 
+import com.kt.domain.order.Order;
 import com.kt.domain.product.Product;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,25 +15,26 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Variant {
+public class OrderProduct {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-	@Enumerated(EnumType.STRING)
-	private VariantType type;
+	Long count;
 
-	private String detail;
+	Long variantId;
 
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;
 
-	public Variant(VariantType type, String detail,  Product product) {
-		this.type = type;
-		this.detail = detail;
-		this.product = product;
-	}
+	@ManyToOne
+	@JoinColumn(name = "order_id")
+	private Order order;
 
-	public void updateDetail(String detail) {  this.detail = detail;  }
+	public OrderProduct(Long count, Product product, Order order) {
+		this.count = count;
+		this.product = product;
+		this.order = order;
+	}
 }

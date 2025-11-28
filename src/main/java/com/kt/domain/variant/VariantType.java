@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum VariantType {
 	SIZE("사이즈"),
-	COLOR("색");
+	COLOR("색상");
 
 	private final String description;
 }

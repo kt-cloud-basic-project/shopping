@@ -8,11 +8,16 @@ import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.domain.shoppingaddress.ShoppingAddress;
 
+import java.util.Optional;
+
 public interface ShoppingAddressRepository extends JpaRepository<ShoppingAddress, Long> {
+
+  Optional<ShoppingAddress> findFirstByUserIdAndIsDefaultTrueOrderByIdDesc(Long userId);
 
 	default ShoppingAddress findByIdOrThrow(Long id, ErrorCode errorCode) {
 		return findById(id).orElseThrow(() -> new CustomException(errorCode));
 	}
 
 	List<ShoppingAddress> findByUserId(Long userId);
+
 }

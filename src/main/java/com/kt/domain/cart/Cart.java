@@ -14,7 +14,7 @@ public class Cart extends BaseEntity {
     @Column(nullable = false)
     private Integer productCount;
 
-    private String productOption;
+    private Long variantId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -24,10 +24,14 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public Cart(Integer productCount, String productOption, User user, Product product) {
+    public Cart(Integer productCount, Long variantId, User user, Product product) {
         this.productCount = productCount;
-        this.productOption = productOption;
+        this.variantId = variantId;
         this.user = user;
         this.product = product;
     }
+
+	public void updateQuantity(Integer productCount) {
+		this.productCount = productCount;
+	}
 }

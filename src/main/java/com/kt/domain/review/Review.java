@@ -49,9 +49,10 @@ public class Review extends BaseEntity {
 		this.isDeleted = false;
 	}
 
-	public void update(User user, String description, Integer star) {
+	public void update(User user, String title, String description, Integer star) {
 		userParamCheck(user, description, star);
 
+		this.title = title;
 		this.description = description;
 		this.star = star;
 	}
