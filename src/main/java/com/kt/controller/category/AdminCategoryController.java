@@ -1,6 +1,7 @@
 package com.kt.controller.category;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,12 @@ public class AdminCategoryController {
 	@PatchMapping("/{categoryId}")
 	public ApiResult<Void> update(@PathVariable Long categoryId, @Valid @RequestBody CategoryRequest request) {
 		categoryService.updateCategory(categoryId, request);
+		return ApiResult.ok();
+	}
+
+	@DeleteMapping("{categoryId}")
+	public ApiResult<Void> delete(@PathVariable Long categoryId) {
+		categoryService.deleteCategory(categoryId);
 		return ApiResult.ok();
 	}
 }
