@@ -1,0 +1,77 @@
+package com.kt.service.order;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kt.common.exception.ErrorCode;
+import com.kt.common.support.Preconditions;
+import com.kt.domain.order.Order;
+import com.kt.domain.orderproduct.OrderProduct;
+import com.kt.domain.product.ProductStatus;
+import com.kt.dto.order.OrderCreateRequest;
+import com.kt.repository.order.OrderRepository;
+import com.kt.repository.orderproduct.OrderProductRepository;
+import com.kt.repository.product.ProductRepository;
+import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
+import com.kt.repository.user.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class OrderService {
+	private final UserRepository userRepository;
+	private final ProductRepository productRepository;
+	private final ShoppingAddressRepository shoppingAddressRepository;
+	private final OrderRepository orderRepository;
+	private final OrderProductRepository orderProductRepository;
+
+	public void create(Long userId, OrderCreateRequest request) {
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
+		var address = shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
+
+		// 1. 주문 생성
+		var newOrder = new Order(
+			request.receiverName(),
+			request.receiverPhone(),
+			address.getAddress(),
+			user
+		);
+
+		List<OrderProduct> orderProducts = new ArrayList<>();
+
+		// 2. 전체 product 검증
+		request.products().forEach(product -> {
+			var targetProduct = productRepository.findByIdOrThrow(product.productId(),  ErrorCode.NOT_FOUND_PRODUCT);
+
+			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CAN_NOT_PURCHASE_PRODUCT);
+			Preconditions.validate(targetProduct.getStock() >= product.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
+
+			// OrderProduct 생성
+			var newOrderProduct = new OrderProduct(
+				product.productCount(),
+				targetProduct,
+				newOrder
+			);
+
+			orderProducts.add(newOrderProduct);
+
+			//TODO: payment 생성
+		});
+
+		// 3. stock 차감
+		orderProducts.forEach(newProduct -> {
+			var product = newProduct.getProduct();
+			product.updateStock(product.getStock() - newProduct.getCount());
+		});
+
+		// 4. 저장
+		orderRepository.save(newOrder);
+		orderProductRepository.saveAll(orderProducts);
+
+	}
+}

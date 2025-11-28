@@ -2,6 +2,7 @@ package com.kt.controller.review;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.review.ReviewCreateRequest;
 import com.kt.dto.review.ReviewListResponse;
 import com.kt.dto.review.ReviewUpdateRequest;
+import com.kt.security.CustomUserDetails;
 import com.kt.service.review.ReviewService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,11 +37,12 @@ public class ReviewController extends SwaggerAssistance {
 	@PostMapping("/products/{productId}/reviews")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> create(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long productId,
 		@Valid @RequestBody ReviewCreateRequest request
 	) {
 
-		reviewService.create(productId, request);
+		reviewService.create(currentUser.getId(), productId, request);
 
 		return ApiResult.ok();
 	}
@@ -47,10 +50,11 @@ public class ReviewController extends SwaggerAssistance {
 	@GetMapping("/reviews/me")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Page<ReviewListResponse>> myReviewList(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
 		Paging paging
 	) {
 
-		Page<ReviewListResponse> reviews = reviewService.myReviewList(2L, paging.toPageable());
+		Page<ReviewListResponse> reviews = reviewService.myReviewList(currentUser.getId(), paging.toPageable());
 
 		return ApiResult.ok(reviews);
 	}
@@ -58,11 +62,12 @@ public class ReviewController extends SwaggerAssistance {
 	@PutMapping("/reviews/{reviewId}")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> update(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long reviewId,
 		@Valid @RequestBody ReviewUpdateRequest request
 	) {
 
-		reviewService.update(reviewId, request);
+		reviewService.update(currentUser.getId(), reviewId, request);
 
 		return ApiResult.ok();
 	}
@@ -70,10 +75,11 @@ public class ReviewController extends SwaggerAssistance {
 	@DeleteMapping("/reviews/{reviewId}")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> delete(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long reviewId
 	) {
 
-		reviewService.delete(reviewId);
+		reviewService.delete(currentUser.getId(), reviewId);
 
 		return ApiResult.ok();
 	}

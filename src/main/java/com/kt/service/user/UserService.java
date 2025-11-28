@@ -4,10 +4,12 @@ import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.domain.auth.RefreshToken;
 import com.kt.domain.membership.Membership;
+import com.kt.domain.shoppingaddress.ShoppingAddress;
 import com.kt.domain.user.User;
 import com.kt.dto.user.*;
 import com.kt.repository.auth.RefreshTokenRepository;
 import com.kt.repository.membership.MembershipRepository;
+import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.CustomUserDetails;
 import com.kt.security.JwtTokenProvider;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
+import static com.kt.common.support.ObjectUtils.orElseIfEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ShoppingAddressRepository shoppingAddressRepository;
     private static final String DEFAULT_MEMBERSHIP_LEVEL = "BRONZE";
 
     public boolean checkLoginIdDuplicated(String loginId) {
@@ -102,6 +107,31 @@ public class UserService {
         var user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
-        return UserInfoResponse.from(user);
+        var shoppingAddressOpt =
+                shoppingAddressRepository.findFirstByUserIdAndIsDefaultTrueOrderByIdDesc(user.getId());
+
+        String address = shoppingAddressOpt
+                .map(ShoppingAddress::getAddress)
+                .orElse(null);
+
+        return UserInfoResponse.from(user,address);
+    }
+
+    public void updateMyInfo(CustomUserDetails customUserDetails, UserUpdateRequest request){
+        String loginId = customUserDetails.getUsername();
+        var user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        user.update(
+                orElseIfEmpty(request.name(),user.getName()),
+                orElseIfEmpty(request.name(),user.getEmail()),
+                orElseIfEmpty(request.name(),user.getMobile())
+        );
+    }
+
+    public void ChangePassword(CustomUserDetails customUserDetails, UserChangePassword request){
+        String loginId = customUserDetails.getUsername();
+        var user = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        user.changePassword(request.password());
     }
 }
