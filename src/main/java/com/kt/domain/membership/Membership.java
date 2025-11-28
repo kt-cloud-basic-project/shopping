@@ -23,18 +23,18 @@ public class Membership {
 	@Column(nullable = false, length = 30)
 	private String level; // BASIC, SILVER, GOLD 등등
 
-	@OneToOne(mappedBy = "membership", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Discount discount;
+	private boolean isDeleted;
 
 	public Membership(String level) {
 			this.level = level;
+			this.isDeleted = false;
 	}
 
 	public void update(String level) {
 		this.level = level;
 	}
 
-	public void changeDiscount(Discount discount) {
-		this.discount = discount;
+	public void delete() {
+		this.isDeleted = true;
 	}
 }

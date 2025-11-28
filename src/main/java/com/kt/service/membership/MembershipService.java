@@ -48,7 +48,7 @@ public class MembershipService {
 	public void delete(Long membershipId) {
 		var membership = membershipRepository.findByIdOrThrow(membershipId, ErrorCode.NOT_FOUND_MEMBERSHIP);
 
-		membershipRepository.delete(membership);
+		membership.delete();
 	}
 
 }
