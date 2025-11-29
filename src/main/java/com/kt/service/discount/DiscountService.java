@@ -88,22 +88,4 @@ public class DiscountService {
 			discount.getValue()
 		);
 	}
-
-	// 할인된 최종 가격
-	public Long calcDiscountFinalPrice(User user, Discount discount, Long originalPrice) {
-		if (user.getMembership() == null || discount == null) {
-			return originalPrice;
-		}
-
-		return discount.calcDiscountFinalPrice(originalPrice);
-	}
-
-	// 할인 가격
-	public Long calcDiscountAmount(User user, Discount discount, Long originalPrice) {
-		if (user.getMembership() == null || discount == null) {
-			return 0L;
-		}
-
-		return discount.calcDiscountAmount(originalPrice);
-	}
 }

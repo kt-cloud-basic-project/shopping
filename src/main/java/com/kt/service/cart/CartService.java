@@ -8,6 +8,7 @@ import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.cart.Cart;
 import com.kt.domain.discount.Discount;
+import com.kt.domain.membership.Membership;
 import com.kt.domain.product.Product;
 import com.kt.domain.user.User;
 import com.kt.dto.cart.CartCreateRequest;
@@ -32,7 +33,6 @@ public class CartService {
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
 	private final DiscountRepository discountRepository;
-	private final DiscountService discountService;
 
     public void create(Long userId, CartCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
@@ -65,13 +65,16 @@ public class CartService {
 		User user = carts.getContent().getFirst().getUser();
 
 		// 할인은 있을 수도 없을 수도(optional)
-		Optional<Discount> discount = discountRepository.findByMembershipId(user.getMembership().getId());
+		Discount discount = Optional.ofNullable(user.getMembership())
+			.map(Membership::getId)
+			.flatMap(discountRepository::findByMembershipId)
+			.orElse(null);
 
 		return carts.map(cart -> CartResponse.from(
 			cart,
-			discountService.calcDiscountAmount(user, discount.orElse(null), cart.getProduct().getPrice()),
-			discountService.calcDiscountFinalPrice(user, discount.orElse(null), cart.getProduct().getPrice()))
-		);
+			discount != null ? discount.calcDiscountAmount(cart.getProduct().getPrice()) : 0L,
+			discount != null ? discount.calcDiscountFinalPrice(cart.getProduct().getPrice()) : cart.getProduct().getPrice()
+		));
 	}
 
 	public void updateQuantity(Long cartId, Integer productCount) {
