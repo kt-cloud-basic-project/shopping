@@ -40,8 +40,6 @@ public class Review extends BaseEntity {
 	private OrderProduct orderProduct;
 
 	public Review(User user, OrderProduct orderProduct, String title, String description, Integer star) {
-		userParamCheck(description, star);
-
 		this.user = user;
 		this.orderProduct = orderProduct;
 		this.title = title;
@@ -51,8 +49,6 @@ public class Review extends BaseEntity {
 	}
 
 	public void update(String title, String description, Integer star) {
-		userParamCheck(description, star);
-
 		this.title = title;
 		this.description = description;
 		this.star = star;
@@ -60,10 +56,5 @@ public class Review extends BaseEntity {
 
 	public void delete() {
 		this.isDeleted = true;
-	}
-
-	private void userParamCheck(String description, Integer star) {
-		Preconditions.validate(!description.isBlank(), ErrorCode.INVALID_PARAMETER);
-		Preconditions.validate(star >= 1 && star <= 5, ErrorCode.INVALID_REVIEW_STAR);
 	}
 }
