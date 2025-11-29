@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -58,4 +58,12 @@ public class UserController {
         userService.ChangePassword(userDetails, request);
         return ApiResult.ok();
     }
+
+    @DeleteMapping("/withdraw")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ApiResult<Void> withDraw(@AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.WithDraw(userDetails);
+        return ApiResult.ok();
+    }
+
 }
