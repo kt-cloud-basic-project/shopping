@@ -22,16 +22,16 @@ public class DiscountRepositoryCustomImpl implements DiscountRepositoryCustom {
 	private final QMembership membership = QMembership.membership;
 
 	@Override
-	public Page<DiscountListResponse> discountAllList(Pageable pageable) {
+	public Page<DiscountListResponse> getAllDiscount(Pageable pageable) {
 
 		var content = queryFactory
 			.select(new QDiscountListResponse(
+				membership.id,
+				membership.level,
 				discount.id,
 				discount.name,
 				discount.type,
-				discount.value,
-				membership.id,
-				membership.level
+				discount.value
 			))
 			.from(discount)
 			.join(membership).on(discount.membership.id.eq(membership.id))
