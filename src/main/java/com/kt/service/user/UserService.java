@@ -36,7 +36,7 @@ public class UserService {
     private static final String DEFAULT_MEMBERSHIP_LEVEL = "BRONZE";
 
     public boolean checkLoginIdDuplicated(String loginId) {
-        return userRepository.existsByLoginId(loginId);
+        return userRepository.existsByLoginIdAndIsDeletedFalse(loginId);
     }
 
     public void create(UserCreateRequest request) {
@@ -67,11 +67,13 @@ public class UserService {
     // access토큰 반환 및 기존 리프레시 토큰 삭제및 저장 추가
     @Transactional
     public UserLoginResponse login(UserLoginRequest request) {
-        User user = userRepository.findByLoginId(request.loginId())
+        User user = userRepository.findByLoginIdAndIsDeletedFalse(request.loginId())
                 .orElseThrow(() -> new CustomException(ErrorCode.FAIL_LOGIN));
 
         if(!passwordEncoder.matches(request.password(), user.getPassword())){
             throw new CustomException(ErrorCode.FAIL_LOGIN);
+        }else if(user.isDeleted()){
+            throw new CustomException(ErrorCode.FAIL_LOGIN); // 삭제된 계정이지만 보안을 위해 ID,PASSWORD 로그인실패 처리
         }
 
         String accessToken = jwtTokenProvider.generateAccessToken(user);
@@ -104,7 +106,7 @@ public class UserService {
 
     public UserInfoResponse getMyInfo(CustomUserDetails customUserDetails){
         String loginId = customUserDetails.getUsername();
-        var user = userRepository.findByLoginId(loginId)
+        var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         var shoppingAddressOpt =
@@ -119,7 +121,7 @@ public class UserService {
 
     public void updateMyInfo(CustomUserDetails customUserDetails, UserUpdateRequest request){
         String loginId = customUserDetails.getUsername();
-        var user = userRepository.findByLoginId(loginId)
+        var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         user.update(
                 orElseIfEmpty(request.name(),user.getName()),
@@ -130,8 +132,15 @@ public class UserService {
 
     public void ChangePassword(CustomUserDetails customUserDetails, UserChangePassword request){
         String loginId = customUserDetails.getUsername();
-        var user = userRepository.findByLoginId(loginId)
+        var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         user.changePassword(passwordEncoder.encode(request.password()));
+    }
+
+    public void WithDraw(CustomUserDetails customUserDetails){
+        String loginId = customUserDetails.getUsername();
+        var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
+                .orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_USER));
+        user.delete();
     }
 }
