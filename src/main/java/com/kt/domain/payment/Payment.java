@@ -30,7 +30,7 @@ public class Payment extends BaseEntity {
 	@Column(nullable = false)
 	private boolean isDeleted = false;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
 
