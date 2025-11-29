@@ -55,4 +55,9 @@ public class Order extends BaseEntity {
 
 		this.user = user;
 	}
+
+	public void cancel() {
+		this.isDeleted = true;
+		this.orderStatus = OrderStatus.CANCELLED;
+	}
 }
