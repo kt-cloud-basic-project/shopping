@@ -1,4 +1,4 @@
-package com.kt.domain.payment;
+package com.kt.domain.paymenttype;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

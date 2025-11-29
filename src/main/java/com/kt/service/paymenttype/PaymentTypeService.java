@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.domain.payment.PaymentType;
+import com.kt.domain.paymenttype.PaymentType;
 import com.kt.dto.paymenttype.PaymentTypeCreateRequest;
 import com.kt.dto.paymenttype.PaymentTypeListResponse;
 import com.kt.repository.paymenttype.PaymentTypeRepository;
