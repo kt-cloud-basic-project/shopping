@@ -3,15 +3,18 @@ package com.kt.service.order;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.ErrorCode;
+import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.order.Order;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.order.OrderCreateRequest;
+import com.kt.dto.order.response.OrderListResponse;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -73,5 +76,11 @@ public class OrderService {
 		orderRepository.save(newOrder);
 		orderProductRepository.saveAll(orderProducts);
 
+	}
+
+	public Page<OrderListResponse> getOrderList(Long userId, Paging paging) {
+		Page<Order> orderList = orderRepository.findByUserId(userId, paging.toPageable());
+
+		return orderList.map(OrderListResponse::from);
 	}
 }

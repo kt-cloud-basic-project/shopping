@@ -35,4 +35,6 @@ public class Variant {
 		this.detail = detail;
 		this.product = product;
 	}
+
+	public void updateDetail(String detail) {  this.detail = detail;  }
 }

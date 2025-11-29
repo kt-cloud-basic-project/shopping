@@ -19,7 +19,7 @@ public class MembershipRepositoryCustomImpl implements  MembershipRepositoryCust
 	private final QMembership membership = QMembership.membership;
 
 	@Override
-	public Page<MembershipListResponse> membershipAllList(Pageable pageable) {
+	public Page<MembershipListResponse> getAllMembership(Pageable pageable) {
 
 		var content = queryFactory
 			.select(new QMembershipListResponse(

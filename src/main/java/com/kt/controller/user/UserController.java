@@ -65,4 +65,5 @@ public class UserController {
         userService.WithDraw(userDetails);
         return ApiResult.ok();
     }
+
 }
