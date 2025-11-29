@@ -15,7 +15,7 @@ public record DiscountUpdateRequest(
 	DiscountType type,
 
 	@NotNull(message = "할인 값은 필수입니다")
-	@Min(value = 0, message = "할인 값은 0 이상이어야 합니다")
+	@Min(value = 1, message = "할인 값은 1 이상이어야 합니다")
 	Integer value
 ) {
 }
