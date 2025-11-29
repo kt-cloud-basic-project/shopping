@@ -6,5 +6,7 @@ import org.springframework.data.domain.Pageable;
 import com.kt.dto.review.ReviewListResponse;
 
 public interface ReviewRepositoryCustom {
-	Page<ReviewListResponse> myReviewList(Long userId, Pageable pageable);
+	Page<ReviewListResponse> getMyAllReview(Long userId, Pageable pageable);
+
+	Page<ReviewListResponse> getProductAllReview(Long ProductId, Pageable pageable);
 }
