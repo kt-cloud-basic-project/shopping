@@ -44,7 +44,7 @@ public class DataInitializer {
 
 		List<Discount> discounts = new ArrayList<>();
 		discounts.add(new Discount("신규회원 웰컴 5% 할인", DiscountType.PERCENTAGE, 5, memberships.get(0)));
-		discounts.add(new Discount("첫 구매 감사 1,000원 할인", DiscountType.FIXED_AMOUNT, 1000, memberships.get(1)));
+		/*discounts.add(new Discount("첫 구매 감사 1,000원 할인", DiscountType.FIXED_AMOUNT, 1000, memberships.get(1)));
 		discounts.add(new Discount("실버 회원 3,000원 할인", DiscountType.FIXED_AMOUNT, 3000, memberships.get(2)));
 		discounts.add(new Discount("골드 회원 5,000원 할인", DiscountType.FIXED_AMOUNT, 5000, memberships.get(3)));
 		discounts.add(new Discount("플래티넘 회원 10,000원 할인", DiscountType.FIXED_AMOUNT, 10000, memberships.get(4)));
@@ -52,7 +52,7 @@ public class DataInitializer {
 		discounts.add(new Discount("다이아몬드 고객님 특가 13% 할인", DiscountType.PERCENTAGE, 13, memberships.get(6)));
 		discounts.add(new Discount("마스터 고객님 특가 15% 할인", DiscountType.PERCENTAGE, 15, memberships.get(7)));
 		discounts.add(new Discount("그랜드 마스터 고객님 감사 20% 할인", DiscountType.PERCENTAGE, 20, memberships.get(8)));
-		discounts.add(new Discount("챌린저 고객님 감사 30% 할인", DiscountType.PERCENTAGE, 30, memberships.get(9)));
+		discounts.add(new Discount("챌린저 고객님 감사 30% 할인", DiscountType.PERCENTAGE, 30, memberships.get(9)));*/
 
 
 		discountRepository.saveAll(discounts);
