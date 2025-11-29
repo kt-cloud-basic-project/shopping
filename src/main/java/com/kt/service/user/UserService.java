@@ -123,8 +123,8 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         user.update(
                 orElseIfEmpty(request.name(),user.getName()),
-                orElseIfEmpty(request.name(),user.getEmail()),
-                orElseIfEmpty(request.name(),user.getMobile())
+                orElseIfEmpty(request.email(),user.getEmail()),
+                orElseIfEmpty(request.mobile(),user.getMobile())
         );
     }
 
@@ -132,6 +132,6 @@ public class UserService {
         String loginId = customUserDetails.getUsername();
         var user = userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
-        user.changePassword(request.password());
+        user.changePassword(passwordEncoder.encode(request.password()));
     }
 }
