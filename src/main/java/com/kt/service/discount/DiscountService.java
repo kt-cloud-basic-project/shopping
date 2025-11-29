@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.discount.Discount;
+import com.kt.domain.discount.DiscountType;
+import com.kt.domain.user.User;
 import com.kt.dto.discount.DiscountCreateRequest;
 import com.kt.dto.discount.DiscountDetailResponse;
 import com.kt.dto.discount.DiscountListResponse;
@@ -33,6 +35,12 @@ public class DiscountService {
 
 		Preconditions.validate(!discountRepository.existsByMembershipId(membershipId), ErrorCode.DISCOUNT_ALREADY_EXISTS);
 
+		if (request.type() == DiscountType.PERCENTAGE) {
+			boolean isValidPercentage = request.value() > 0 && request.value() < 100;
+
+			Preconditions.validate(isValidPercentage, ErrorCode.INVALID_PERCENTAGE_DISCOUNT_VALUE);
+		}
+
 		var discount = new Discount(
 			request.name(),
 			request.type(),
@@ -43,13 +51,14 @@ public class DiscountService {
 		discountRepository.save(discount);
 	}
 
-	public Page<DiscountListResponse> discountAllList(Pageable pageable) {
-		return discountRepositoryCustom.discountAllList(pageable);
+	public Page<DiscountListResponse> getAllDiscount(Pageable pageable) {
+		return discountRepositoryCustom.getAllDiscount(pageable);
 	}
 
 	public void update(Long discountId, DiscountUpdateRequest request) {
 
 		var discount = discountRepository.findByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
+		Preconditions.validate(request.type() == DiscountType.PERCENTAGE && (request.value() < 1 || request.value() > 100), ErrorCode.INVALID_PERCENTAGE_DISCOUNT_VALUE);
 
 		discount.update(
 			request.name(),
@@ -67,19 +76,34 @@ public class DiscountService {
 
 	public DiscountDetailResponse detail(Long discountId) {
 
-		// 1+N 문제, 현재는 단건 조회라서 문제는 없겠지만 membership 추가 쿼리 발생
-		// var discount = discountRepository.findByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
-
 		// 해결 방법: EntityGraph 사용
 		var discount = discountRepository.findDiscountDetailByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
 
 		return new DiscountDetailResponse(
+			discount.getMembership().getId(),
+			discount.getMembership().getLevel(),
 			discount.getId(),
 			discount.getName(),
 			discount.getType(),
-			discount.getValue(),
-			discount.getMembership().getId(),
-			discount.getMembership().getLevel()
+			discount.getValue()
 		);
+	}
+
+	// 할인된 최종 가격
+	public Long calcDiscountFinalPrice(User user, Discount discount, Long originalPrice) {
+		if (user.getMembership() == null || discount == null) {
+			return originalPrice;
+		}
+
+		return discount.calcDiscountFinalPrice(originalPrice);
+	}
+
+	// 할인 가격
+	public Long calcDiscountAmount(User user, Discount discount, Long originalPrice) {
+		if (user.getMembership() == null || discount == null) {
+			return 0L;
+		}
+
+		return discount.calcDiscountAmount(originalPrice);
 	}
 }
