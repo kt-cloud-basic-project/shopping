@@ -1,6 +1,7 @@
 package com.kt.controller.product;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
 import com.kt.dto.product.response.UserProductDetailResponse;
 import com.kt.dto.product.response.UserProductListResponse;
+import com.kt.security.CustomUserDetails;
 import com.kt.service.product.ProductService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,15 +29,19 @@ public class UserProductController {
 
 	@GetMapping("")
 	public ApiResult<Page<UserProductListResponse>> getProductList(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) Long categoryId,
 		@Valid @Parameter(hidden = true) Paging paging
 	) {
-		return ApiResult.ok(productService.getProductListForUser(keyword, categoryId, paging.toPageable()));
+		return ApiResult.ok(productService.getProductListForUser(currentUser, keyword, categoryId, paging.toPageable()));
 	}
 
 	@GetMapping("/{productId}")
-	public ApiResult<UserProductDetailResponse> getProductDetail(@PathVariable Long productId) {
-		return ApiResult.ok(productService.getProductDetailForUser(productId));
+	public ApiResult<UserProductDetailResponse> getProductDetail(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@PathVariable Long productId
+	) {
+		return ApiResult.ok(productService.getProductDetailForUser(currentUser, productId));
 	}
 }
