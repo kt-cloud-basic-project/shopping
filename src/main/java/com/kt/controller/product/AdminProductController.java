@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.response.ApiResult;
 import com.kt.dto.product.request.ProductCreateRequest;
 import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
-import com.kt.dto.product.response.ProductListResponse;
-import com.kt.dto.product.response.ProductResponse;
+import com.kt.dto.product.response.AdminProductListResponse;
+import com.kt.dto.product.response.AdminProductDetailResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
 import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.service.product.ProductService;
@@ -40,13 +40,13 @@ public class AdminProductController {
 	}
 
 	@GetMapping("")
-	public ApiResult<Page<ProductListResponse>> getProductList(Pageable pageable) {
-		Page<ProductListResponse> productList = productService.getProductList(pageable);
+	public ApiResult<Page<AdminProductListResponse>> getProductList(Pageable pageable) {
+		Page<AdminProductListResponse> productList = productService.getProductList(pageable);
 		return ApiResult.ok(productList);
 	}
 
 	@GetMapping("/{productId}")
-	public ApiResult<ProductResponse> getProductDetail(@PathVariable("productId") Long productId) {
+	public ApiResult<AdminProductDetailResponse> getProductDetail(@PathVariable("productId") Long productId) {
 		var product = productService.getProductDetail(productId);
 		return ApiResult.ok(product);
 	}

@@ -40,7 +40,7 @@ public class CartController extends SwaggerAssistance {
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "장바구니 조회")
 	public ApiResult<Page<CartResponse>> getCart(
-		Paging paging,
+		@Valid Paging paging,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
 		Page<CartResponse> carts = cartService.getCartList(currentUser.getId(), paging);
