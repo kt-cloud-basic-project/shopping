@@ -40,7 +40,7 @@ public class VariantService {
 
 	public List<VariantListResponse> getVariantList(Long productId) {
 		productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
-		var variants = variantRepository.findByProductId(productId);
+		var variants = variantRepository.findByProductIdAndDeletedFalse(productId);
 
 		Map<VariantType, List<String>> groupedVariants = variants.stream()
 			.collect(Collectors.groupingBy(
@@ -59,7 +59,7 @@ public class VariantService {
 
 
 	public void updateVariant(Long variantId, VariantUpdateRequest request) {
-		 var variant = variantRepository.findByIdOrThrow(variantId, ErrorCode.NOT_FOUND_VARIANT);
+		 var variant = variantRepository.findByIdAndDeletedFalseOrThrow(variantId, ErrorCode.NOT_FOUND_VARIANT);
 
 		 variant.updateDetail(request.detail());
 	}

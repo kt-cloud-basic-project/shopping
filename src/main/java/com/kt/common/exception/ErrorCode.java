@@ -78,6 +78,7 @@ public enum ErrorCode {
 	NOT_FOUND_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 찾을 수 없습니다"),
 	INVALID_VARIANT(HttpStatus.BAD_REQUEST, "해당 상품의 옵션이 아닙니다."),
 	CANNOT_DELETE_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 삭제할 수 없습니다"),
+	DELETED_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션이 존재하지 않습니다"),
 
 	;
 

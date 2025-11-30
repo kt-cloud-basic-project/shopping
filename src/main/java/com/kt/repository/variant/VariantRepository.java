@@ -1,6 +1,7 @@
 package com.kt.repository.variant;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,5 +15,13 @@ public interface VariantRepository extends JpaRepository<Variant, Long> {
 		return findById(id).orElseThrow(() -> new CustomException(errorCode));
 	}
 
-	List<Variant> findByProductId(Long productId);
+	List<Variant> findByProductIdAndDeletedFalse(Long productId);
+
+	boolean existsByIdAndDeletedFalse(Long variantId);
+
+	Optional<Variant> findByIdAndDeletedFalse(Long variantId);
+
+	default Variant findByIdAndDeletedFalseOrThrow(Long variantId, ErrorCode errorCode) {
+		return findByIdAndDeletedFalse(variantId).orElseThrow(() -> new CustomException(errorCode));
+	}
 }
