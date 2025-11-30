@@ -53,4 +53,8 @@ public class Payment extends BaseEntity {
 		this.finalPrice = finalPrice;
 		this.isDeleted = false;
 	}
+
+	public void delete() {
+		this.isDeleted = true;
+	}
 }

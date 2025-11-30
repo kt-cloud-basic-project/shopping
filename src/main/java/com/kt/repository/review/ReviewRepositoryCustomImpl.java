@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 	private final QReview review = QReview.review;
-	private QOrderProduct orderProduct = QOrderProduct.orderProduct;
+	private final QOrderProduct orderProduct = QOrderProduct.orderProduct;
 
 	@Override
 	public Page<ReviewListResponse> getMyAllReview(Long userId, Pageable pageable) {

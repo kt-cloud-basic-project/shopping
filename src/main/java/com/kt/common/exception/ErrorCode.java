@@ -42,6 +42,7 @@ public enum ErrorCode {
 	NOT_ORDER_OWNER(HttpStatus.BAD_REQUEST, "자신의 주문만 취소 할 수 있습니다."),
 	NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 주문이 존재하지 않습니다."),
 	CANNOT_CANCEL_ORDER(HttpStatus.BAD_REQUEST, "주문 취소가 불가능합니다."),
+	CANNOT_UPDATE_ORDER_INFO(HttpStatus.BAD_REQUEST, "주문 수정이 불가능합니다."),
 
 	//shoppingaddress
 	NOT_SHOPPING_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),
@@ -70,6 +71,7 @@ public enum ErrorCode {
 
 	//cart
 	NOT_FOUND_CART(HttpStatus.BAD_REQUEST, "해당 장바구니를 찾을 수 없습니다."),
+	NOT_CART_OWNER(HttpStatus.BAD_REQUEST, "본인의 장바구니만 수정 할 수 있습니다."),
 
 	//order product
 	NOT_FOUND_ORDER_PRODUCT(HttpStatus.BAD_REQUEST, "주문 상품을 찾을 수 없습니다."),
@@ -79,6 +81,10 @@ public enum ErrorCode {
 	INVALID_VARIANT(HttpStatus.BAD_REQUEST, "해당 상품의 옵션이 아닙니다."),
 	CANNOT_DELETE_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 삭제할 수 없습니다"),
 	DELETED_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션이 존재하지 않습니다"),
+
+	//payment
+	NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제 정보를 찾을 수 없습니다"),
+
 
 	;
 
