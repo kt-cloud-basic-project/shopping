@@ -1,5 +1,7 @@
 package com.kt.service.product;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.ObjectUtils;
 import com.kt.common.support.Preconditions;
+import com.kt.domain.discount.Discount;
+import com.kt.domain.membership.Membership;
 import com.kt.domain.product.Product;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.product.request.ProductCreateRequest;
@@ -19,9 +23,12 @@ import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.dto.product.response.UserProductDetailResponse;
 import com.kt.dto.product.response.UserProductListResponse;
 import com.kt.repository.category.CategoryRepository;
+import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.orderproduct.OrderProductRepositoryCustom;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.product.ProductRepositoryCustom;
+import com.kt.repository.user.UserRepository;
+import com.kt.security.CustomUserDetails;
 import com.kt.service.variant.VariantService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +42,8 @@ public class ProductService {
 	private final VariantService variantService;
 	private final ProductRepositoryCustom productRepositoryCustom;
 	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
+	private final UserRepository userRepository;
+	private final DiscountRepository discountRepository;
 
 	public void create(ProductCreateRequest request) {
 		var category = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
@@ -122,19 +131,49 @@ public class ProductService {
 	}
 
 
-	public Page<UserProductListResponse> getProductListForUser(String keyword, Long categoryId, Pageable pageable) {
-		return productRepositoryCustom.search(keyword, categoryId, pageable)
-			.map(UserProductListResponse::from);
+	public Page<UserProductListResponse> getProductListForUser(CustomUserDetails currentUser, String keyword, Long categoryId, Pageable pageable) {
+		Page<Product> products = productRepositoryCustom.search(keyword, categoryId, pageable);
 
+		if(products.isEmpty()) {
+			return Page.empty(pageable);
+		}
+
+		// 로그인 유저는 할인 적용
+		Discount discount = getDiscountForUser(currentUser);
+
+		return products.map(product -> UserProductListResponse.from(
+			product,
+			discount != null ? discount.calcDiscountAmount(product.getPrice()) : 0L,
+			discount != null ? discount.calcDiscountFinalPrice(product.getPrice()) : product.getPrice()
+		));
 	}
 
-
-	public UserProductDetailResponse getProductDetailForUser(Long productId) {
+	public UserProductDetailResponse getProductDetailForUser(CustomUserDetails currentUser, Long productId) {
 		var product = productRepository.findByIdAndDeletedFalseOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		Preconditions.validate(!product.isDeleted(), ErrorCode.DELETED_PRODUCT);
 
 		var variants = variantService.getVariantList(productId);
-		return UserProductDetailResponse.from(product, variants);
+
+		// 로그인 유저는 할인 적용
+		Discount discount = getDiscountForUser(currentUser);
+		final Long discountAmount = discount != null ? discount.calcDiscountAmount(product.getPrice()) : 0L;
+		final Long discountedPrice = discount != null ? discount.calcDiscountFinalPrice(product.getPrice()) : product.getPrice();
+
+		return UserProductDetailResponse.from(product, variants, discountAmount, discountedPrice);
+
+	}
+
+	private Discount getDiscountForUser(CustomUserDetails currentUser) {
+		if(currentUser == null) {
+			return null;
+		}
+
+		var user = userRepository.findByIdOrThrow(currentUser.getId(), ErrorCode.NOT_FOUND_USER);
+
+		return Optional.ofNullable(user.getMembership())
+			.map(Membership::getId)
+			.flatMap(discountRepository::findByMembershipId)
+			.orElse(null);
 	}
 
 
