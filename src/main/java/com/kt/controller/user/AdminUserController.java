@@ -61,7 +61,7 @@ public class AdminUserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/update/role")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ApiResult<Void> changeUserPassword(@Valid @RequestBody UserChangeRole request){
+    public ApiResult<Void> changeUserRole(@Valid @RequestBody UserChangeRole request){
         userService.changeRole(request);
         return ApiResult.ok();
     }
