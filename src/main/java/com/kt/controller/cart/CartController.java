@@ -52,8 +52,9 @@ public class CartController extends SwaggerAssistance {
     @Operation(summary = "장바구니 수량 변경")
     public ApiResult<Void> updateQuantity(
             @Valid @RequestBody CartUpdateQuantityRequest request,
-            @PathVariable Long cartId) {
-        cartService.updateQuantity(cartId, request.productCount());
+            @PathVariable Long cartId,
+		@AuthenticationPrincipal CustomUserDetails currentUser) {
+        cartService.updateQuantity(cartId, currentUser.getId(), request.productCount());
 
         return ApiResult.ok();
     }
