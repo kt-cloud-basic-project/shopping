@@ -20,4 +20,10 @@ public interface ShoppingAddressRepository extends JpaRepository<ShoppingAddress
 
 	List<ShoppingAddress> findByUserId(Long userId);
 
+	Optional<ShoppingAddress> findByIdAndUserId(Long id, Long userId);
+
+	default ShoppingAddress findByIdAndUserIdOrThrow(Long id, Long userId, ErrorCode errorCode) {
+		return findByIdAndUserId(id, userId).orElseThrow(() -> new CustomException(errorCode));
+	}
+
 }

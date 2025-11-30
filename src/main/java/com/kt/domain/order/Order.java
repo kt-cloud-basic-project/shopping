@@ -60,4 +60,10 @@ public class Order extends BaseEntity {
 		this.isDeleted = true;
 		this.orderStatus = OrderStatus.CANCELLED;
 	}
+
+	public void update(String receiverName, String receiverPhone, String receiverAddress) {
+		this.receiverName = receiverName;
+		this.receiverPhone = receiverPhone;
+		this.receiverAddress = receiverAddress;
+	}
 }
