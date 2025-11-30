@@ -5,6 +5,7 @@ import com.kt.dto.user.request.UserCreateRequest;
 import com.kt.dto.user.response.UserInfoResponse;
 import com.kt.dto.user.response.UserListResponse;
 import com.kt.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public class AdminUserController {
     private final UserService userService;
 
+    @PostMapping("/auth/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void adminCreate(@Valid @RequestBody UserCreateRequest request){
+        userService.createAdmin(request);
+    }
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
