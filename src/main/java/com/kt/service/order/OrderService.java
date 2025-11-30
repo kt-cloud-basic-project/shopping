@@ -75,8 +75,6 @@ public class OrderService {
 			);
 
 			orderProducts.add(newOrderProduct);
-
-			//TODO: payment 생성
 		});
 
 		// 3. stock 차감
@@ -125,8 +123,6 @@ public class OrderService {
 				);
 			}
 		).toList();
-
-		//TODO: payment 정보 반환
 
 		return OrderDetailResponse.from(order, products);
 	}
