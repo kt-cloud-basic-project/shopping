@@ -1,6 +1,6 @@
 package com.kt.dto.order;
 
-import com.kt.domain.payment.PaymentType;
+import com.kt.domain.paymenttype.PaymentType;
 
 public record OrderPaymentResponse (
 	PaymentType paymentType,

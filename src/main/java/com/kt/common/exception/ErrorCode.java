@@ -74,6 +74,7 @@ public enum ErrorCode {
 
 	//variant
 	NOT_FOUND_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 찾을 수 없습니다"),
+	INVALID_VARIANT(HttpStatus.BAD_REQUEST, "해당 상품의 옵션이 아닙니다."),
 
 	;
 
