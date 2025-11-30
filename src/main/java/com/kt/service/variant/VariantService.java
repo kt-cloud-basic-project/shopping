@@ -65,9 +65,9 @@ public class VariantService {
 	}
 
 
-	public void delete(Long variantId) {
+	public void deleteVariant(Long variantId) {
 		var variant = variantRepository.findByIdOrThrow(variantId, ErrorCode.NOT_FOUND_VARIANT);
-		Preconditions.validate(!orderProductRepositoryCustom.hasInvalidStatus(variantId), ErrorCode.CANNOT_DELETE_VARIANT);
+		Preconditions.validate(!orderProductRepositoryCustom.hasInvalidStatusWithVariantId(variantId), ErrorCode.CANNOT_DELETE_VARIANT);
 
 		variant.delete();
 	}

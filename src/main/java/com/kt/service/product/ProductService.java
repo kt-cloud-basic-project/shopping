@@ -19,6 +19,7 @@ import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.dto.product.response.UserProductDetailResponse;
 import com.kt.dto.product.response.UserProductListResponse;
 import com.kt.repository.category.CategoryRepository;
+import com.kt.repository.orderproduct.OrderProductRepositoryCustom;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.product.ProductRepositoryCustom;
 import com.kt.service.variant.VariantService;
@@ -33,6 +34,7 @@ public class ProductService {
 	private final CategoryRepository categoryRepository;
 	private final VariantService variantService;
 	private final ProductRepositoryCustom productRepositoryCustom;
+	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
 
 	public void create(ProductCreateRequest request) {
 		var category = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
@@ -58,10 +60,13 @@ public class ProductService {
 	public AdminProductDetailResponse getProductDetail(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		return AdminProductDetailResponse.from(product);
+
+		//TODO : deleted 추가
 	}
 
 
 	public void updateProduct(Long productId,  ProductUpdateRequest request) {
+		//TODO : deleted 검증
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 
 		product.update(
@@ -74,6 +79,7 @@ public class ProductService {
 
 
 	public void updateProductCategory(Long productId, ProductUpdateCategoryRequest request) {
+		//TODO : deleted 검증
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		var updateCategory = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
 
@@ -92,8 +98,6 @@ public class ProductService {
 		} else {
 			product.updateSoldOut();
 		}
-
-		//TODO : cart 결제 가능 여부 비활성화 처리
 	}
 
 
@@ -130,10 +134,22 @@ public class ProductService {
 
 
 	public UserProductDetailResponse getProductDetailForUser(Long productId) {
+		//TODO : deleted 검증
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		Preconditions.validate(!product.isDeleted(), ErrorCode.DELETED_PRODUCT);
 
 		var variants = variantService.getVariantList(productId);
 		return UserProductDetailResponse.from(product, variants);
+	}
+
+
+	public void deleteProduct(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(!orderProductRepositoryCustom.hasInvalidStatusWithProductId(productId), ErrorCode.CANNOT_DELETE_PRODUCT);
+
+		product.delete();
+		product.getVariants().forEach(variant -> {
+			variantService.deleteVariant(variant.getId());
+		});
 	}
 }

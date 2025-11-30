@@ -32,7 +32,7 @@ public class Product extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private ProductStatus status;
 
-	private boolean isDeleted;
+	private boolean deleted;
 
 	@ManyToOne
 	@JoinColumn(name = "category_id")
@@ -50,7 +50,7 @@ public class Product extends BaseEntity {
 		this.price = price;
 		this.stock = stock;
 		this.status = ProductStatus.ACTIVATED;
-		this.isDeleted = false;
+		this.deleted = false;
 
 		this.category = category;
 	}
@@ -73,5 +73,10 @@ public class Product extends BaseEntity {
 	public void updateActive() {  this.status = ProductStatus.ACTIVATED;  }
 
 	public void updateStock(Long stock) {  this.stock = stock;  }
+
+	public void delete() {
+		this.deleted = true;
+		this.status = ProductStatus.DELETED;
+	}
 
 }

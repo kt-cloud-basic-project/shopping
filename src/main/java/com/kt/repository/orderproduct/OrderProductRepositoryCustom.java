@@ -1,5 +1,6 @@
 package com.kt.repository.orderproduct;
 
 public interface OrderProductRepositoryCustom {
-	boolean hasInvalidStatus(Long variantId);
+	boolean hasInvalidStatusWithVariantId(Long variantId);
+	boolean hasInvalidStatusWithProductId(Long productId);
 }

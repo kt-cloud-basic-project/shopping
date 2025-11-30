@@ -25,7 +25,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 		//status : ACTIVATED + stock >=1 + 삭제되지 않은 상품 중
 		BooleanExpression booleanBuilder = product.status.eq(ProductStatus.ACTIVATED)
 			.and(product.stock.goe(1))
-			.and(product.isDeleted.isFalse());
+			.and(product.deleted.isFalse());
 
 		//입력 여부에 따라 keyword 또는 categoryId 또는 keyword&&categoryId 기반 검색 목록 조회
 		if (keyword != null && !keyword.isBlank()) {

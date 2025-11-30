@@ -17,7 +17,7 @@ public class OrderProductRepositoryCustomImpl implements OrderProductRepositoryC
 	private final QOrderProduct orderProduct =  QOrderProduct.orderProduct;
 
 	@Override
-	public boolean hasInvalidStatus(Long variantId) {
+	public boolean hasInvalidStatusWithVariantId(Long variantId) {
 
 		List<OrderStatus> validStatuses = List.of(
 			OrderStatus.DELIVERED,
@@ -35,4 +35,26 @@ public class OrderProductRepositoryCustomImpl implements OrderProductRepositoryC
 			)
 			.fetchFirst() != null;   //존재하는 상품이 있으면 true
 	}
+
+	@Override
+	public boolean hasInvalidStatusWithProductId(Long productId) {
+
+		List<OrderStatus> validStatuses = List.of(
+			OrderStatus.DELIVERED,
+			OrderStatus.CANCELLED,
+			OrderStatus.RETURNED,
+			OrderStatus.REFUNDED
+		);
+
+		return queryFactory
+			.selectOne()
+			.from(orderProduct)
+			.where(
+				orderProduct.product.id.eq(productId)
+					.and(orderProduct.order.orderStatus.notIn(validStatuses))
+			)
+			.fetchFirst() != null;   //존재하는 상품이 있으면 true
+	}
+
+
 }
