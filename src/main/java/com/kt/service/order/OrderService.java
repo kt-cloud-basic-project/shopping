@@ -57,7 +57,7 @@ public class OrderService {
 		request.products().forEach(product -> {
 			var targetProduct = productRepository.findByIdOrThrow(product.productId(),  ErrorCode.NOT_FOUND_PRODUCT);
 
-			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CAN_NOT_PURCHASE_PRODUCT);
+			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CANNOT_PURCHASE_PRODUCT);
 			Preconditions.validate(targetProduct.getStock() >= product.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
 			//선택한 상품의 옵션이 맞는지 검증
 			var variant = variantRepository.findByIdOrThrow(product.productVariantId(),  ErrorCode.NOT_FOUND_VARIANT);

@@ -26,6 +26,8 @@ public class Variant {
 
 	private String detail;
 
+	private boolean isDeleted;
+
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;
@@ -34,7 +36,10 @@ public class Variant {
 		this.type = type;
 		this.detail = detail;
 		this.product = product;
+		this.isDeleted = false;
 	}
 
 	public void updateDetail(String detail) {  this.detail = detail;  }
+
+	public void delete() { isDeleted = true; }
 }

@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.ErrorCode;
+import com.kt.common.support.Preconditions;
 import com.kt.domain.variant.Variant;
 import com.kt.domain.variant.VariantType;
 import com.kt.dto.variant.VariantCreateRequest;
 import com.kt.dto.variant.VariantListResponse;
 import com.kt.dto.variant.VariantUpdateRequest;
+import com.kt.repository.orderproduct.OrderProductRepositoryCustom;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.variant.VariantRepository;
 
@@ -25,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class VariantService {
 	private final ProductRepository productRepository;
 	private final VariantRepository variantRepository;
-
+	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
 
 	public void create(Long productId, List<VariantCreateRequest> requests) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
@@ -60,5 +62,13 @@ public class VariantService {
 		 var variant = variantRepository.findByIdOrThrow(variantId, ErrorCode.NOT_FOUND_VARIANT);
 
 		 variant.updateDetail(request.detail());
+	}
+
+
+	public void delete(Long variantId) {
+		var variant = variantRepository.findByIdOrThrow(variantId, ErrorCode.NOT_FOUND_VARIANT);
+		Preconditions.validate(!orderProductRepositoryCustom.hasInvalidStatus(variantId), ErrorCode.CANNOT_DELETE_VARIANT);
+
+		variant.delete();
 	}
 }

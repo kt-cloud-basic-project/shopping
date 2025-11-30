@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
-	QProduct product = QProduct.product;
+	private final QProduct product = QProduct.product;
 
 	@Override
 	public Page<Product> search(String keyword, Long categoryId, Pageable pageable) {
