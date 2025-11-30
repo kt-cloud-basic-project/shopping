@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
 import com.kt.dto.product.request.ProductCreateRequest;
 import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
@@ -40,8 +41,8 @@ public class AdminProductController {
 	}
 
 	@GetMapping("")
-	public ApiResult<Page<AdminProductListResponse>> getProductList(Pageable pageable) {
-		Page<AdminProductListResponse> productList = productService.getProductList(pageable);
+	public ApiResult<Page<AdminProductListResponse>> getProductList(Paging paging) {
+		Page<AdminProductListResponse> productList = productService.getProductList(paging.toPageable());
 		return ApiResult.ok(productList);
 	}
 
