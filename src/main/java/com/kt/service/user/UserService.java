@@ -5,8 +5,16 @@ import com.kt.common.exception.ErrorCode;
 import com.kt.domain.auth.RefreshToken;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.shoppingaddress.ShoppingAddress;
+import com.kt.domain.user.Role;
 import com.kt.domain.user.User;
 import com.kt.dto.user.*;
+import com.kt.dto.user.request.UserCreateRequest;
+import com.kt.dto.user.request.UserLoginRequest;
+import com.kt.dto.user.request.UserLogoutRequest;
+import com.kt.dto.user.request.UserUpdateRequest;
+import com.kt.dto.user.response.UserInfoResponse;
+import com.kt.dto.user.response.UserListResponse;
+import com.kt.dto.user.response.UserLoginResponse;
 import com.kt.repository.auth.RefreshTokenRepository;
 import com.kt.repository.membership.MembershipRepository;
 import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
@@ -14,6 +22,8 @@ import com.kt.repository.user.UserRepository;
 import com.kt.security.CustomUserDetails;
 import com.kt.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +49,7 @@ public class UserService {
         return userRepository.existsByLoginIdAndIsDeletedFalse(loginId);
     }
 
+    //User 기능
     public void create(UserCreateRequest request) {
 
         if (checkLoginIdDuplicated(request.loginId())) {
@@ -142,5 +153,52 @@ public class UserService {
         var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_USER));
         user.delete();
+    }
+
+    //Admin 기능
+    public void createAdmin(UserCreateRequest request){
+        if (checkLoginIdDuplicated(request.loginId())) {
+            throw new CustomException(ErrorCode.DUPLICATED_LOGIN_ID);
+        }
+        Membership defaultMembership = membershipRepository.findByLevel(DEFAULT_MEMBERSHIP_LEVEL)
+                .orElseThrow(() -> new IllegalStateException("기본 멤버십이 설정되어 있지 않습니다."));
+
+        var newUser = User.admin(
+                request.loginId(),
+                passwordEncoder.encode(request.password()),
+                request.name(),
+                request.email(),
+                request.mobile(),
+                request.gender(),
+                request.birthday(),
+                defaultMembership
+        );
+
+        userRepository.save(newUser);
+    }
+
+    public UserInfoResponse getUserInfo(String loginId){
+        var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        var shoppingAddressOpt =
+                shoppingAddressRepository.findFirstByUserIdAndIsDefaultTrueOrderByIdDesc(user.getId());
+
+        String address = shoppingAddressOpt
+                .map(ShoppingAddress::getAddress)
+                .orElse(null);
+
+        return UserInfoResponse.from(user,address);
+    }
+
+    public Page<UserListResponse> getUserList(Pageable pageable){
+        Page<User> users = userRepository.findAllByIsDeletedFalseAndRole(pageable,Role.USER);
+
+        return UserListResponse.fromList(users,
+                user->shoppingAddressRepository
+                        .findFirstByUserIdAndIsDefaultTrueOrderByIdDesc(user.getId())
+                        .map(ShoppingAddress::getAddress)
+                        .orElse(null)
+        );
     }
 }

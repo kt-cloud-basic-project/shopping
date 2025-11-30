@@ -1,12 +1,14 @@
-package com.kt.dto.user;
-
-import java.time.LocalDate;
+package com.kt.dto.user.response;
 
 import com.kt.domain.user.Gender;
 import com.kt.domain.user.Role;
 import com.kt.domain.user.User;
+import org.springframework.data.domain.Page;
 
-public record UserInfoResponse(
+import java.time.LocalDate;
+import java.util.function.Function;
+
+public record UserListResponse(
         Long id,
         String loginId,
         String name,
@@ -19,8 +21,8 @@ public record UserInfoResponse(
         Role role,
         String address
 ) {
-    public static UserInfoResponse from(User user,String address) {
-        return new UserInfoResponse(
+    public static Page<UserListResponse> fromList(Page<User> page, Function<User,String> addressMapper) {
+        return page.map(user -> new UserListResponse(
                 user.getId(),
                 user.getLoginId(),
                 user.getName(),
@@ -31,7 +33,7 @@ public record UserInfoResponse(
                 user.getMembership().getLevel(),
                 user.getMoney(),
                 user.getRole(),
-                address
-        );
+                addressMapper.apply(user)
+        ));
     }
 }

@@ -1,15 +1,12 @@
-package com.kt.dto.user;
-
-import com.kt.domain.review.Review;
-import com.kt.domain.user.Gender;
-import com.kt.domain.user.Role;
-import com.kt.domain.user.User;
-import com.kt.dto.review.ReviewListResponse;
-import org.springframework.data.domain.Page;
+package com.kt.dto.user.response;
 
 import java.time.LocalDate;
 
-public record UserListResponse(
+import com.kt.domain.user.Gender;
+import com.kt.domain.user.Role;
+import com.kt.domain.user.User;
+
+public record UserInfoResponse(
         Long id,
         String loginId,
         String name,
@@ -22,8 +19,8 @@ public record UserListResponse(
         Role role,
         String address
 ) {
-    public static Page<UserListResponse> fromList(Page<User> page) {
-        return page.map(user -> new UserListResponse(
+    public static UserInfoResponse from(User user,String address) {
+        return new UserInfoResponse(
                 user.getId(),
                 user.getLoginId(),
                 user.getName(),
@@ -35,6 +32,6 @@ public record UserListResponse(
                 user.getMoney(),
                 user.getRole(),
                 address
-        ));
+        );
     }
 }

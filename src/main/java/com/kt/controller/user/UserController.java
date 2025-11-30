@@ -1,6 +1,11 @@
 package com.kt.controller.user;
 
-import com.kt.dto.user.UserInfoResponse;
+import com.kt.dto.user.response.UserInfoResponse;
+import com.kt.dto.user.request.UserCreateRequest;
+import com.kt.dto.user.request.UserLoginRequest;
+import com.kt.dto.user.request.UserLogoutRequest;
+import com.kt.dto.user.request.UserUpdateRequest;
+import com.kt.dto.user.response.UserLoginResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.common.response.ApiResult;
 import com.kt.dto.user.*;
@@ -23,6 +28,12 @@ public class UserController {
     public ApiResult<Void> create(@Valid @RequestBody UserCreateRequest request){
         userService.create(request);
         return ApiResult.ok();
+    }
+
+    @PostMapping("/auth/admin/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void adminCreate(@Valid @RequestBody UserCreateRequest request){
+        userService.createAdmin(request);
     }
 
     @PostMapping("auth/login")
