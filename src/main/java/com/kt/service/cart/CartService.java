@@ -17,7 +17,7 @@ import com.kt.repository.cart.CartRepository;
 import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
-import com.kt.service.discount.DiscountService;
+import com.kt.repository.variant.VariantRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,7 @@ public class CartService {
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
 	private final DiscountRepository discountRepository;
+	private final VariantRepository variantRepository;
 
     public void create(Long userId, CartCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
@@ -43,6 +44,9 @@ public class CartService {
 
 		// 상품의 재고보다 구매할 상품 수량이 적은지 검증
 		Preconditions.validate(product.getStock() >= request.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
+
+		// 선택한 옵션이 존재하는지 검증
+		Preconditions.validate(variantRepository.existsByIdAndDeletedFalse(request.variantId()), ErrorCode.DELETED_VARIANT);
 
 		var newCart = new Cart(
 			request.productCount(),
@@ -77,9 +81,14 @@ public class CartService {
 		));
 	}
 
-	public void updateQuantity(Long cartId, Integer productCount) {
+	public void updateQuantity(Long cartId, Long userId, Integer productCount) {
 		Cart cart = cartRepository.findByIdOrThrow(cartId, ErrorCode.NOT_FOUND_CART);
 		Product product = productRepository.findByIdOrThrow(cart.getProduct().getId(), ErrorCode.NOT_FOUND_PRODUCT);
+
+		Preconditions.validate(variantRepository.existsByIdAndDeletedFalse(cart.getVariantId()), ErrorCode.DELETED_VARIANT);
+
+    // 변경할 장바구니가 유저 본인 장바구니인지 확인
+		Preconditions.validate(cart.getUser().getId().equals(userId), ErrorCode.NOT_CART_OWNER);
 
 		// 변경할 수량이 상품의 재고보다 적은지 확인
 		Preconditions.validate(productCount <= product.getStock(),ErrorCode.NOT_ENOUGH_STOCK);

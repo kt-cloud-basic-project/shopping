@@ -60,10 +60,10 @@ public class OrderService {
 		request.products().forEach(product -> {
 			var targetProduct = productRepository.findByIdOrThrow(product.productId(),  ErrorCode.NOT_FOUND_PRODUCT);
 
-			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CAN_NOT_PURCHASE_PRODUCT);
+			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CANNOT_PURCHASE_PRODUCT);
 			Preconditions.validate(targetProduct.getStock() >= product.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
 			//선택한 상품의 옵션이 맞는지 검증
-			var variant = variantRepository.findByIdOrThrow(product.productVariantId(),  ErrorCode.NOT_FOUND_VARIANT);
+			var variant = variantRepository.findByIdAndDeletedFalseOrThrow(product.productVariantId(), ErrorCode.NOT_FOUND_VARIANT);
 			Preconditions.validate(variant.getProduct().getId().equals(targetProduct.getId()), ErrorCode.INVALID_VARIANT);
 
 			// OrderProduct 생성
@@ -148,5 +148,15 @@ public class OrderService {
 			orElseIfEmpty(request.receiverPhone(), order.getReceiverPhone()),
 			updatedAddress
 		);
+	}
+
+	public void cancelByAdmin(Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		// 주문 취소 가능 여부 검증
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED ||
+			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_CANCEL_ORDER);
+
+		order.cancel();
 	}
 }

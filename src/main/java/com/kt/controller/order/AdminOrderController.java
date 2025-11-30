@@ -42,13 +42,12 @@ public class AdminOrderController {
 		return ApiResult.ok(orderList);
 	}
 
-	@PatchMapping("/{orderId}")
+	@PatchMapping("/{orderId}/cancel")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 취소")
-	public ApiResult<Void> cancel(@PathVariable Long orderId,
-		@AuthenticationPrincipal CustomUserDetails currentUser
+	public ApiResult<Void> cancel(@PathVariable Long orderId
 	) {
-		orderService.cancel(orderId, currentUser.getId());
+		orderService.cancelByAdmin(orderId);
 
 		return ApiResult.ok();
 	}
