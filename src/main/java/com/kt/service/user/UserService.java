@@ -7,11 +7,7 @@ import com.kt.domain.membership.Membership;
 import com.kt.domain.shoppingaddress.ShoppingAddress;
 import com.kt.domain.user.Role;
 import com.kt.domain.user.User;
-import com.kt.dto.user.*;
-import com.kt.dto.user.request.UserCreateRequest;
-import com.kt.dto.user.request.UserLoginRequest;
-import com.kt.dto.user.request.UserLogoutRequest;
-import com.kt.dto.user.request.UserUpdateRequest;
+import com.kt.dto.user.request.*;
 import com.kt.dto.user.response.UserInfoResponse;
 import com.kt.dto.user.response.UserListResponse;
 import com.kt.dto.user.response.UserLoginResponse;
@@ -200,5 +196,28 @@ public class UserService {
                         .map(ShoppingAddress::getAddress)
                         .orElse(null)
         );
+    }
+
+    public void updateUserInfo(UserAdminUpdateRequest request){
+        String loginId = request.userId();
+        var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        user.update(
+                orElseIfEmpty(request.name(),user.getName()),
+                orElseIfEmpty(request.email(),user.getEmail()),
+                orElseIfEmpty(request.mobile(),user.getMobile())
+        );
+    }
+    public void adminChangePassword(UserAdminChangePassword request){
+        String loginId = request.userId();
+        var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        user.changePassword(passwordEncoder.encode(request.password()));
+    }
+    public void changeRole(UserChangeRole request){
+        String loginId = request.userId();
+        var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        user.changeRole(request.role());
     }
 }
