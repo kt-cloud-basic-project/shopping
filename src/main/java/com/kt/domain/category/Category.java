@@ -29,4 +29,6 @@ public class Category {
 	public Category(String type) {
 		this.type = type;
 	}
+
+	public void update(String type) {  this.type = type;  }
 }

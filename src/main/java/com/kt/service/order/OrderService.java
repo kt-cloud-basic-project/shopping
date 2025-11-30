@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.ErrorCode;
+import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.order.Order;
+import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.order.OrderCreateRequest;
+import com.kt.dto.order.response.OrderListResponse;
 import com.kt.dto.order.OrderDetailResponse;
 import com.kt.dto.order.OrderProductResponse;
 import com.kt.repository.order.OrderRepository;
@@ -78,6 +82,26 @@ public class OrderService {
 		orderRepository.save(newOrder);
 		orderProductRepository.saveAll(orderProducts);
 
+	}
+
+	public Page<OrderListResponse> getOrderList(Long userId, Paging paging) {
+		Page<Order> orderList = orderRepository.findByUserId(userId, paging.toPageable());
+
+		return orderList.map(OrderListResponse::from);
+	}
+
+	public void cancel(Long orderId, Long userId) {
+		// orderId 존재 여부 검증
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		// userId 랑 order 가 갖고있는 userId 랑 같은지 검증
+		Preconditions.validate(order.getUser().getId().equals(userId), ErrorCode.NOT_ORDER_OWNER);
+
+		// 주문 취소 가능 여부 검증
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED ||
+			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_CANCEL_ORDER);
+
+		order.cancel();
 	}
 
 

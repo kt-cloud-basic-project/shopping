@@ -32,9 +32,9 @@ public class MembershipService {
 		membershipRepository.save(membership);
 	}
 
-	public Page<MembershipListResponse> membershipAllList(Pageable pageable) {
+	public Page<MembershipListResponse> getAllMembership(Pageable pageable) {
 
-		return membershipRepositoryCustom.membershipAllList(pageable);
+		return membershipRepositoryCustom.getAllMembership(pageable);
 	}
 
 	public void update(Long membershipId, MembershipUpdateRequest request) {
@@ -48,7 +48,7 @@ public class MembershipService {
 	public void delete(Long membershipId) {
 		var membership = membershipRepository.findByIdOrThrow(membershipId, ErrorCode.NOT_FOUND_MEMBERSHIP);
 
-		membershipRepository.delete(membership);
+		membership.delete();
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.kt.domain.payment;
+package com.kt.domain.paymenttype;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class  PaymentType {
+public class PaymentType {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +18,13 @@ public class  PaymentType {
 
 	private String name;
 
+	private boolean isDeleted;
+
 	public PaymentType(String name) {
 		this.name = name;
+	}
+
+	public void delete(){
+		this.isDeleted=true;
 	}
 }

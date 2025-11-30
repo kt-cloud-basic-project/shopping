@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Cart", description = "장바구니 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/carts")
+@RequestMapping("/api/carts")
 public class CartController extends SwaggerAssistance {
     private final CartService cartService;
 

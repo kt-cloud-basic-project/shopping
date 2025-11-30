@@ -11,4 +11,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	default Review findByIdOrThrow(Long id, ErrorCode errorCode) {
 		return findById(id).orElseThrow(() -> new CustomException(errorCode));
 	}
+
+	boolean existsByUserIdAndOrderProductId(Long userId, Long orderProductId);
 }

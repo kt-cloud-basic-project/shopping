@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -46,10 +46,24 @@ public class UserController {
         return ApiResult.ok(userInfoResponse);
     }
 
-    @PutMapping("/update/myinfo")
+    @PatchMapping("/update/myinfo")
     @ResponseStatus(HttpStatus.OK)
     public ApiResult<Void> updateMyInfo(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody UserUpdateRequest request){
         userService.updateMyInfo(userDetails,request);
         return ApiResult.ok();
     }
+    @PatchMapping("/update/password")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResult<Void> changePassword(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody UserChangePassword request){
+        userService.ChangePassword(userDetails, request);
+        return ApiResult.ok();
+    }
+
+    @DeleteMapping("/withdraw")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ApiResult<Void> withDraw(@AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.WithDraw(userDetails);
+        return ApiResult.ok();
+    }
+
 }

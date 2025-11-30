@@ -1,5 +1,7 @@
 package com.kt.repository.order;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +14,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	default Order findByIdOrThrow(Long id, ErrorCode errorCode) {
 		return findById(id).orElseThrow(() -> new CustomException(errorCode));
 	}
+
+	Page<Order> findByUserId(Long userId, Pageable pageable);
 
 	Optional<Order> findByIdAndUserId(Long id, Long userId);
 

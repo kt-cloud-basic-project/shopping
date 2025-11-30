@@ -1,5 +1,6 @@
 package com.kt.service.review;
 
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.Preconditions;
+import com.kt.domain.order.OrderStatus;
 import com.kt.domain.review.Review;
 import com.kt.dto.review.ReviewCreateRequest;
 import com.kt.dto.review.ReviewListResponse;
 import com.kt.dto.review.ReviewUpdateRequest;
+import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.review.ReviewRepositoryCustom;
@@ -27,18 +30,35 @@ public class ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final ReviewRepositoryCustom reviewRepositoryCustom;
 	private final UserRepository userRepository;
+	private final OrderProductRepository orderProductRepository;
 	private final ProductRepository productRepository;
-	//private final OrderProductRepository orderProductRepository;
 
-	public void create(Long userId, Long productId, ReviewCreateRequest request) {
+	public void create(Long userId, Long orderProductId, ReviewCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
-		//var orderProduct = productRepository.findById(productId);
+		// 주문상품인지 조회
+		var orderProduct = orderProductRepository.findWithOrderAndProductByIdThrow(orderProductId, ErrorCode.NOT_FOUND_ORDER_PRODUCT);
 
-		//Preconditions.validate(product.isPresent(), ErrorCode.NOT_FOUND_PRODUCT);
+		// 본인 주문 확인
+		Preconditions.validate(orderProduct.getOrder().getUser().getId().equals(userId), ErrorCode.NOT_ORDER_USER);
+
+		// 배송 상태 확인
+		Preconditions.validate(orderProduct.getOrder().getOrderStatus().equals(OrderStatus.DELIVERED), ErrorCode.DELIVERY_NOT_COMPLETED_ORDER);
+
+		// 리뷰 작성 기한 - 배송 완료 후 N일 이내만 작성 가능
+		LocalDate deliveredAt = orderProduct.getOrder().getDeliveredAt();
+		Preconditions.validate(deliveredAt != null, ErrorCode.DELIVERY_NOT_COMPLETED_ORDER);
+
+		boolean isExpDate = LocalDate.now().isAfter(deliveredAt.plusDays(7));
+		Preconditions.validate(!isExpDate, ErrorCode.REVIEW_WRITE_DATE_EXPIRED);
+
+		// 중복 리뷰 방지
+		var existingReview = reviewRepository.existsByUserIdAndOrderProductId(userId, orderProductId);
+		Preconditions.validate(!existingReview, ErrorCode.DUPLICATE_REVIEW);
 
 		Review review = new Review(
 			user,
+			orderProduct,
 			request.title(),
 			request.description(),
 			request.star()
@@ -48,10 +68,10 @@ public class ReviewService {
 
 	}
 
-	public Page<ReviewListResponse> myReviewList(Long userId, Pageable pageable) {
+	public Page<ReviewListResponse> getMyAllReview(Long userId, Pageable pageable) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
-		return reviewRepositoryCustom.myReviewList(user.getId(), pageable);
+		return reviewRepositoryCustom.getMyAllReview(user.getId(), pageable);
 	}
 
 	public void update(Long userId, Long reviewId, ReviewUpdateRequest request) {
@@ -62,7 +82,6 @@ public class ReviewService {
 		Preconditions.validate(review.getUser().getId().equals(user.getId()), ErrorCode.NOT_REVIEW_AUTHOR);
 
 		review.update(
-			user,
 			request.title(),
 			request.description(),
 			request.star()
@@ -88,13 +107,10 @@ public class ReviewService {
 
 	}
   
-	/*public Page<ReviewResponse.ReviewList> productReviewList(Long productId, Pageable pageable) {
-		//TODO: findByIdOrThrow 추가되면 수정
-		var product = productRepository.findById(productId);
-		Preconditions.validate(product.isPresent(), ErrorCode.NOT_FOUND_PRODUCT);
+	public Page<ReviewListResponse> getProductAllReview(Long productId, Pageable pageable) {
 
-		Page<Review> reviewList = reviewRepository.findReviewsByProductId(productId, pageable);
+		productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 
-		return ReviewResponse.ReviewList.fromList(reviewList);
-	}*/
+		return reviewRepositoryCustom.getProductAllReview(productId, pageable);
+	}
 }
