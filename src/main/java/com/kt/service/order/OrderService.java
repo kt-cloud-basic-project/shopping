@@ -1,5 +1,7 @@
 package com.kt.service.order;
 
+import static com.kt.common.support.ObjectUtils.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,6 +18,7 @@ import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.order.OrderCreateRequest;
+import com.kt.dto.order.OrderUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.dto.order.OrderDetailResponse;
 import com.kt.dto.order.OrderProductResponse;
@@ -108,7 +111,6 @@ public class OrderService {
 		order.cancel();
 	}
 
-
 	public OrderDetailResponse getOrderDetail(Long userId, Long orderId) {
 		var order = orderRepository.findByIdAndUserIdOrThrow(orderId, userId, ErrorCode.NOT_FOUND_ORDER);
 
@@ -127,5 +129,24 @@ public class OrderService {
 		//TODO: payment 정보 반환
 
 		return OrderDetailResponse.from(order, products);
+	}
+
+	public void update(OrderUpdateRequest request, Long orderId, Long userId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getUser().getId().equals(userId), ErrorCode.NOT_ORDER_OWNER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED ||
+			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_UPDATE_ORDER_INFO);
+
+		String updatedAddress = request.receiverAddressId() != null
+			? shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS).getAddress()
+			: order.getReceiverAddress();
+
+		order.update(
+			orElseIfEmpty(request.receiverName(), order.getReceiverName()),
+			orElseIfEmpty(request.receiverPhone(), order.getReceiverPhone()),
+			updatedAddress
+		);
 	}
 }
