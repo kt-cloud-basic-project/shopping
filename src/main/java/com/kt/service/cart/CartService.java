@@ -1,17 +1,23 @@
 package com.kt.service.cart;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.cart.Cart;
+import com.kt.domain.discount.Discount;
+import com.kt.domain.membership.Membership;
 import com.kt.domain.product.Product;
+import com.kt.domain.user.User;
 import com.kt.dto.cart.CartCreateRequest;
 import com.kt.dto.cart.response.CartResponse;
 import com.kt.repository.cart.CartRepository;
+import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.service.discount.DiscountService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +29,10 @@ import org.springframework.stereotype.Service;
 @Transactional
 @RequiredArgsConstructor
 public class CartService {
-    private final CartRepository cartRepository;
+	private final CartRepository cartRepository;
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
+	private final DiscountRepository discountRepository;
 
     public void create(Long userId, CartCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
@@ -49,9 +56,26 @@ public class CartService {
 	public Page<CartResponse> getCartList(Long userId, Paging paging) {
 		Page<Cart> carts = cartRepository.findByUserId(userId, paging.toPageable());
 
-		return carts.map(CartResponse::from);
+		// 빈 카트 반환(빈 카트 일 시 User 정보를 가져올 수 없기 때문)
+		if (carts.isEmpty()) {
+			return Page.empty(paging.toPageable());
+		}
+
+		// carts안에 있는 user는 모두 동일한 user이므로 첫번째 것만 가져와서 membershipId를 얻음
+		User user = carts.getContent().getFirst().getUser();
+
+		// 할인은 있을 수도 없을 수도(optional)
+		Discount discount = Optional.ofNullable(user.getMembership())
+			.map(Membership::getId)
+			.flatMap(discountRepository::findByMembershipId)
+			.orElse(null);
+
+		return carts.map(cart -> CartResponse.from(
+			cart,
+			discount != null ? discount.calcDiscountAmount(cart.getProduct().getPrice()) : 0L,
+			discount != null ? discount.calcDiscountFinalPrice(cart.getProduct().getPrice()) : cart.getProduct().getPrice()
+		));
 	}
-	//TODO: 유저가 장바구니 여러개 가지고 있을시 N+1 문제 발생 > 추후 수정
 
 	public void updateQuantity(Long cartId, Integer productCount) {
 		Cart cart = cartRepository.findByIdOrThrow(cartId, ErrorCode.NOT_FOUND_CART);

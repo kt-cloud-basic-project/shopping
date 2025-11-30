@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import com.kt.dto.discount.DiscountListResponse;
 
 public interface DiscountRepositoryCustom {
-	Page<DiscountListResponse> discountAllList(Pageable pageable);
+	Page<DiscountListResponse> getAllDiscount(Pageable pageable);
 }
