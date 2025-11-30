@@ -60,13 +60,10 @@ public class ProductService {
 	public AdminProductDetailResponse getProductDetail(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		return AdminProductDetailResponse.from(product);
-
-		//TODO : deleted 추가
 	}
 
 
 	public void updateProduct(Long productId,  ProductUpdateRequest request) {
-		//TODO : deleted 검증
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 
 		product.update(
@@ -79,7 +76,6 @@ public class ProductService {
 
 
 	public void updateProductCategory(Long productId, ProductUpdateCategoryRequest request) {
-		//TODO : deleted 검증
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		var updateCategory = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
 
@@ -134,8 +130,7 @@ public class ProductService {
 
 
 	public UserProductDetailResponse getProductDetailForUser(Long productId) {
-		//TODO : deleted 검증
-		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		var product = productRepository.findByIdAndDeletedFalseOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		Preconditions.validate(!product.isDeleted(), ErrorCode.DELETED_PRODUCT);
 
 		var variants = variantService.getVariantList(productId);
