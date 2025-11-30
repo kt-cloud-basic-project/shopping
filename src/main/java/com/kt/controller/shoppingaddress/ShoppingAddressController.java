@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,11 +49,11 @@ public class ShoppingAddressController extends SwaggerAssistance {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<List<ShoppingAddressListResponse>> myShoppingAddressList(
+	public ApiResult<List<ShoppingAddressListResponse>> getMyShoppingAddress(
 		@AuthenticationPrincipal CustomUserDetails currentUser
 		) {
 
-		List<ShoppingAddressListResponse> shoppingAddressList = shoppingAddressService.myShoppingAddressList(currentUser.getId());
+		List<ShoppingAddressListResponse> shoppingAddressList = shoppingAddressService.getMyShoppingAddress(currentUser.getId());
 
 		return ApiResult.ok(shoppingAddressList);
 	}
@@ -70,7 +71,7 @@ public class ShoppingAddressController extends SwaggerAssistance {
 		return ApiResult.ok();
 	}
 
-	@PutMapping("/{addressId}/default")
+	@PatchMapping("/{addressId}/default")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> defaultAddress(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
