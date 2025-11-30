@@ -17,8 +17,10 @@ import com.kt.dto.product.response.AdminProductDetailResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
 import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.dto.product.response.UserProductDetailResponse;
+import com.kt.dto.product.response.UserProductListResponse;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.repository.product.ProductRepositoryCustom;
 import com.kt.service.variant.VariantService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class ProductService {
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
 	private final VariantService variantService;
+	private final ProductRepositoryCustom productRepositoryCustom;
 
 	public void create(ProductCreateRequest request) {
 		var category = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
@@ -116,6 +119,13 @@ public class ProductService {
 
 			product.updateSoldOut();
 		});
+	}
+
+
+	public Page<UserProductListResponse> getProductListForUser(String keyword, Long categoryId, Pageable pageable) {
+		return productRepositoryCustom.search(keyword, categoryId, pageable)
+			.map(UserProductListResponse::from);
+
 	}
 
 
