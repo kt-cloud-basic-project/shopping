@@ -45,7 +45,7 @@ public class OrderController {
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 목록 조회")
 	public ApiResult<Page<OrderListResponse>> getOrderList(
-		Paging paging,
+		@Valid Paging paging,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 		) {
 		Page<OrderListResponse> orderList = orderService.getOrderList(currentUser.getId(), paging);
