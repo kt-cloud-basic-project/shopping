@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.exception.ErrorCode;
 import com.kt.domain.payment.Payment;
 import com.kt.dto.payment.PaymentCreateRequest;
+import com.kt.dto.payment.PaymentDetailResponse;
 import com.kt.dto.payment.PaymentListResponse;
 import com.kt.dto.review.ReviewListResponse;
 import com.kt.repository.order.OrderRepository;
@@ -54,6 +55,25 @@ public class PaymentService {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		return paymentRepositoryCustom.getMyAllPayment(user.getId(), pageable);
+	}
+
+	public PaymentDetailResponse getPayment(Long userId, Long paymentId) {
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
+
+		var payment = paymentRepository.findByIdAndOrderUserIdAndIsDeletedFalseOrThorw(paymentId, user.getId(), ErrorCode.NOT_FOUND_PAYMENT);
+
+		return new PaymentDetailResponse(
+			payment.getId(),
+			payment.getOrder().getId(),
+			payment.getOrder().getUser().getLoginId(),
+			payment.getOrder().getUser().getName(),
+			payment.getOrder().getOrderStatus(),
+			payment.getPaymentType().getName(),
+			payment.getTotalPrice(),
+			payment.getDeliveryFee(),
+			payment.getFinalPrice(),
+			payment.getCreatedAt()
+		);
 	}
 
 }
