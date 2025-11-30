@@ -52,7 +52,7 @@ public class ReviewController extends SwaggerAssistance {
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Page<ReviewListResponse>> getMyAllReview(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
-		Paging paging
+		@Valid Paging paging
 	) {
 
 		Page<ReviewListResponse> reviews = reviewService.getMyAllReview(currentUser.getId(), paging.toPageable());
@@ -89,7 +89,7 @@ public class ReviewController extends SwaggerAssistance {
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Page<ReviewListResponse>> getProductAllReview(
 		@PathVariable Long productId,
-		Paging paging
+		@Valid Paging paging
 	) {
 
 		Page<ReviewListResponse> reviews = reviewService.getProductAllReview(productId, paging.toPageable());

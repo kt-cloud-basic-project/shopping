@@ -2,7 +2,7 @@ package com.kt.dto.product.response;
 
 import com.kt.domain.product.Product;
 
-public record ProductResponse(
+public record AdminProductDetailResponse(
 	String name,
 	String description,
 	Long price,
@@ -10,8 +10,8 @@ public record ProductResponse(
 	String status,
 	String category
 ) {
-	public static ProductResponse from(Product product) {
-		return new ProductResponse(
+	public static AdminProductDetailResponse from(Product product) {
+		return new AdminProductDetailResponse(
 			product.getName(),
 			product.getDescription(),
 			product.getPrice(),

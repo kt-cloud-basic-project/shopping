@@ -1,9 +1,10 @@
 package com.kt.controller.user;
 
-import com.kt.dto.user.UserInfoResponse;
+import com.kt.dto.user.request.*;
+import com.kt.dto.user.response.UserInfoResponse;
+import com.kt.dto.user.response.UserLoginResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.common.response.ApiResult;
-import com.kt.dto.user.*;
 import com.kt.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class UserController {
         userService.create(request);
         return ApiResult.ok();
     }
+
 
     @PostMapping("auth/login")
     @ResponseStatus(HttpStatus.ACCEPTED)

@@ -1,9 +1,11 @@
-package com.kt.dto.user;
+package com.kt.dto.user.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-public record UserUpdateRequest(
+public record UserAdminUpdateRequest(
+        @NotNull
+        String userId,
         String name,
         @Pattern(regexp = "^$|^(0\\d{1,2})-(\\d{3,4})-(\\d{4})$")
         String mobile,

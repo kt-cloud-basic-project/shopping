@@ -2,6 +2,7 @@ package com.kt.domain.payment;
 
 import com.kt.common.support.BaseEntity;
 import com.kt.domain.order.Order;
+import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.paymenttype.PaymentType;
 
 import jakarta.persistence.*;
@@ -19,13 +20,13 @@ public class Payment extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false)
-	private Integer totalPrice;
+	private Integer totalPrice;    // 총 상품 금액
 
 	@Column(nullable = false)
-	private Integer deliveryFee;
+	private Integer deliveryFee;   // 배송비
 
 	@Column(nullable = false)
-	private Integer finalPrice;
+	private Integer finalPrice;    // 총 결제 금액 (상품금액 + 배송비)
 
 	@Column(nullable = false)
 	private boolean isDeleted = false;
@@ -40,20 +41,16 @@ public class Payment extends BaseEntity {
 
 	public Payment(
 		Order order,
+		PaymentType paymentType,
 		Integer totalPrice,
 		Integer deliveryFee,
-		Integer finalPrice,
-		PaymentType paymentType
+		Integer finalPrice
 	) {
 		this.order = order;
+		this.paymentType = paymentType;
 		this.totalPrice = totalPrice;
 		this.deliveryFee = deliveryFee;
 		this.finalPrice = finalPrice;
-		this.paymentType = paymentType;
 		this.isDeleted = false;
-	}
-
-	public void delete() {
-		this.isDeleted = true;
 	}
 }

@@ -31,6 +31,7 @@ public enum ErrorCode {
 	INVALID_PRODUCT_STATUS(HttpStatus.BAD_REQUEST, "상품 상태 변경이 이미 적용되었습니다"),
 	INVALID_PRODUCT_STOCK(HttpStatus.BAD_REQUEST, "상품 수량이 부족합니다"),
 	CAN_NOT_PURCHASE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 구매할 수 없습니다"),
+	DELETED_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품이 존재하지 않습니다"),
 
 	//category
 	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),
@@ -41,6 +42,7 @@ public enum ErrorCode {
 	NOT_ORDER_OWNER(HttpStatus.BAD_REQUEST, "자신의 주문만 취소 할 수 있습니다."),
 	NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 주문이 존재하지 않습니다."),
 	CANNOT_CANCEL_ORDER(HttpStatus.BAD_REQUEST, "주문 취소가 불가능합니다."),
+	CANNOT_UPDATE_ORDER_INFO(HttpStatus.BAD_REQUEST, "주문 수정이 불가능합니다."),
 
 	//shoppingaddress
 	NOT_SHOPPING_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),

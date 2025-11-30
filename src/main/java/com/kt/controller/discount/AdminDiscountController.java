@@ -54,7 +54,7 @@ public class AdminDiscountController extends SwaggerAssistance {
 	@GetMapping("discounts")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Page<DiscountListResponse>> getAllDiscount(
-		Paging paging
+		@Valid Paging paging
 	) {
 
 		Page<DiscountListResponse> discounts = discountService.getAllDiscount(paging.toPageable());

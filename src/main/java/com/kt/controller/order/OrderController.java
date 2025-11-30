@@ -16,6 +16,7 @@ import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
 import com.kt.dto.order.OrderCreateRequest;
 import com.kt.dto.order.OrderDetailResponse;
+import com.kt.dto.order.OrderUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.order.OrderService;
@@ -45,7 +46,7 @@ public class OrderController {
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 목록 조회")
 	public ApiResult<Page<OrderListResponse>> getOrderList(
-		Paging paging,
+		@Valid Paging paging,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 		) {
 		Page<OrderListResponse> orderList = orderService.getOrderList(currentUser.getId(), paging);
@@ -64,10 +65,21 @@ public class OrderController {
 		return ApiResult.ok();
 	}
 
-
 	@GetMapping("/{orderId}")
+	@Operation(summary = "주문 상세 조회")
 	public ApiResult<OrderDetailResponse> getOrderDetail(@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable("orderId") Long orderId) {
 		return ApiResult.ok(orderService.getOrderDetail(currentUser.getId(), orderId));
+	}
+
+	@PatchMapping("/{orderId}")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 수정")
+	public ApiResult<Void> update(@RequestBody OrderUpdateRequest request,
+		@PathVariable Long orderId,
+		@AuthenticationPrincipal CustomUserDetails currentUser) {
+		orderService.update(request, orderId, currentUser.getId());
+
+		return ApiResult.ok();
 	}
 }
