@@ -1,4 +1,4 @@
-package com.kt.dto.user;
+package com.kt.dto.user.request;
 
 import jakarta.validation.constraints.NotNull;
 

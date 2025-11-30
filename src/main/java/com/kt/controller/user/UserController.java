@@ -1,14 +1,10 @@
 package com.kt.controller.user;
 
+import com.kt.dto.user.request.*;
 import com.kt.dto.user.response.UserInfoResponse;
-import com.kt.dto.user.request.UserCreateRequest;
-import com.kt.dto.user.request.UserLoginRequest;
-import com.kt.dto.user.request.UserLogoutRequest;
-import com.kt.dto.user.request.UserUpdateRequest;
 import com.kt.dto.user.response.UserLoginResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.common.response.ApiResult;
-import com.kt.dto.user.*;
 import com.kt.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +26,6 @@ public class UserController {
         return ApiResult.ok();
     }
 
-    @PostMapping("/auth/admin/signup")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void adminCreate(@Valid @RequestBody UserCreateRequest request){
-        userService.createAdmin(request);
-    }
 
     @PostMapping("auth/login")
     @ResponseStatus(HttpStatus.ACCEPTED)

@@ -88,6 +88,10 @@ public class User extends BaseEntity {
         this.mobile = mobile;
     }
 
+    public void changeRole(Role role){
+        this.role = role;
+    }
+
     public void delete() {
         this.isDeleted = true;
     }
