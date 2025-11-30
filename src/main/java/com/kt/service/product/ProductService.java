@@ -24,6 +24,7 @@ import com.kt.dto.product.response.UserProductDetailResponse;
 import com.kt.dto.product.response.UserProductListResponse;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.discount.DiscountRepository;
+import com.kt.repository.orderproduct.OrderProductRepositoryCustom;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.product.ProductRepositoryCustom;
 import com.kt.repository.user.UserRepository;
@@ -40,6 +41,7 @@ public class ProductService {
 	private final CategoryRepository categoryRepository;
 	private final VariantService variantService;
 	private final ProductRepositoryCustom productRepositoryCustom;
+	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
 	private final UserRepository userRepository;
 	private final DiscountRepository discountRepository;
 
@@ -101,8 +103,6 @@ public class ProductService {
 		} else {
 			product.updateSoldOut();
 		}
-
-		//TODO : cart 결제 가능 여부 비활성화 처리
 	}
 
 
@@ -148,9 +148,8 @@ public class ProductService {
 		));
 	}
 
-
 	public UserProductDetailResponse getProductDetailForUser(CustomUserDetails currentUser, Long productId) {
-		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		var product = productRepository.findByIdAndDeletedFalseOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		Preconditions.validate(!product.isDeleted(), ErrorCode.DELETED_PRODUCT);
 
 		var variants = variantService.getVariantList(productId);
@@ -175,5 +174,16 @@ public class ProductService {
 			.map(Membership::getId)
 			.flatMap(discountRepository::findByMembershipId)
 			.orElse(null);
+	}
+
+
+	public void deleteProduct(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(!orderProductRepositoryCustom.hasInvalidStatusWithProductId(productId), ErrorCode.CANNOT_DELETE_PRODUCT);
+
+		product.delete();
+		product.getVariants().forEach(variant -> {
+			variantService.deleteVariant(variant.getId());
+		});
 	}
 }

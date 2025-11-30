@@ -49,7 +49,7 @@ public class AdminVariantController {
 
 	@DeleteMapping("/variants/{variantId}")
 	public ApiResult<Void> delete(@PathVariable Long variantId) {
-		variantService.delete(variantId);
+		variantService.deleteVariant(variantId);
 		return ApiResult.ok();
 	}
 }
