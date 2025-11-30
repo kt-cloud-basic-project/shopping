@@ -71,6 +71,7 @@ public enum ErrorCode {
 
 	//cart
 	NOT_FOUND_CART(HttpStatus.BAD_REQUEST, "해당 장바구니를 찾을 수 없습니다."),
+	NOT_CART_OWNER(HttpStatus.BAD_REQUEST, "본인의 장바구니만 수정 할 수 있습니다."),
 
 	//order product
 	NOT_FOUND_ORDER_PRODUCT(HttpStatus.BAD_REQUEST, "주문 상품을 찾을 수 없습니다."),

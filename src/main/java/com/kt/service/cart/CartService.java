@@ -77,9 +77,12 @@ public class CartService {
 		));
 	}
 
-	public void updateQuantity(Long cartId, Integer productCount) {
+	public void updateQuantity(Long cartId, Long userId, Integer productCount) {
 		Cart cart = cartRepository.findByIdOrThrow(cartId, ErrorCode.NOT_FOUND_CART);
 		Product product = productRepository.findByIdOrThrow(cart.getProduct().getId(), ErrorCode.NOT_FOUND_PRODUCT);
+
+		// 변경할 장바구니가 유저 본인 장바구니인지 확인
+		Preconditions.validate(cart.getUser().getId().equals(userId), ErrorCode.NOT_CART_OWNER);
 
 		// 변경할 수량이 상품의 재고보다 적은지 확인
 		Preconditions.validate(productCount <= product.getStock(),ErrorCode.NOT_ENOUGH_STOCK);

@@ -149,4 +149,14 @@ public class OrderService {
 			updatedAddress
 		);
 	}
+
+	public void cancelByAdmin(Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		// 주문 취소 가능 여부 검증
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED ||
+			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_CANCEL_ORDER);
+
+		order.cancel();
+	}
 }
