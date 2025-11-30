@@ -1,6 +1,8 @@
 package com.kt.controller.order;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
 import com.kt.dto.order.OrderCreateRequest;
+import com.kt.dto.order.OrderDetailResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.order.OrderService;
 
@@ -25,5 +28,11 @@ public class OrderController {
 		@Valid @RequestBody OrderCreateRequest orderCreateRequest) {
 		orderService.create(currentUser.getId(), orderCreateRequest);
 		return ApiResult.ok();
+	}
+
+	@GetMapping("/{orderId}")
+	public ApiResult<OrderDetailResponse> getOrderDetail(@AuthenticationPrincipal CustomUserDetails currentUser,
+		@PathVariable("orderId") Long orderId) {
+		return ApiResult.ok(orderService.getOrderDetail(currentUser.getId(), orderId));
 	}
 }

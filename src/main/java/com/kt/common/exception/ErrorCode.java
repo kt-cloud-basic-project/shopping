@@ -37,6 +37,7 @@ public enum ErrorCode {
 
 	//order
 	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다."),
+	NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "주문 내역을 찾을 수 없습니다"),
 
 	//shoppingaddress
 	NOT_SHOPPING_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),

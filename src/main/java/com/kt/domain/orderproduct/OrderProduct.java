@@ -32,8 +32,9 @@ public class OrderProduct {
 	@JoinColumn(name = "order_id")
 	private Order order;
 
-	public OrderProduct(Long count, Product product, Order order) {
+	public OrderProduct(Long count, Long variantId, Product product, Order order) {
 		this.count = count;
+		this.variantId = variantId;
 		this.product = product;
 		this.order = order;
 	}
