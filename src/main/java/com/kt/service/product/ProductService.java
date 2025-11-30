@@ -12,12 +12,14 @@ import com.kt.domain.product.Product;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.product.request.ProductCreateRequest;
 import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
-import com.kt.dto.product.response.ProductListResponse;
-import com.kt.dto.product.response.ProductResponse;
+import com.kt.dto.product.response.AdminProductListResponse;
+import com.kt.dto.product.response.AdminProductDetailResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
 import com.kt.dto.product.request.ProductUpdateRequest;
+import com.kt.dto.product.response.UserProductDetailResponse;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
+import com.kt.service.variant.VariantService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductService {
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
+	private final VariantService variantService;
 
 	public void create(ProductCreateRequest request) {
 		var category = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
@@ -43,15 +46,15 @@ public class ProductService {
 	}
 
 
-	public Page<ProductListResponse> getProductList(Pageable pageable) {
+	public Page<AdminProductListResponse> getProductList(Pageable pageable) {
 		return productRepository.findAll(pageable)
-			.map(ProductListResponse::from);
+			.map(AdminProductListResponse::from);
 	}
 
 
-	public ProductResponse getProductDetail(Long productId) {
+	public AdminProductDetailResponse getProductDetail(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
-		return ProductResponse.from(product);
+		return AdminProductDetailResponse.from(product);
 	}
 
 
@@ -113,5 +116,14 @@ public class ProductService {
 
 			product.updateSoldOut();
 		});
+	}
+
+
+	public UserProductDetailResponse getProductDetailForUser(Long productId) {
+		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(!product.isDeleted(), ErrorCode.DELETED_PRODUCT);
+
+		var variants = variantService.getVariantList(productId);
+		return UserProductDetailResponse.from(product, variants);
 	}
 }

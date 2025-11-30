@@ -31,6 +31,7 @@ public enum ErrorCode {
 	INVALID_PRODUCT_STATUS(HttpStatus.BAD_REQUEST, "상품 상태 변경이 이미 적용되었습니다"),
 	INVALID_PRODUCT_STOCK(HttpStatus.BAD_REQUEST, "상품 수량이 부족합니다"),
 	CAN_NOT_PURCHASE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 구매할 수 없습니다"),
+	DELETED_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품이 존재하지 않습니다"),
 
 	//category
 	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),
