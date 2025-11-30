@@ -78,7 +78,7 @@ public class ShoppingAddressService {
 		shoppingAddressRepository.save(newAddress);
 	}
 
-	public List<ShoppingAddressListResponse> myShoppingAddressList(Long userId) {
+	public List<ShoppingAddressListResponse> getMyShoppingAddress(Long userId) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var addressList = shoppingAddressRepository.findByUserId(user.getId());

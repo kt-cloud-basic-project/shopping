@@ -2,6 +2,7 @@ package com.kt.service.order;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,14 @@ import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.order.OrderCreateRequest;
 import com.kt.dto.order.response.OrderListResponse;
+import com.kt.dto.order.OrderDetailResponse;
+import com.kt.dto.order.OrderProductResponse;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
 import com.kt.repository.user.UserRepository;
+import com.kt.repository.variant.VariantRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +37,7 @@ public class OrderService {
 	private final ShoppingAddressRepository shoppingAddressRepository;
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
+	private final VariantRepository variantRepository;
 
 	public void create(Long userId, OrderCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
@@ -54,10 +59,14 @@ public class OrderService {
 
 			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CAN_NOT_PURCHASE_PRODUCT);
 			Preconditions.validate(targetProduct.getStock() >= product.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
+			//선택한 상품의 옵션이 맞는지 검증
+			var variant = variantRepository.findByIdOrThrow(product.productVariantId(),  ErrorCode.NOT_FOUND_VARIANT);
+			Preconditions.validate(variant.getProduct().getId().equals(targetProduct.getId()), ErrorCode.INVALID_VARIANT);
 
 			// OrderProduct 생성
 			var newOrderProduct = new OrderProduct(
 				product.productCount(),
+				product.productVariantId(),
 				targetProduct,
 				newOrder
 			);
@@ -97,5 +106,26 @@ public class OrderService {
 			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_CANCEL_ORDER);
 
 		order.cancel();
+	}
+
+
+	public OrderDetailResponse getOrderDetail(Long userId, Long orderId) {
+		var order = orderRepository.findByIdAndUserIdOrThrow(orderId, userId, ErrorCode.NOT_FOUND_ORDER);
+
+		List<OrderProductResponse> products = orderProductRepository.findByOrderId(orderId).stream()
+			.map(
+			orderProduct -> {
+				var product = Objects.requireNonNull(orderProduct.getProduct(), ErrorCode.NOT_FOUND_PRODUCT.getMessage());
+
+				return OrderProductResponse.from(
+					orderProduct,
+					product
+				);
+			}
+		).toList();
+
+		//TODO: payment 정보 반환
+
+		return OrderDetailResponse.from(order, products);
 	}
 }

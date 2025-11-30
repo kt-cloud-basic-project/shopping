@@ -3,6 +3,7 @@ package com.kt.controller.discount;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.response.ApiResult;
 import com.kt.common.request.Paging;
 import com.kt.common.support.SwaggerAssistance;
+import com.kt.domain.user.User;
 import com.kt.dto.discount.DiscountCreateRequest;
 import com.kt.dto.discount.DiscountDetailResponse;
 import com.kt.dto.discount.DiscountListResponse;
 import com.kt.dto.discount.DiscountUpdateRequest;
+import com.kt.security.CustomUserDetails;
 import com.kt.service.discount.DiscountService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,11 +53,11 @@ public class AdminDiscountController extends SwaggerAssistance {
 
 	@GetMapping("discounts")
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<Page<DiscountListResponse>> discountAllList(
+	public ApiResult<Page<DiscountListResponse>> getAllDiscount(
 		Paging paging
 	) {
 
-		Page<DiscountListResponse> discounts = discountService.discountAllList(paging.toPageable());
+		Page<DiscountListResponse> discounts = discountService.getAllDiscount(paging.toPageable());
 
 		return ApiResult.ok(discounts);
 	}

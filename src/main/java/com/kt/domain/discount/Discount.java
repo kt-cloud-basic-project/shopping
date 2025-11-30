@@ -50,4 +50,21 @@ public class Discount {
 		this.type = type;
 		this.value = value;
 	}
+
+	public Long calcDiscountFinalPrice(Long originalPrice) {
+		if (originalPrice == null || originalPrice <= 0) {
+			return 0L;
+		}
+
+		if (this.type == DiscountType.FIXED_AMOUNT) {
+			return Math.max(0, originalPrice - this.value);
+		} else {
+			return Math.max(0, originalPrice - (originalPrice * this.value / 100));
+		}
+	}
+
+	public Long calcDiscountAmount(Long originalPrice) {
+		return originalPrice - calcDiscountFinalPrice(originalPrice);
+	}
+
 }

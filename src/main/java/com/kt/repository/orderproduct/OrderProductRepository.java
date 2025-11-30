@@ -3,6 +3,8 @@ package com.kt.repository.orderproduct;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kt.common.exception.CustomException;
@@ -20,4 +22,5 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
 
 	@EntityGraph(attributePaths = {"order", "product", "order.user"})
 	Optional<OrderProduct> findWithOrderAndProductById(Long id);
+	List<OrderProduct> findByOrderId(Long orderId);
 }

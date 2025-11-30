@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
 import com.kt.dto.order.OrderCreateRequest;
+import com.kt.dto.order.OrderDetailResponse;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.order.OrderService;
@@ -64,6 +65,9 @@ public class OrderController {
 	}
 
 
-
-
+	@GetMapping("/{orderId}")
+	public ApiResult<OrderDetailResponse> getOrderDetail(@AuthenticationPrincipal CustomUserDetails currentUser,
+		@PathVariable("orderId") Long orderId) {
+		return ApiResult.ok(orderService.getOrderDetail(currentUser.getId(), orderId));
+	}
 }

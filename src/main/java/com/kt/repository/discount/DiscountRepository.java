@@ -23,4 +23,6 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
 	Optional<Discount> findWithMembershipById(Long id);
 
 	boolean existsByMembershipId(Long membershipId);
+
+	Optional<Discount> findByMembershipId(Long membershipId);
 }

@@ -34,6 +34,7 @@ public enum ErrorCode {
 
 	//category
 	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),
+	CANNOT_DELETE_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 삭제할 수 없습니다."),
 
 	//order
 	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다."),
@@ -64,15 +65,17 @@ public enum ErrorCode {
 
 	//discount
 	NOT_FOUND_DISCOUNT(HttpStatus.BAD_REQUEST, "할인 정책을 찾을 수 없습니다."),
+	INVALID_PERCENTAGE_DISCOUNT_VALUE(HttpStatus.BAD_REQUEST, "퍼센트 할인은 1부터 99 사이의 값이어야 합니다."),
 
 	//cart
 	NOT_FOUND_CART(HttpStatus.BAD_REQUEST, "해당 장바구니를 찾을 수 없습니다."),
 
 	//order product
 	NOT_FOUND_ORDER_PRODUCT(HttpStatus.BAD_REQUEST, "주문 상품을 찾을 수 없습니다."),
-  
+
 	//variant
 	NOT_FOUND_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 찾을 수 없습니다"),
+	INVALID_VARIANT(HttpStatus.BAD_REQUEST, "해당 상품의 옵션이 아닙니다."),
 
 	;
 
