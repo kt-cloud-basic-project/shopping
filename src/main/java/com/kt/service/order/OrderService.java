@@ -140,7 +140,7 @@ public class OrderService {
 			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_UPDATE_ORDER_INFO);
 
 		String updatedAddress = request.receiverAddressId() != null
-			? shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS).getAddress()
+			? shoppingAddressRepository.findByIdAndUserIdOrThrow(request.receiverAddressId(), userId, ErrorCode.NOT_SHOPPING_ADDRESS_OWNER).getAddress()
 			: order.getReceiverAddress();
 
 		order.update(
