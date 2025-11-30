@@ -1,10 +1,12 @@
 package com.kt.controller.user;
 
+import com.kt.dto.auth.TokenResponse;
 import com.kt.dto.user.request.*;
 import com.kt.dto.user.response.UserInfoResponse;
 import com.kt.dto.user.response.UserLoginResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.common.response.ApiResult;
+import com.kt.service.auth.AuthService;
 import com.kt.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("auth/signup")
     @ResponseStatus(HttpStatus.CREATED)
@@ -25,7 +28,6 @@ public class UserController {
         userService.create(request);
         return ApiResult.ok();
     }
-
 
     @PostMapping("auth/login")
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -66,6 +68,13 @@ public class UserController {
     public ApiResult<Void> withDraw(@AuthenticationPrincipal CustomUserDetails userDetails){
         userService.WithDraw(userDetails);
         return ApiResult.ok();
+    }
+
+    @PostMapping("/reissue")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ApiResult<TokenResponse> reissue(TokenResponse request){
+        TokenResponse newToken = authService.reissue(request.accessToken(), request.refreshToken());
+        return ApiResult.ok(newToken);
     }
 
 }
