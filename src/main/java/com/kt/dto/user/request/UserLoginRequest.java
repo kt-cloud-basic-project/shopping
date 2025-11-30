@@ -1,14 +1,9 @@
-package com.kt.dto.user;
+package com.kt.dto.user.request;
 
-import com.kt.domain.user.Gender;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-import java.time.LocalDate;
-
-    public record UserLoginRequest(
+public record UserLoginRequest(
             @NotBlank
             String loginId,
             @NotBlank

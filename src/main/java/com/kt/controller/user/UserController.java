@@ -1,6 +1,11 @@
 package com.kt.controller.user;
 
-import com.kt.dto.user.UserInfoResponse;
+import com.kt.dto.user.response.UserInfoResponse;
+import com.kt.dto.user.request.UserCreateRequest;
+import com.kt.dto.user.request.UserLoginRequest;
+import com.kt.dto.user.request.UserLogoutRequest;
+import com.kt.dto.user.request.UserUpdateRequest;
+import com.kt.dto.user.response.UserLoginResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.common.response.ApiResult;
 import com.kt.dto.user.*;
@@ -24,6 +29,7 @@ public class UserController {
         userService.create(request);
         return ApiResult.ok();
     }
+
 
     @PostMapping("auth/login")
     @ResponseStatus(HttpStatus.ACCEPTED)
