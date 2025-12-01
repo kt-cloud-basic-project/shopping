@@ -117,8 +117,8 @@
 
 ## 🔀 PR Template
 
-📝요약(Summary)
-이슈 번호 : #번호
+📝요약(Summary)<br>
+이슈 번호 : #
 <br><br>
 
 
