@@ -19,7 +19,7 @@
 `ShoppingFourU` 는 온라인 쇼핑몰 운영에 필요한 기능들을 완전하게 구현한 E-commerce 플랫폼입니다.<br>
 회원 관리부터 상품 등록, 장바구니, 주문/결제까지 실제 서비스와 동일한 흐름을 제공하며<br>
 사용자 경험과 관리자 운영 경험을 모두 담아낸 쇼핑 서비스입니다.<br>
-
+<br>
 
 ## 👥 팀원
 
@@ -30,13 +30,13 @@
 | 🤓 전지민 | https://github.com/jeemin65-pixel | 팀원 |
 | 🐨 정문영 | https://github.com/munyeong0103 | 팀장 |
 | 🫠 정종한 |  https://github.com/jong15325/  |  팀원  |
+<br>
 
 ## 🏛 Architecture
 
 📜 ERD 설계도
 <img width="1902" height="858" alt="image" src="https://github.com/user-attachments/assets/b8cd6585-15a3-4266-a9c0-eae0f79661f1" />
-
-
+<br>
 
 ## 📌 Naming Rules
 
@@ -47,7 +47,7 @@
 | Constant  | `UPPERCASE`  |
 | Method    | `camelCase`  |
 | Variables | `camelCase`  |
-
+<br>
 
 
 ## 📁 Commit Convention
@@ -65,7 +65,7 @@
 | **comment**  | 주석 추가 및 변경           |
 | **remove**   | 파일, 폴더 삭제            |
 | **rename**   | 파일, 폴더명 수정           |
-
+<br>
 
 
 ✔ 커밋 메시지 형식<br>
@@ -79,7 +79,7 @@
 [TKT-17] chore: 라이브러리 추가<br>
 
 [TKT-23] feat: 인증/인가 기능 추가<br>
-
+<br>
 
 
 ## 🐬 Git Flow
@@ -97,8 +97,8 @@
   - 브랜치 네이밍: `fix/#이슈번호/[topic]`
 
 *브랜치명은 Jira 작업을 생성하면 자동으로 생성됩니다.
-
-
+<br>
+<br>
 
 
 ## 🧩 Issue Template
@@ -113,6 +113,7 @@
 
 🔖기타 사항
 <br><br>
+<br>
 
 ## 🔀 PR Template
 
@@ -127,13 +128,14 @@
 
 😉리뷰 요구사항
 <br><br>
+<br>
 
 ## 📡 API Documentation
 
 전체 API 명세 및 상세 스펙은 아래 링크에서 확인할 수 있습니다
 
 [📄 Full API Documentation (Notion)](https://www.notion.so/API-2ae9e3e335cc8097988ffe2a0e982fec?source=copy_link)
-
+<br><br><br>
 
 ## 🔥 트러블슈팅(Troubleshooting)
 
@@ -148,6 +150,7 @@
 - @EntityGraph 로 Fetch Join 적용
 - 1번의 쿼리로 통합하여 성능 개선
 - 쿼리 횟수 50% 감소 (2회 → 1회)
+<br>
 
 ---
 
