@@ -103,7 +103,10 @@ public class UserService {
 
     public void logout(UserLogoutRequest request){
         if(request.refreshToken() == null || request.refreshToken().isBlank()){
-            throw new CustomException(ErrorCode.INVALID_PARAMETER);
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+        }
+        if(!refreshTokenRepository.existsByToken(request.refreshToken())){
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
         }
 
         refreshTokenRepository.findByToken(request.refreshToken())
