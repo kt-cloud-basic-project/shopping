@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.ErrorCode;
+import com.kt.common.support.Preconditions;
+import com.kt.domain.order.OrderStatus;
 import com.kt.domain.payment.Payment;
 import com.kt.dto.payment.PaymentCreateRequest;
 import com.kt.dto.payment.PaymentDetailResponse;
@@ -30,10 +32,8 @@ public class PaymentService {
 	private final PaymentRepositoryCustom paymentRepositoryCustom;
 
 	@Transactional
-	public void create(PaymentCreateRequest request) {
-
-		var order = orderRepository.findById(request.orderId())
-			.orElseThrow();
+	public void create(PaymentCreateRequest request, Long userId) {
+		var order = orderRepository.findByIdAndUserIdOrThrow(request.orderId(), userId, ErrorCode.NOT_FOUND_ORDER);
 
 		var paymentType = paymentTypeRepository.findById(request.paymentTypeId())
 			.orElseThrow();
@@ -49,6 +49,7 @@ public class PaymentService {
 		var payment = new Payment(order, paymentType, total, delivery, finalPrice);
 
 		paymentRepository.save(payment);
+		order.updateStatus(OrderStatus.PAID);
 	}
 
 	public Page<PaymentListResponse> getMyAllPayment(Long userId, Pageable pageable) {
