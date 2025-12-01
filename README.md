@@ -134,4 +134,45 @@
 [📄 Full API Documentation (Notion)](https://www.notion.so/API-2ae9e3e335cc8097988ffe2a0e982fec?source=copy_link)
 
 
-##
+## 🔥 트러블슈팅(Troubleshooting)
+
+### 불필요한 쿼리 생성 문제
+
+문제 상황
+- 할인 정보 조회 시 멤버십 정보도 필요함
+- Lazy Loading으로 인해 2번의 쿼리 발생 (할인 조회 → 멤버십 조회)
+- 목록 조회에서는 N+1 문제로 이어질 수 있는 구조
+
+해결 방법
+- @EntityGraph 로 Fetch Join 적용
+- 1번의 쿼리로 통합하여 성능 개선
+- 쿼리 횟수 50% 감소 (2회 → 1회)
+
+---
+
+### JWT 필터 예외 처리 문제
+
+문제 상황
+- 토큰이 필요 없는 요청에서도 토큰 검증 예외 발생
+- Authorization 헤더가 없는 경우에도 예외를 던져 Controller 로직까지 전달되지 못함
+
+기존 문제 코드
+```java
+private String resolveToken(HttpServletRequest request) {
+    String header = request.getHeader(AUTH_HEADER);
+
+    if (!StringUtils.hasText(header) || !header.startsWith(BEARER_PREFIX)) {
+        throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+    }
+    return header.substring(BEARER_PREFIX.length());
+}
+
+
+```
+
+해결방법
+- Authorization 헤더가 없거나 Bearer 로 시작하지 않으면
+예외를 던지지 않고 null 반환
+
+- 이렇게 하면 Security에서 인증없이 통과시키고
+Controller 로직까지 정상적으로 전달됨
