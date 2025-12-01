@@ -13,11 +13,12 @@
 ![GitHub Issues](https://img.shields.io/badge/GitHub_Issues-181717?style=flat&logo=github&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white)
 ![Swagger UI](https://img.shields.io/badge/Swagger_UI-85EA2D?style=flat&logo=swagger&logoColor=black)
+<br><br>
 
 # ShoppingFourU
-`ShoppingFourU` 는 온라인 쇼핑몰 운영에 필요한 기능들을 완전하게 구현한 E-commerce 플랫폼입니다.
-회원 관리부터 상품 등록, 장바구니, 주문/결제까지 실제 서비스와 동일한 흐름을 제공하며
-사용자 경험과 관리자 운영 경험을 모두 담아낸 쇼핑 서비스입니다.
+`ShoppingFourU` 는 온라인 쇼핑몰 운영에 필요한 기능들을 완전하게 구현한 E-commerce 플랫폼입니다.<br>
+회원 관리부터 상품 등록, 장바구니, 주문/결제까지 실제 서비스와 동일한 흐름을 제공하며<br>
+사용자 경험과 관리자 운영 경험을 모두 담아낸 쇼핑 서비스입니다.<br>
 
 
 ## 👥 팀원
@@ -67,17 +68,17 @@
 
 
 
-✔ 커밋 메시지 형식
+✔ 커밋 메시지 형식<br>
 
-[티켓 번호] 작업 유형: 작업 내용
+[티켓 번호] 작업 유형: 작업 내용<br><br>
 
-✔ 예시
+✔ 예시<br>
 
-[TKT-15] feat: 로그인 시 잠금 검증 기능 추가
+[TKT-15] feat: 로그인 시 잠금 검증 기능 추가<br>
 
-[TKT-17] chore: 라이브러리 추가
+[TKT-17] chore: 라이브러리 추가<br>
 
-[TKT-23] feat: 인증/인가 기능 추가
+[TKT-23] feat: 인증/인가 기능 추가<br>
 
 
 
@@ -138,12 +139,12 @@
 
 ### 불필요한 쿼리 생성 문제
 
-문제 상황
+문제 상황<br>
 - 할인 정보 조회 시 멤버십 정보도 필요함
 - Lazy Loading으로 인해 2번의 쿼리 발생 (할인 조회 → 멤버십 조회)
 - 목록 조회에서는 N+1 문제로 이어질 수 있는 구조
-
-해결 방법
+<br>
+해결 방법<br>
 - @EntityGraph 로 Fetch Join 적용
 - 1번의 쿼리로 통합하여 성능 개선
 - 쿼리 횟수 50% 감소 (2회 → 1회)
@@ -173,6 +174,5 @@ private String resolveToken(HttpServletRequest request) {
 해결방법
 - Authorization 헤더가 없거나 Bearer 로 시작하지 않으면
 예외를 던지지 않고 null 반환
-
 - 이렇게 하면 Security에서 인증없이 통과시키고
 Controller 로직까지 정상적으로 전달됨
