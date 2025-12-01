@@ -60,3 +60,18 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.named("bootJar") {
+	enabled = true
+	archiveFileName = "shopping.jar"
+}
+
+tasks.register("zip", Zip.class) {
+	dependsOn("bootJar")
+	group("build")
+	archiveFileName = "shopping.zip"
+
+	from("build/libs/shopping.jar") { into("") }
+	from(".ebextentions") { into(".ebextentions") }
+	from("profiles/Profile") { into("") }
+}
