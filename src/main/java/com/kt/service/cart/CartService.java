@@ -87,7 +87,7 @@ public class CartService {
 
 		Preconditions.validate(variantRepository.existsByIdAndDeletedFalse(cart.getVariantId()), ErrorCode.DELETED_VARIANT);
 
-    // 변경할 장바구니가 유저 본인 장바구니인지 확인
+        // 변경할 장바구니가 유저 본인 장바구니인지 확인
 		Preconditions.validate(cart.getUser().getId().equals(userId), ErrorCode.NOT_CART_OWNER);
 
 		// 변경할 수량이 상품의 재고보다 적은지 확인

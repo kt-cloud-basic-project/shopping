@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
@@ -18,6 +19,7 @@ import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.order.OrderCreateRequest;
+import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.OrderUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.dto.order.OrderDetailResponse;
@@ -154,5 +156,59 @@ public class OrderService {
 			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_CANCEL_ORDER);
 
 		order.cancel();
+	}
+
+	public void requestRefund(Long orderId, Long userId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getUser().getId().equals(userId), ErrorCode.NOT_ORDER_OWNER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.PAID ||
+			order.getOrderStatus() == OrderStatus.RETURNED, ErrorCode.CANNOT_REFUND_ORDER);
+
+		order.requestRefund();
+	}
+
+	public void requestReturn(Long orderId, Long userId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getUser().getId().equals(userId), ErrorCode.NOT_ORDER_OWNER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.DELIVERED, ErrorCode.CANNOT_RETURN_ORDER);
+
+		order.requestReturn();
+	}
+
+	public void approveRefund(Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.REFUND_REQUESTED, ErrorCode.CANNOT_REFUND_ORDER);
+
+		order.approveRefund();
+	}
+
+	public void approveReturn(Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.RETURN_REQUESTED, ErrorCode.CANNOT_RETURN_ORDER);
+
+		order.approveReturn();
+	}
+
+	public void updateStatus(OrderStatusUpdateRequest request, Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		switch (request.orderStatus()) {
+			case PAID -> Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED,
+				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+			case PROCESSING -> Preconditions.validate(order.getOrderStatus() == OrderStatus.PAID,
+				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+			case SHIPPED -> Preconditions.validate(order.getOrderStatus() == OrderStatus.PROCESSING,
+				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+			case DELIVERED -> Preconditions.validate(order.getOrderStatus() == OrderStatus.SHIPPED,
+				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+			default -> throw new CustomException(ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+		}
+		order.updateStatus(request.orderStatus());
 	}
 }

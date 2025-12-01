@@ -44,6 +44,9 @@ public enum ErrorCode {
 	NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 주문이 존재하지 않습니다."),
 	CANNOT_CANCEL_ORDER(HttpStatus.BAD_REQUEST, "주문 취소가 불가능합니다."),
 	CANNOT_UPDATE_ORDER_INFO(HttpStatus.BAD_REQUEST, "주문 수정이 불가능합니다."),
+	CANNOT_REFUND_ORDER(HttpStatus.BAD_REQUEST, "주문 환불이 불가능합니다."),
+	CANNOT_RETURN_ORDER(HttpStatus.BAD_REQUEST, "주문 반품이 불가능합니다."),
+	CANNOT_UPDATE_ORDER_STATUS(HttpStatus.BAD_REQUEST, "주문 상태 변경이 불가능합니다."),
 
 	//shoppingaddress
 	NOT_SHOPPING_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),
