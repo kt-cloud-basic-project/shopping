@@ -21,7 +21,7 @@
 사용자 경험과 관리자 운영 경험을 모두 담아낸 쇼핑 서비스입니다.<br>
 <br>
 
-## 👥 팀원
+## 👥 Team Member
 
 | 이름 | GITHUB | 역할 |
 | --- | --- | --- |
@@ -137,7 +137,7 @@
 [📄 Full API Documentation (Notion)](https://www.notion.so/API-2ae9e3e335cc8097988ffe2a0e982fec?source=copy_link)
 <br><br><br>
 
-## 🔥 트러블슈팅(Troubleshooting)
+## 🔥 Troubleshooting
 
 ### 불필요한 쿼리 생성 문제
 
