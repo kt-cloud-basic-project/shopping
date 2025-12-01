@@ -7,7 +7,6 @@ import java.util.List;
 import com.kt.common.support.BaseEntity;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.user.User;
-import com.kt.dto.order.OrderStatusUpdateRequest;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
