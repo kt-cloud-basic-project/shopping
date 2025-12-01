@@ -105,6 +105,9 @@ public class UserService {
         if(request.refreshToken() == null || request.refreshToken().isBlank()){
             throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
         }
+        if(!refreshTokenRepository.existsByToken(request.refreshToken())){
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+        }
 
         refreshTokenRepository.findByToken(request.refreshToken())
                 .ifPresent(token -> refreshTokenRepository.delete(token));
