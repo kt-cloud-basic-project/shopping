@@ -103,23 +103,35 @@
 ## 🧩 Issue Template
 
 ✨이슈 설명
-user 관련 기능을 구현합니다.
+<br><br>
+
 
 🔥투두리스트
-- [ ] user 회원가입
-- [ ] user 로그인
+<br><br>
+
 
 🔖기타 사항
-
+<br><br>
 
 ## 🔀 PR Template
 
 📝요약(Summary)
 이슈 번호 : #번호
+<br><br>
+
 
 🔨변경 사항(Changes)
-user 회원가입 기능을 개발했습니다
+<br><br>
+
 
 😉리뷰 요구사항
-메서드 구조가 잘 이루어졌는지
+<br><br>
 
+## 📡 API Documentation
+
+전체 API 명세 및 상세 스펙은 아래 링크에서 확인할 수 있습니다
+
+[📄 Full API Documentation (Notion)](https://www.notion.so/API-2ae9e3e335cc8097988ffe2a0e982fec?source=copy_link)
+
+
+##
