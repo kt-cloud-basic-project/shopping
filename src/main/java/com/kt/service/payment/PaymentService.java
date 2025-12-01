@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.Preconditions;
+import com.kt.domain.order.OrderStatus;
 import com.kt.domain.payment.Payment;
 import com.kt.dto.payment.PaymentCreateRequest;
 import com.kt.dto.payment.PaymentDetailResponse;
@@ -48,6 +49,7 @@ public class PaymentService {
 		var payment = new Payment(order, paymentType, total, delivery, finalPrice);
 
 		paymentRepository.save(payment);
+		order.updateStatus(OrderStatus.PAID);
 	}
 
 	public Page<PaymentListResponse> getMyAllPayment(Long userId, Pageable pageable) {
