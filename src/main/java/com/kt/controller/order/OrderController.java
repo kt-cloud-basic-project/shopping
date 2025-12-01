@@ -83,4 +83,26 @@ public class OrderController {
 		return ApiResult.ok();
 	}
 
+	@PatchMapping("/{orderId}/refund-request")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 환불 요청")
+	public ApiResult<Void> requestRefund(@PathVariable Long orderId,
+		@AuthenticationPrincipal CustomUserDetails currentUser) {
+		orderService.requestRefund(orderId, currentUser.getId());
+
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{orderId}/return-request")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 반품 요청")
+	public ApiResult<Void> requestReturn(@PathVariable Long orderId,
+		@AuthenticationPrincipal CustomUserDetails currentUser) {
+		orderService.requestReturn(orderId, currentUser.getId());
+
+		return ApiResult.ok();
+	}
+
+
+
 }
