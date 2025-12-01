@@ -35,7 +35,7 @@
 📜 ERD 설계도
 <img width="1902" height="858" alt="image" src="https://github.com/user-attachments/assets/b8cd6585-15a3-4266-a9c0-eae0f79661f1" />
 
----
+
 
 ## 📌 Naming Rules
 
@@ -47,7 +47,7 @@
 | Method    | `camelCase`  |
 | Variables | `camelCase`  |
 
----
+
 
 ## 📁 Commit Convention
 
@@ -66,17 +66,20 @@
 | **rename**   | 파일, 폴더명 수정           |
 
 
-커밋 메시지는 아래 규칙에 따라 작성합니다.
 
 ✔ 커밋 메시지 형식
+
 [티켓 번호] 작업 유형: 작업 내용
 
 ✔ 예시
+
 [TKT-15] feat: 로그인 시 잠금 검증 기능 추가
+
 [TKT-17] chore: 라이브러리 추가
+
 [TKT-23] feat: 인증/인가 기능 추가
 
----
+
 
 ## 🐬 Git Flow
 
