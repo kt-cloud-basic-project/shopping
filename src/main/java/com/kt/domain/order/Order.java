@@ -6,14 +6,17 @@ import java.util.List;
 
 import com.kt.common.support.BaseEntity;
 import com.kt.domain.orderproduct.OrderProduct;
+import com.kt.domain.payment.Payment;
 import com.kt.domain.user.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,7 +47,8 @@ public class Order extends BaseEntity {
 	@OneToMany(mappedBy = "order")
 	private List<OrderProduct> orderProducts = new ArrayList<>();
 
-	//TODO: payment domain 연결
+	@OneToOne(mappedBy = "order")
+	private Payment payment;
 
 	public Order(String receiverName, String receiverPhone, String receiverAddress, User user) {
 		this.receiverName = receiverName;
@@ -65,5 +69,25 @@ public class Order extends BaseEntity {
 		this.receiverName = receiverName;
 		this.receiverPhone = receiverPhone;
 		this.receiverAddress = receiverAddress;
+	}
+
+	public void requestRefund() {
+		this.orderStatus = OrderStatus.REFUND_REQUESTED;
+	}
+
+	public void requestReturn() {
+		this.orderStatus = OrderStatus.RETURN_REQUESTED;
+	}
+
+	public void approveRefund() {
+		this.orderStatus = OrderStatus.REFUNDED;
+	}
+
+	public void approveReturn() {
+		this.orderStatus = OrderStatus.RETURNED;
+	}
+
+	public void updateStatus(OrderStatus newStatus) {
+		this.orderStatus = newStatus;
 	}
 }

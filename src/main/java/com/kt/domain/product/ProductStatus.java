@@ -9,7 +9,8 @@ public enum ProductStatus {
 
 	ACTIVATED("판매 중"),
 	SOLD_OUT("품절"),
-	IN_ACTIVATED("판매 중지");
+	IN_ACTIVATED("판매 중지"),
+	DELETED("삭제");
 
 	private final String description;
 }

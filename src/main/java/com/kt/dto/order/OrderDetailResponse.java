@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
+import com.kt.domain.payment.Payment;
 
 public record OrderDetailResponse(
 	OrderStatus orderStatus,
@@ -13,7 +14,6 @@ public record OrderDetailResponse(
 	String receiverAddress,
 	LocalDate orderedAt,
 	List<OrderProductResponse> products
-	//TODO: OrderPaymentResponse payment
 ) {
 	public static OrderDetailResponse from(Order order, List<OrderProductResponse> products) {
 		return new OrderDetailResponse(
