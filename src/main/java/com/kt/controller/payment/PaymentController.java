@@ -49,6 +49,12 @@ public class PaymentController {
 		return ApiResult.ok(paymentService.getPayment(currentUser.getId(), paymentId));
 	}
 
+	@PostMapping("")
+	public ApiResult<Void> create(@Valid PaymentCreateRequest request, @AuthenticationPrincipal CustomUserDetails currentUser) {
+		paymentService.create(request, currentUser.getId());
+		return ApiResult.ok();
+	}
+
 
 }
 
