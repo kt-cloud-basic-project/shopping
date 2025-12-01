@@ -7,6 +7,7 @@ import java.util.List;
 import com.kt.common.support.BaseEntity;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.user.User;
+import com.kt.dto.order.OrderStatusUpdateRequest;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -65,5 +66,25 @@ public class Order extends BaseEntity {
 		this.receiverName = receiverName;
 		this.receiverPhone = receiverPhone;
 		this.receiverAddress = receiverAddress;
+	}
+
+	public void requestRefund() {
+		this.orderStatus = OrderStatus.REFUND_REQUESTED;
+	}
+
+	public void requestReturn() {
+		this.orderStatus = OrderStatus.RETURN_REQUESTED;
+	}
+
+	public void approveRefund() {
+		this.orderStatus = OrderStatus.REFUNDED;
+	}
+
+	public void approveReturn() {
+		this.orderStatus = OrderStatus.RETURNED;
+	}
+
+	public void updateStatus(OrderStatus newStatus) {
+		this.orderStatus = newStatus;
 	}
 }
