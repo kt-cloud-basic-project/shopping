@@ -1,5 +1,6 @@
 package com.kt.controller.user;
 
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.auth.TokenResponse;
 import com.kt.dto.user.request.*;
 import com.kt.dto.user.response.UserInfoResponse;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-public class UserController {
+public class UserController extends SwaggerAssistance {
 
     private final UserService userService;
     private final AuthService authService;
