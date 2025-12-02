@@ -83,7 +83,7 @@ public class UserController extends SwaggerAssistance {
     @PostMapping("/reissue")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "만료된 토큰 재발급")
-    public ApiResult<TokenResponse> reissue(TokenResponse request){
+    public ApiResult<TokenResponse> reissue(@RequestBody TokenResponse request){
         TokenResponse newToken = authService.reissue(request.accessToken(), request.refreshToken());
         return ApiResult.ok(newToken);
     }
