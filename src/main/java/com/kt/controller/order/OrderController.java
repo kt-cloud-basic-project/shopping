@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.order.OrderCreateRequest;
 import com.kt.dto.order.OrderDetailResponse;
 import com.kt.dto.order.OrderUpdateRequest;
@@ -30,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController extends SwaggerAssistance {
 	private final OrderService orderService;
 
 	@PostMapping("")
