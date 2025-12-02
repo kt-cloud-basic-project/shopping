@@ -76,8 +76,8 @@ public class CartService {
 
 		return carts.map(cart -> CartResponse.from(
 			cart,
-			discount != null ? discount.calcDiscountAmount(cart.getProduct().getPrice()) : 0L,
-			discount != null ? discount.calcDiscountFinalPrice(cart.getProduct().getPrice()) : cart.getProduct().getPrice()
+			discount != null ? discount.calcDiscountAmount(cart.getTotalPrice()) : 0L,
+			discount != null ? discount.calcDiscountFinalPrice(cart.getTotalPrice()) : cart.getTotalPrice()
 		));
 	}
 

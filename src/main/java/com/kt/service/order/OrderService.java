@@ -5,6 +5,7 @@ import static com.kt.common.support.ObjectUtils.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -14,17 +15,22 @@ import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
+import com.kt.domain.discount.Discount;
+import com.kt.domain.membership.Membership;
 import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
+import com.kt.domain.user.User;
 import com.kt.dto.order.OrderCreateRequest;
 import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.OrderUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.dto.order.OrderDetailResponse;
 import com.kt.dto.order.OrderProductResponse;
+import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.order.OrderRepository;
+import com.kt.repository.order.OrderRepositoryCustom;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
@@ -43,6 +49,8 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
 	private final VariantRepository variantRepository;
+	private final DiscountRepository discountRepository;
+	private final OrderRepositoryCustom orderRepositoryCustom;
 
 	public void create(Long userId, OrderCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
@@ -92,9 +100,25 @@ public class OrderService {
 	}
 
 	public Page<OrderListResponse> getOrderList(Long userId, Paging paging) {
-		Page<Order> orderList = orderRepository.findByUserId(userId, paging.toPageable());
+		//Page<Order> orderList = orderRepository.findByUserId(userId, paging.toPageable());
+		Page<Order> orders = orderRepositoryCustom.getOrders(userId, paging.toPageable());
 
-		return orderList.map(OrderListResponse::from);
+		if (orders.isEmpty()) {
+			return Page.empty(paging.toPageable());
+		}
+
+		User user = orders.getContent().getFirst().getUser();
+
+		// 할인은 있을 수도 없을 수도(optional)
+		Discount discount = Optional.ofNullable(user.getMembership())
+			.map(Membership::getId)
+			.flatMap(discountRepository::findByMembershipId)
+			.orElse(null);
+
+		return orders.map(order -> OrderListResponse.from(
+			order,
+			discount
+		));
 	}
 
 	public void cancel(Long orderId, Long userId) {
@@ -114,6 +138,14 @@ public class OrderService {
 	public OrderDetailResponse getOrderDetail(Long userId, Long orderId) {
 		var order = orderRepository.findByIdAndUserIdOrThrow(orderId, userId, ErrorCode.NOT_FOUND_ORDER);
 
+		User user = order.getUser();
+
+		// 할인은 있을 수도 없을 수도(optional)
+		Discount discount = Optional.ofNullable(user.getMembership())
+			.map(Membership::getId)
+			.flatMap(discountRepository::findByMembershipId)
+			.orElse(null);
+
 		List<OrderProductResponse> products = orderProductRepository.findByOrderId(orderId).stream()
 			.map(
 			orderProduct -> {
@@ -121,7 +153,8 @@ public class OrderService {
 
 				return OrderProductResponse.from(
 					orderProduct,
-					product
+					product,
+					discount
 				);
 			}
 		).toList();
