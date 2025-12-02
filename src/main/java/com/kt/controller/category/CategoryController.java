@@ -1,10 +1,13 @@
 package com.kt.controller.category;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.category.CategoryListResponse;
 import com.kt.service.category.CategoryService;
 
@@ -15,10 +18,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-public class CategoryController {
+public class CategoryController extends SwaggerAssistance {
 	private final CategoryService categoryService;
 
 	@GetMapping("")
+	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<CategoryListResponse> getCategoryList() {
 		return ApiResult.ok(categoryService.getCategoryList());
 	}
