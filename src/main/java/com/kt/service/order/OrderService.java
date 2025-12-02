@@ -199,8 +199,6 @@ public class OrderService {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
 		switch (request.orderStatus()) {
-			case PAID -> Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED,
-				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
 			case PROCESSING -> Preconditions.validate(order.getOrderStatus() == OrderStatus.PAID,
 				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
 			case SHIPPED -> Preconditions.validate(order.getOrderStatus() == OrderStatus.PROCESSING,
