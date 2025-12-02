@@ -28,9 +28,14 @@ public class AuthService {
 
         String dbRefreshToken = refreshTokenRepository.findRefreshTokenByToken(refreshToken);
 
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new CustomException(ErrorCode.EXPIRED_JWT_TOKEN);
+        } // 리프레시 토큰 만료확인
+
         if (dbRefreshToken == null || !dbRefreshToken.equals(refreshToken)) {
             throw new CustomException(ErrorCode.EXPIRED_JWT_TOKEN);
-        }
+        } // db에 저장된 리프레시토큰과 제공된 토큰이 같은지 확인
+
         var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
