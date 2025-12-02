@@ -1,11 +1,10 @@
-package com.kt.dto.order;
+package com.kt.dto.order.response;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
-import com.kt.domain.payment.Payment;
 
 public record OrderDetailResponse(
 	OrderStatus orderStatus,
