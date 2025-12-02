@@ -35,7 +35,7 @@ public class CartService {
 	private final DiscountRepository discountRepository;
 	private final VariantRepository variantRepository;
 
-    public void create(Long userId, CartCreateRequest request) {
+    public Long create(Long userId, CartCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 		var product = productRepository.findByIdOrThrow(request.productId(), ErrorCode.NOT_FOUND_PRODUCT);
 
@@ -55,6 +55,8 @@ public class CartService {
 			product
 		);
 		cartRepository.save(newCart);
+
+		return newCart.getId();
     }
 
 	public Page<CartResponse> getCartList(Long userId, Paging paging) {

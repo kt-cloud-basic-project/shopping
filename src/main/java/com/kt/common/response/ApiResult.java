@@ -24,6 +24,10 @@ public class ApiResult<T> {
 		return ApiResult.of("ok", "성공", data, LocalDateTime.now());
 	}
 
+	public static <T> ApiResult<T> of(String message, T data) {
+		return ApiResult.of("ok", message, data, LocalDateTime.now());
+	}
+
 	public static <T> ApiResult<T> error(String code, String message) {
 		return ApiResult.of(code, message, null, LocalDateTime.now());
 	}

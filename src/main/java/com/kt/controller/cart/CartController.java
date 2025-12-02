@@ -28,12 +28,12 @@ public class CartController extends SwaggerAssistance {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "장바구니 생성")
-    public ApiResult<Void> create(
+    public ApiResult<Long> create(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@Valid @RequestBody CartCreateRequest request) {
-        cartService.create(currentUser.getId(), request);
+        Long cartId = cartService.create(currentUser.getId(), request);
 
-        return ApiResult.ok();
+        return ApiResult.of("장바구니 생성 완료", cartId);
     }
 
 	@GetMapping
@@ -50,22 +50,22 @@ public class CartController extends SwaggerAssistance {
     @PatchMapping("/{cartId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "장바구니 수량 변경")
-    public ApiResult<Void> updateQuantity(
+    public ApiResult<Long> updateQuantity(
             @Valid @RequestBody CartUpdateQuantityRequest request,
             @PathVariable Long cartId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
         cartService.updateQuantity(cartId, currentUser.getId(), request.productCount());
 
-        return ApiResult.ok();
+        return ApiResult.of("장바구니 상품 수량 변경 완료", cartId);
     }
 
     @DeleteMapping("/{cartId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "장바구니에서 특정 상품 삭제")
-    public ApiResult<Void> deleteCartItem(@PathVariable Long cartId) {
+    public ApiResult<Long> deleteCartItem(@PathVariable Long cartId) {
         cartService.deleteCartItem(cartId);
 
-        return ApiResult.ok();
+        return ApiResult.of("장바구니 삭제 완료", cartId);
     }
 
     @DeleteMapping

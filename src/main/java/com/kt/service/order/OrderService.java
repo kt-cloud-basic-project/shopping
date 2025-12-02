@@ -22,8 +22,8 @@ import com.kt.dto.order.OrderCreateRequest;
 import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.OrderUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
-import com.kt.dto.order.OrderDetailResponse;
-import com.kt.dto.order.OrderProductResponse;
+import com.kt.dto.order.response.OrderDetailResponse;
+import com.kt.dto.order.response.OrderProductResponse;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
 import com.kt.repository.product.ProductRepository;
@@ -44,7 +44,7 @@ public class OrderService {
 	private final OrderProductRepository orderProductRepository;
 	private final VariantRepository variantRepository;
 
-	public void create(Long userId, OrderCreateRequest request) {
+	public Long create(Long userId, OrderCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 		var address = shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
 
@@ -89,6 +89,8 @@ public class OrderService {
 		orderRepository.save(newOrder);
 		orderProductRepository.saveAll(orderProducts);
 
+		// 5. orderId 반환
+		return newOrder.getId();
 	}
 
 	public Page<OrderListResponse> getOrderList(Long userId, Paging paging) {

@@ -16,7 +16,7 @@ import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
 import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.order.OrderCreateRequest;
-import com.kt.dto.order.OrderDetailResponse;
+import com.kt.dto.order.response.OrderDetailResponse;
 import com.kt.dto.order.OrderUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.security.CustomUserDetails;
@@ -37,10 +37,10 @@ public class OrderController extends SwaggerAssistance {
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "주문 생성")
-	public ApiResult<Void> create(@AuthenticationPrincipal CustomUserDetails currentUser,
+	public ApiResult<Long> create(@AuthenticationPrincipal CustomUserDetails currentUser,
 		@Valid @RequestBody OrderCreateRequest orderCreateRequest) {
-		orderService.create(currentUser.getId(), orderCreateRequest);
-		return ApiResult.ok();
+		Long orderId = orderService.create(currentUser.getId(), orderCreateRequest);
+		return ApiResult.of("주문 생성 완료", orderId);
 	}
 
 	@GetMapping
@@ -58,12 +58,12 @@ public class OrderController extends SwaggerAssistance {
 	@PatchMapping("/{orderId}/cancel")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 취소")
-	public ApiResult<Void> cancel(@PathVariable Long orderId,
+	public ApiResult<Long> cancel(@PathVariable Long orderId,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
 		orderService.cancel(orderId, currentUser.getId());
 
-		return ApiResult.ok();
+		return ApiResult.of("주문 취소 완료", orderId);
 	}
 
 	@GetMapping("/{orderId}")
@@ -76,34 +76,31 @@ public class OrderController extends SwaggerAssistance {
 	@PatchMapping("/{orderId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 수정")
-	public ApiResult<Void> update(@RequestBody OrderUpdateRequest request,
+	public ApiResult<Long> update(@RequestBody OrderUpdateRequest request,
 		@PathVariable Long orderId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		orderService.update(request, orderId, currentUser.getId());
 
-		return ApiResult.ok();
+		return ApiResult.of("주문 수정 완료", orderId);
 	}
 
 	@PatchMapping("/{orderId}/refund-request")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 환불 요청")
-	public ApiResult<Void> requestRefund(@PathVariable Long orderId,
+	public ApiResult<Long> requestRefund(@PathVariable Long orderId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		orderService.requestRefund(orderId, currentUser.getId());
 
-		return ApiResult.ok();
+		return ApiResult.of("환불 요청 완료", orderId);
 	}
 
 	@PatchMapping("/{orderId}/return-request")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 반품 요청")
-	public ApiResult<Void> requestReturn(@PathVariable Long orderId,
+	public ApiResult<Long> requestReturn(@PathVariable Long orderId,
 		@AuthenticationPrincipal CustomUserDetails currentUser) {
 		orderService.requestReturn(orderId, currentUser.getId());
 
-		return ApiResult.ok();
+		return ApiResult.of("반품 요청 완료", orderId);
 	}
-
-
-
 }
