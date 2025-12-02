@@ -3,31 +3,31 @@ package com.kt.controller.payment;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
-import com.kt.domain.payment.Payment;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.payment.PaymentCreateRequest;
 import com.kt.dto.payment.PaymentDetailResponse;
 import com.kt.dto.payment.PaymentListResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.payment.PaymentService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Payment", description = "결제 기록 기능 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/payments")
-public class PaymentController {
+public class PaymentController extends SwaggerAssistance {
 
 	private final PaymentService paymentService;
 
