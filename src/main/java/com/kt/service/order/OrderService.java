@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
@@ -18,6 +19,7 @@ import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.order.OrderCreateRequest;
+import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.OrderUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.dto.order.OrderDetailResponse;
@@ -60,10 +62,10 @@ public class OrderService {
 		request.products().forEach(product -> {
 			var targetProduct = productRepository.findByIdOrThrow(product.productId(),  ErrorCode.NOT_FOUND_PRODUCT);
 
-			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CAN_NOT_PURCHASE_PRODUCT);
+			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CANNOT_PURCHASE_PRODUCT);
 			Preconditions.validate(targetProduct.getStock() >= product.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
 			//선택한 상품의 옵션이 맞는지 검증
-			var variant = variantRepository.findByIdOrThrow(product.productVariantId(),  ErrorCode.NOT_FOUND_VARIANT);
+			var variant = variantRepository.findByIdAndDeletedFalseOrThrow(product.productVariantId(), ErrorCode.NOT_FOUND_VARIANT);
 			Preconditions.validate(variant.getProduct().getId().equals(targetProduct.getId()), ErrorCode.INVALID_VARIANT);
 
 			// OrderProduct 생성
@@ -75,8 +77,6 @@ public class OrderService {
 			);
 
 			orderProducts.add(newOrderProduct);
-
-			//TODO: payment 생성
 		});
 
 		// 3. stock 차감
@@ -126,8 +126,6 @@ public class OrderService {
 			}
 		).toList();
 
-		//TODO: payment 정보 반환
-
 		return OrderDetailResponse.from(order, products);
 	}
 
@@ -148,5 +146,67 @@ public class OrderService {
 			orElseIfEmpty(request.receiverPhone(), order.getReceiverPhone()),
 			updatedAddress
 		);
+	}
+
+	public void cancelByAdmin(Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		// 주문 취소 가능 여부 검증
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED ||
+			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_CANCEL_ORDER);
+
+		order.cancel();
+	}
+
+	public void requestRefund(Long orderId, Long userId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getUser().getId().equals(userId), ErrorCode.NOT_ORDER_OWNER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.PAID ||
+			order.getOrderStatus() == OrderStatus.RETURNED, ErrorCode.CANNOT_REFUND_ORDER);
+
+		order.requestRefund();
+	}
+
+	public void requestReturn(Long orderId, Long userId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getUser().getId().equals(userId), ErrorCode.NOT_ORDER_OWNER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.DELIVERED, ErrorCode.CANNOT_RETURN_ORDER);
+
+		order.requestReturn();
+	}
+
+	public void approveRefund(Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.REFUND_REQUESTED, ErrorCode.CANNOT_REFUND_ORDER);
+
+		order.approveRefund();
+	}
+
+	public void approveReturn(Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.RETURN_REQUESTED, ErrorCode.CANNOT_RETURN_ORDER);
+
+		order.approveReturn();
+	}
+
+	public void updateStatus(OrderStatusUpdateRequest request, Long orderId) {
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+
+		switch (request.orderStatus()) {
+			case PROCESSING -> Preconditions.validate(order.getOrderStatus() == OrderStatus.PAID,
+				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+			case SHIPPED -> Preconditions.validate(order.getOrderStatus() == OrderStatus.PROCESSING,
+				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+			case DELIVERED -> Preconditions.validate(order.getOrderStatus() == OrderStatus.SHIPPED,
+				ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+			default -> throw new CustomException(ErrorCode.CANNOT_UPDATE_ORDER_STATUS);
+		}
+		order.updateStatus(request.orderStatus());
 	}
 }

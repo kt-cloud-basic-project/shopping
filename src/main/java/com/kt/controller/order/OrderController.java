@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.order.OrderCreateRequest;
 import com.kt.dto.order.OrderDetailResponse;
 import com.kt.dto.order.OrderUpdateRequest;
@@ -30,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController extends SwaggerAssistance {
 	private final OrderService orderService;
 
 	@PostMapping("")
@@ -54,7 +55,7 @@ public class OrderController {
 		return ApiResult.ok(orderList);
 	}
 
-	@PatchMapping("/{orderId}")
+	@PatchMapping("/{orderId}/cancel")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 취소")
 	public ApiResult<Void> cancel(@PathVariable Long orderId,
@@ -82,4 +83,27 @@ public class OrderController {
 
 		return ApiResult.ok();
 	}
+
+	@PatchMapping("/{orderId}/refund-request")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 환불 요청")
+	public ApiResult<Void> requestRefund(@PathVariable Long orderId,
+		@AuthenticationPrincipal CustomUserDetails currentUser) {
+		orderService.requestRefund(orderId, currentUser.getId());
+
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{orderId}/return-request")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 반품 요청")
+	public ApiResult<Void> requestReturn(@PathVariable Long orderId,
+		@AuthenticationPrincipal CustomUserDetails currentUser) {
+		orderService.requestReturn(orderId, currentUser.getId());
+
+		return ApiResult.ok();
+	}
+
+
+
 }

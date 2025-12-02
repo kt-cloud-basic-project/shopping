@@ -16,6 +16,8 @@ public class Cart extends BaseEntity {
 
     private Long variantId;
 
+	private Long totalPrice;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -33,5 +35,6 @@ public class Cart extends BaseEntity {
 
 	public void updateQuantity(Integer productCount) {
 		this.productCount = productCount;
+		this.totalPrice = this.product.getPrice() * productCount;
 	}
 }

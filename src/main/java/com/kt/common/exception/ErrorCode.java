@@ -29,9 +29,10 @@ public enum ErrorCode {
 	//product
 	NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "상품을 찾을 수 없습니다."),
 	INVALID_PRODUCT_STATUS(HttpStatus.BAD_REQUEST, "상품 상태 변경이 이미 적용되었습니다"),
-	INVALID_PRODUCT_STOCK(HttpStatus.BAD_REQUEST, "상품 수량이 부족합니다"),
-	CAN_NOT_PURCHASE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 구매할 수 없습니다"),
-	DELETED_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품이 존재하지 않습니다"),
+	INVALID_PRODUCT_STOCK(HttpStatus.BAD_REQUEST, "상품 수량이 부족합니다."),
+	CANNOT_PURCHASE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 구매할 수 없습니다."),
+	DELETED_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품이 존재하지 않습니다."),
+	CANNOT_DELETE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 삭제할 수 없습니다."),
 
 	//category
 	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),
@@ -43,6 +44,9 @@ public enum ErrorCode {
 	NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 주문이 존재하지 않습니다."),
 	CANNOT_CANCEL_ORDER(HttpStatus.BAD_REQUEST, "주문 취소가 불가능합니다."),
 	CANNOT_UPDATE_ORDER_INFO(HttpStatus.BAD_REQUEST, "주문 수정이 불가능합니다."),
+	CANNOT_REFUND_ORDER(HttpStatus.BAD_REQUEST, "주문 환불이 불가능합니다."),
+	CANNOT_RETURN_ORDER(HttpStatus.BAD_REQUEST, "주문 반품이 불가능합니다."),
+	CANNOT_UPDATE_ORDER_STATUS(HttpStatus.BAD_REQUEST, "주문 상태 변경이 불가능합니다."),
 
 	//shoppingaddress
 	NOT_SHOPPING_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),
@@ -71,13 +75,20 @@ public enum ErrorCode {
 
 	//cart
 	NOT_FOUND_CART(HttpStatus.BAD_REQUEST, "해당 장바구니를 찾을 수 없습니다."),
+	NOT_CART_OWNER(HttpStatus.BAD_REQUEST, "본인의 장바구니만 수정 할 수 있습니다."),
 
 	//order product
 	NOT_FOUND_ORDER_PRODUCT(HttpStatus.BAD_REQUEST, "주문 상품을 찾을 수 없습니다."),
 
 	//variant
-	NOT_FOUND_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 찾을 수 없습니다"),
+	NOT_FOUND_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 찾을 수 없습니다."),
 	INVALID_VARIANT(HttpStatus.BAD_REQUEST, "해당 상품의 옵션이 아닙니다."),
+	CANNOT_DELETE_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 삭제할 수 없습니다."),
+	DELETED_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션이 존재하지 않습니다."),
+
+	//payment
+	NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제 정보를 찾을 수 없습니다"),
+
 
 	;
 

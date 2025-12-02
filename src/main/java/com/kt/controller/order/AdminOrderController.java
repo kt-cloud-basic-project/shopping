@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.order.OrderDetailResponse;
+import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.order.OrderService;
@@ -27,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/orders")
-public class AdminOrderController {
+public class AdminOrderController extends SwaggerAssistance {
 	private final OrderService orderService;
 
 	@GetMapping
@@ -42,21 +44,52 @@ public class AdminOrderController {
 		return ApiResult.ok(orderList);
 	}
 
-	@PatchMapping("/{orderId}")
+	@PatchMapping("/{orderId}/cancel")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 취소")
-	public ApiResult<Void> cancel(@PathVariable Long orderId,
-		@AuthenticationPrincipal CustomUserDetails currentUser
+	public ApiResult<Void> cancel(@PathVariable Long orderId
 	) {
-		orderService.cancel(orderId, currentUser.getId());
+		orderService.cancelByAdmin(orderId);
 
 		return ApiResult.ok();
 	}
 
 	@GetMapping("/{orderId}")
+	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 상세 조회")
 	public ApiResult<OrderDetailResponse> getOrderDetail(@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable("orderId") Long orderId) {
 		return ApiResult.ok(orderService.getOrderDetail(currentUser.getId(), orderId));
 	}
+
+	@PatchMapping("/{orderId}/refund-approve")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 환불 승인")
+	public ApiResult<Void> approveRefund(@PathVariable Long orderId) {
+		orderService.approveRefund(orderId);
+
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{orderId}/return-approve")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 반품 승인")
+	public ApiResult<Void> approveReturn(@PathVariable Long orderId) {
+		orderService.approveReturn(orderId);
+
+		return ApiResult.ok();
+	}
+
+	@PatchMapping("/{orderId}/status")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 상태 변경")
+	public ApiResult<Void> updateStatus(OrderStatusUpdateRequest request,
+		@PathVariable Long orderId) {
+		orderService.updateStatus(request, orderId);
+
+		return ApiResult.ok();
+	}
+
+
+
 }
