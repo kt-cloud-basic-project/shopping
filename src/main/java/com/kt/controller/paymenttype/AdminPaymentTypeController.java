@@ -1,6 +1,5 @@
 package com.kt.controller.paymenttype;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.paymenttype.PaymentTypeCreateRequest;
 import com.kt.dto.paymenttype.PaymentTypeListResponse;
 import com.kt.service.paymenttype.PaymentTypeService;
@@ -23,12 +23,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Admin PaymentType", description = "관리자 결제방법 API")
+@Tag(name = "Admin PaymentType", description = "관리자 결제 방법 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/payments/types")
 @PreAuthorize("hasRole('ADMIN')")
-public class AdminPaymentTypeController {
+public class AdminPaymentTypeController extends SwaggerAssistance {
 
 	private final PaymentTypeService paymentTypeService;
 
