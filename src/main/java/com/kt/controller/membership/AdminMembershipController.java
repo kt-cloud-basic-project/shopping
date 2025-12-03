@@ -21,12 +21,13 @@ import com.kt.dto.membership.MembershipListResponse;
 import com.kt.dto.membership.MembershipUpdateRequest;
 import com.kt.service.membership.MembershipService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Admin Membership", description = "관리자 멤버쉽 기능 관리  API")
+@Tag(name = "Admin Membership", description = "Membership 관리자용  API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/memberships")
@@ -36,6 +37,7 @@ public class AdminMembershipController extends SwaggerAssistance {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "멤버십 등록")
 	public ApiResult<Void> create(
 		@Valid @RequestBody MembershipCreateRequest request
 	) {
@@ -47,6 +49,7 @@ public class AdminMembershipController extends SwaggerAssistance {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "멤버십 목록 조회")
 	public ApiResult<Page<MembershipListResponse>> getAllMembership(
 		@Valid Paging paging
 	) {
@@ -58,6 +61,7 @@ public class AdminMembershipController extends SwaggerAssistance {
 
 	@PutMapping("/{membershipId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "멤버십 수정")
 	public ApiResult<Void> update(
 		@PathVariable Long membershipId,
 		@Valid @RequestBody MembershipUpdateRequest request
@@ -70,6 +74,7 @@ public class AdminMembershipController extends SwaggerAssistance {
 
 	@DeleteMapping("/{membershipId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "멤버십 삭제")
 	public ApiResult<Void> delete(
 		@PathVariable Long membershipId
 	) {

@@ -25,12 +25,13 @@ import com.kt.dto.discount.DiscountUpdateRequest;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.discount.DiscountService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Admin Discount", description = "관리자 할인 기능 관리 API")
+@Tag(name = "Admin Discount", description = "Discount 관리자용 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin")
@@ -41,6 +42,7 @@ public class AdminDiscountController extends SwaggerAssistance {
 	// 역할을 어디에 두어야 하는가 -> 멤버십 페이지 -> 멤버십 선택 -> 할인 정책 생성 -> 멤버십에서 제어해야한다? 아니면 할인에서 제어한다?
 	@PostMapping("/memberships/{membershipId}/discount")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "할인 정책 등록")
 	public ApiResult<Void> create(
 		@PathVariable Long membershipId,
 		@Valid @RequestBody DiscountCreateRequest request
@@ -53,6 +55,7 @@ public class AdminDiscountController extends SwaggerAssistance {
 
 	@GetMapping("discounts")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "할인 정책 목록 조회")
 	public ApiResult<Page<DiscountListResponse>> getAllDiscount(
 		@Valid Paging paging
 	) {
@@ -64,6 +67,7 @@ public class AdminDiscountController extends SwaggerAssistance {
 
 	@PutMapping("/discounts/{discountId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "할인 정책 수정")
 	public ApiResult<Void> update(
 		@PathVariable Long discountId,
 		@Valid @RequestBody DiscountUpdateRequest request
@@ -76,6 +80,7 @@ public class AdminDiscountController extends SwaggerAssistance {
 
 	@DeleteMapping("/discounts/{discountId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "할인 정책 삭제")
 	public ApiResult<Void> delete(
 		@PathVariable Long discountId
 	) {
@@ -87,6 +92,7 @@ public class AdminDiscountController extends SwaggerAssistance {
 
 	@GetMapping("/discounts/{discountId}/detail")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "할인 정책 상세 조회")
 	public ApiResult<DiscountDetailResponse> detail(
 		@PathVariable Long discountId
 	) {

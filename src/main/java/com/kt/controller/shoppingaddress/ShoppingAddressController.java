@@ -23,11 +23,12 @@ import com.kt.dto.shoppingaddress.ShoppingAddressUpdateRequest;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.shoppingaddress.ShoppingAddressService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Shopping Address", description = "배송지 관련 API")
+@Tag(name = "Shopping Address", description = "Shopping Address 유저용 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/me/addresses")
@@ -37,6 +38,7 @@ public class ShoppingAddressController extends SwaggerAssistance {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "배송지 등록")
 	public ApiResult<Void> create(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@Valid @RequestBody ShoppingAddressCreateRequest request
@@ -49,6 +51,7 @@ public class ShoppingAddressController extends SwaggerAssistance {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "내 배송지 목록 조회")
 	public ApiResult<List<ShoppingAddressListResponse>> getMyShoppingAddress(
 		@AuthenticationPrincipal CustomUserDetails currentUser
 		) {
@@ -60,6 +63,7 @@ public class ShoppingAddressController extends SwaggerAssistance {
 
 	@PutMapping("/{addressId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "배송지 수정")
 	public ApiResult<Void> update(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long addressId,
@@ -73,6 +77,7 @@ public class ShoppingAddressController extends SwaggerAssistance {
 
 	@PatchMapping("/{addressId}/default")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "기본 배송지 설정")
 	public ApiResult<Void> defaultAddress(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long addressId
@@ -85,6 +90,7 @@ public class ShoppingAddressController extends SwaggerAssistance {
 
 	@DeleteMapping("/{addressId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "배송지 삭제")
 	public ApiResult<Void> delete(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long addressId
