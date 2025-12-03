@@ -21,12 +21,13 @@ import com.kt.dto.variant.VariantListResponse;
 import com.kt.dto.variant.VariantUpdateRequest;
 import com.kt.service.variant.VariantService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Variant", description = "Variant 관리자용 API")
+@Tag(name = "Admin Variant", description = "Variant 관리자용 API")
 @RestController
 @RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class AdminVariantController extends SwaggerAssistance {
 
 	@PostMapping("/{productId}/variants")
 	@ResponseStatus(HttpStatus.CREATED)
+	@Operation(summary = "옵션 등록")
 	public ApiResult<Void> create(@PathVariable Long productId, @Valid @RequestBody List<VariantCreateRequest> requests) {
 		variantService.create(productId, requests);
 		return ApiResult.ok();
@@ -42,12 +44,14 @@ public class AdminVariantController extends SwaggerAssistance {
 
 	@GetMapping("/{productId}/variants")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "옵션 목록 조회")
 	public ApiResult<List<VariantListResponse>> getVariantList(@PathVariable Long productId) {
 		return ApiResult.ok(variantService.getVariantList(productId));
 	}
 
 	@PatchMapping("/variants/{variantId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "옵션 수정")
 	public ApiResult<Void> update(@PathVariable Long variantId, @Valid @RequestBody VariantUpdateRequest request) {
 		variantService.updateVariant(variantId, request);
 		return ApiResult.ok();
@@ -55,6 +59,7 @@ public class AdminVariantController extends SwaggerAssistance {
 
 	@DeleteMapping("/variants/{variantId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "옵션 삭제")
 	public ApiResult<Void> delete(@PathVariable Long variantId) {
 		variantService.deleteVariant(variantId);
 		return ApiResult.ok();

@@ -18,6 +18,7 @@ import com.kt.dto.product.response.UserProductListResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.product.ProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,17 +33,19 @@ public class UserProductController extends SwaggerAssistance {
 
 	@GetMapping("")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 목록 조회")
 	public ApiResult<Page<UserProductListResponse>> getProductList(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(required = false) Long categoryId,
-		@Valid @Parameter(hidden = true) Paging paging
+		@Valid Paging paging
 	) {
 		return ApiResult.ok(productService.getProductListForUser(currentUser, keyword, categoryId, paging.toPageable()));
 	}
 
 	@GetMapping("/{productId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 상세 조회")
 	public ApiResult<UserProductDetailResponse> getProductDetail(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long productId
