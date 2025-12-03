@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "User", description = "유저 관리자 관련 API")
+@Tag(name = "Admin User", description = "유저 관리자 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/users")
