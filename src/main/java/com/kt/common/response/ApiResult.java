@@ -28,6 +28,10 @@ public class ApiResult<T> {
 		return ApiResult.of(code, message, null, LocalDateTime.now());
 	}
 
+	public static <T> ApiResult<T> of(String message, T data) {
+		return ApiResult.of("ok", message, data, LocalDateTime.now());
+	}
+
 	private static <T> ApiResult<T> of(String code, String message, T data,  LocalDateTime timestamp) {
 		return new ApiResult<>(code, message, data, timestamp);
 	}

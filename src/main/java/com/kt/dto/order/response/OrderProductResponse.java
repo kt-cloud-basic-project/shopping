@@ -1,4 +1,4 @@
-package com.kt.dto.order;
+package com.kt.dto.order.response;
 
 import com.kt.domain.discount.Discount;
 import com.kt.domain.orderproduct.OrderProduct;
