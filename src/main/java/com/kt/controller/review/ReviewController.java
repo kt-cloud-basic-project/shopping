@@ -22,11 +22,12 @@ import com.kt.dto.review.ReviewUpdateRequest;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.review.ReviewService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Review", description = "리뷰 관련 API")
+@Tag(name = "Review", description = "Review 유저용 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -37,6 +38,7 @@ public class ReviewController extends SwaggerAssistance {
 	// review와 orderProduct는 종속관계가 아니다..
 	@PostMapping("/order-product/{orderProductId}/reviews")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "리뷰 등록")
 	public ApiResult<Void> create(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long orderProductId,
@@ -50,6 +52,7 @@ public class ReviewController extends SwaggerAssistance {
 
 	@GetMapping("/reviews/me")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "내 리뷰 목록 조회")
 	public ApiResult<Page<ReviewListResponse>> getMyAllReview(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@Valid Paging paging
@@ -62,6 +65,7 @@ public class ReviewController extends SwaggerAssistance {
 
 	@PutMapping("/reviews/{reviewId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "리뷰 수정")
 	public ApiResult<Void> update(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long reviewId,
@@ -75,6 +79,7 @@ public class ReviewController extends SwaggerAssistance {
 
 	@DeleteMapping("/reviews/{reviewId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "리뷰 삭제")
 	public ApiResult<Void> delete(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long reviewId
@@ -87,6 +92,7 @@ public class ReviewController extends SwaggerAssistance {
 
 	@GetMapping("/products/{productId}/reviews")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "특정 상품 리뷰 목록 조회")
 	public ApiResult<Page<ReviewListResponse>> getProductAllReview(
 		@PathVariable Long productId,
 		@Valid Paging paging
