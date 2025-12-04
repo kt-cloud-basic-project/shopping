@@ -14,9 +14,11 @@ import com.kt.dto.discount.DiscountCreateRequest;
 import com.kt.dto.discount.DiscountDetailResponse;
 import com.kt.dto.discount.DiscountListResponse;
 import com.kt.dto.discount.DiscountUpdateRequest;
+import com.kt.dto.discount.DiscountUserResponse;
 import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.discount.DiscountRepositoryCustom;
 import com.kt.repository.membership.MembershipRepository;
+import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +30,7 @@ public class DiscountService {
 	private final DiscountRepository discountRepository;
 	private final MembershipRepository membershipRepository;
 	private final DiscountRepositoryCustom discountRepositoryCustom;
+	private final UserRepository userRepository;
 
 	public void create(Long membershipId, DiscountCreateRequest request) {
 
@@ -87,5 +90,11 @@ public class DiscountService {
 			discount.getType(),
 			discount.getValue()
 		);
+	}
+
+	public DiscountUserResponse getMyDiscount(Long userId) {
+		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
+
+		return discountRepositoryCustom.findDiscountUserById(user.getId());
 	}
 }
