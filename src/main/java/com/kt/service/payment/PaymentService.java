@@ -63,7 +63,7 @@ public class PaymentService {
 		var payment = new Payment(order, paymentType, (int)totalPrice, delivery, finalPrice);
 
 		paymentRepository.save(payment);
-		order.updateStatus(OrderStatus.PAID);
+		order.updateStatus(OrderStatus.SHIPPED);
 	}
 
 	public Page<PaymentListResponse> getMyAllPayment(Long userId, Pageable pageable) {
