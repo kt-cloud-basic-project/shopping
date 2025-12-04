@@ -68,7 +68,7 @@ public class UserController extends SwaggerAssistance {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "비밀번호 변경")
     public ApiResult<Void> changePassword(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody UserChangePassword request){
-        userService.ChangePassword(userDetails, request);
+        userService.changePassword(userDetails, request);
         return ApiResult.ok();
     }
 
@@ -76,7 +76,7 @@ public class UserController extends SwaggerAssistance {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "회원탈퇴")
     public ApiResult<Void> withDraw(@AuthenticationPrincipal CustomUserDetails userDetails){
-        userService.WithDraw(userDetails);
+        userService.withDraw(userDetails);
         return ApiResult.ok();
     }
 
