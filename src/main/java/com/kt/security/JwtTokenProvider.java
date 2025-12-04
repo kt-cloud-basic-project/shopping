@@ -93,6 +93,18 @@ public class JwtTokenProvider {
         }
     }
 
+    public void validateAccessTokenOrThrow(String token) {
+        try {
+            parseClaims(token);
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.EXPIRED_JWT_TOKEN);
+        } catch (MalformedJwtException e) {
+            throw new CustomException(ErrorCode.MALFORMED_JWT_TOKEN);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+        }
+    }
+
     public Authentication getAuthentication(String token) {
         String loginId = getLoginId(token);
         var userDetails = userDetailsService.loadUserByUsername(loginId);
