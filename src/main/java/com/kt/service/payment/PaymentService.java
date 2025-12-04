@@ -27,6 +27,7 @@ import com.kt.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PaymentService {
 
@@ -37,7 +38,6 @@ public class PaymentService {
 	private final PaymentRepositoryCustom paymentRepositoryCustom;
 	private final DiscountRepository discountRepository;
 
-	@Transactional
 	public void create(PaymentCreateRequest request, Long userId) {
 		var order = orderRepository.findByIdAndUserIdOrThrow(request.orderId(), userId, ErrorCode.NOT_FOUND_ORDER);
 
@@ -63,7 +63,7 @@ public class PaymentService {
 		var payment = new Payment(order, paymentType, (int)totalPrice, delivery, finalPrice);
 
 		paymentRepository.save(payment);
-		order.updateStatus(OrderStatus.PAID);
+		order.updateStatus(OrderStatus.SHIPPED);
 	}
 
 	public Page<PaymentListResponse> getMyAllPayment(Long userId, Pageable pageable) {
