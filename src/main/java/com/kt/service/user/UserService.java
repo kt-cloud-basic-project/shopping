@@ -103,7 +103,10 @@ public class UserService {
 
     public void logout(UserLogoutRequest request){
         if(request.refreshToken() == null || request.refreshToken().isBlank()){
-            throw new CustomException(ErrorCode.INVALID_PARAMETER);
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+        }
+        if(!refreshTokenRepository.existsByToken(request.refreshToken())){
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
         }
 
         refreshTokenRepository.findByToken(request.refreshToken())
@@ -137,14 +140,14 @@ public class UserService {
         );
     }
 
-    public void ChangePassword(CustomUserDetails customUserDetails, UserChangePassword request){
+    public void changePassword(CustomUserDetails customUserDetails, UserChangePassword request){
         String loginId = customUserDetails.getUsername();
         var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         user.changePassword(passwordEncoder.encode(request.password()));
     }
 
-    public void WithDraw(CustomUserDetails customUserDetails){
+    public void withDraw(CustomUserDetails customUserDetails){
         String loginId = customUserDetails.getUsername();
         var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_USER));

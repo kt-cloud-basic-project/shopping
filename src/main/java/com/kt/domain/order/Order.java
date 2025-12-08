@@ -47,9 +47,6 @@ public class Order extends BaseEntity {
 	@OneToMany(mappedBy = "order")
 	private List<OrderProduct> orderProducts = new ArrayList<>();
 
-	@OneToOne(mappedBy = "order")
-	private Payment payment;
-
 	public Order(String receiverName, String receiverPhone, String receiverAddress, User user) {
 		this.receiverName = receiverName;
 		this.receiverPhone = receiverPhone;
@@ -69,5 +66,29 @@ public class Order extends BaseEntity {
 		this.receiverName = receiverName;
 		this.receiverPhone = receiverPhone;
 		this.receiverAddress = receiverAddress;
+	}
+
+	public void requestRefund() {
+		this.orderStatus = OrderStatus.REFUND_REQUESTED;
+	}
+
+	public void requestReturn() {
+		this.orderStatus = OrderStatus.RETURN_REQUESTED;
+	}
+
+	public void approveRefund() {
+		this.orderStatus = OrderStatus.REFUNDED;
+	}
+
+	public void approveReturn() {
+		this.orderStatus = OrderStatus.RETURNED;
+	}
+
+	public void updateStatus(OrderStatus newStatus) {
+		this.orderStatus = newStatus;
+
+		if(newStatus.equals(OrderStatus.DELIVERED)) {
+			this.deliveredAt = LocalDate.now();
+		}
 	}
 }

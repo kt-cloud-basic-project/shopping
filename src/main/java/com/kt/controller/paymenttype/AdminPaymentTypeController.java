@@ -1,6 +1,5 @@
 package com.kt.controller.paymenttype;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -15,25 +14,28 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.paymenttype.PaymentTypeCreateRequest;
 import com.kt.dto.paymenttype.PaymentTypeListResponse;
 import com.kt.service.paymenttype.PaymentTypeService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Admin PaymentType", description = "관리자 결제방법 API")
+@Tag(name = "Admin PaymentType", description = "PaymentType 관리자용 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/payments/types")
 @PreAuthorize("hasRole('ADMIN')")
-public class AdminPaymentTypeController {
+public class AdminPaymentTypeController extends SwaggerAssistance {
 
 	private final PaymentTypeService paymentTypeService;
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "결제 타입 등록")
 	public ApiResult<Void> create(
 		@Valid @RequestBody PaymentTypeCreateRequest request
 	) {
@@ -44,6 +46,7 @@ public class AdminPaymentTypeController {
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "결제 타입 삭제")
 	public ApiResult<Void> delete(@PathVariable Long id) {
 		paymentTypeService.delete(id);
 		return ApiResult.ok();
@@ -51,6 +54,7 @@ public class AdminPaymentTypeController {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "결제 목록 조회")
 	public ApiResult<List<PaymentTypeListResponse>> getAllPaymentTypes(){
 		var types = paymentTypeService.getAllPaymentTypes();
 		return ApiResult.ok(types);

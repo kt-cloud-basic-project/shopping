@@ -1,5 +1,6 @@
 package com.kt.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.security.JwtAuthenticationFilter;
 import com.kt.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
@@ -25,12 +26,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-	private static final String[] GET_PERMIT_ALL = {"/api/health/**", "/swagger-ui/**", "/v3/api-docs/**", "/api/products/", "/api/products/**"};
-	private static final String[] POST_PERMIT_ALL = {"/api/users/auth/signup", "/api/users/auth/login","/api/admin/users/auth/signup", "/api/admin/users/auth/login"};
+
+	private static final String[] GET_PERMIT_ALL = {"/api/health/**", "/swagger-ui.html","/swagger-ui/**", "/v3/api-docs/**"};
+	private static final String[] POST_PERMIT_ALL = {"/api/users/auth/signup", "/api/users/auth/login","/api/admin/users/auth/signup", "/api/admin/users/auth/login","/api/users/reissue"};
 	private static final String[] PUT_PERMIT_ALL = {"/api/v1/public/**"};
 	private static final String[] PATCH_PERMIT_ALL = {"/api/v1/public/**"};
 	private static final String[] DELETE_PERMIT_ALL = {"/api/v1/public/**"};
     private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -65,7 +68,7 @@ public class SecurityConfiguration {
                 .logout(logout -> logout.disable())
                 .csrf(AbstractHttpConfigurer::disable);
 
-                http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,objectMapper), UsernamePasswordAuthenticationFilter.class);
 
 
 		return http.build();

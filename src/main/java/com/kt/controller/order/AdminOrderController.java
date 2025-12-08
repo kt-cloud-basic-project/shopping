@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
-import com.kt.dto.order.OrderDetailResponse;
+import com.kt.common.support.SwaggerAssistance;
+import com.kt.dto.order.response.OrderDetailResponse;
+import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.order.OrderService;
@@ -23,11 +25,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Order", description = "Order 관리자용 API")
+@Tag(name = "Admin Order", description = "Order 관리자용 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/orders")
-public class AdminOrderController {
+public class AdminOrderController extends SwaggerAssistance {
 	private final OrderService orderService;
 
 	@GetMapping
@@ -45,17 +47,46 @@ public class AdminOrderController {
 	@PatchMapping("/{orderId}/cancel")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 취소")
-	public ApiResult<Void> cancel(@PathVariable Long orderId
+	public ApiResult<Long> cancel(@PathVariable Long orderId
 	) {
 		orderService.cancelByAdmin(orderId);
 
-		return ApiResult.ok();
+		return ApiResult.of("주문 취소 완료", orderId);
 	}
 
 	@GetMapping("/{orderId}")
+	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "주문 상세 조회")
 	public ApiResult<OrderDetailResponse> getOrderDetail(@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable("orderId") Long orderId) {
 		return ApiResult.ok(orderService.getOrderDetail(currentUser.getId(), orderId));
+	}
+
+	@PatchMapping("/{orderId}/refund-approve")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 환불 승인")
+	public ApiResult<Long> approveRefund(@PathVariable Long orderId) {
+		orderService.approveRefund(orderId);
+
+		return ApiResult.of("환불 승인 완료", orderId);
+	}
+
+	@PatchMapping("/{orderId}/return-approve")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 반품 승인")
+	public ApiResult<Long> approveReturn(@PathVariable Long orderId) {
+		orderService.approveReturn(orderId);
+
+		return ApiResult.of("반품 승인 완료", orderId);
+	}
+
+	@PatchMapping("/{orderId}/status")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "주문 상태 변경")
+	public ApiResult<Long> updateStatus(OrderStatusUpdateRequest request,
+		@PathVariable Long orderId) {
+		orderService.updateStatus(request, orderId);
+
+		return ApiResult.of("주문 상태 업데이트 완료", orderId);
 	}
 }
