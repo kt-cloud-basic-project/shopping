@@ -1,0 +1,55 @@
+package com.kt.controller.product;
+
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kt.common.request.Paging;
+import com.kt.common.response.ApiResult;
+import com.kt.common.support.SwaggerAssistance;
+import com.kt.dto.product.response.UserProductDetailResponse;
+import com.kt.dto.product.response.UserProductListResponse;
+import com.kt.security.CustomUserDetails;
+import com.kt.service.product.ProductService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@Tag(name = "Product", description = "Product 유저용 API")
+@RestController
+@RequestMapping("/api/products")
+@RequiredArgsConstructor
+public class UserProductController extends SwaggerAssistance {
+	private final ProductService productService;
+
+	@GetMapping("")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 목록 조회")
+	public ApiResult<Page<UserProductListResponse>> getProductList(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@RequestParam(required = false) String keyword,
+		@RequestParam(required = false) Long categoryId,
+		@Valid Paging paging
+	) {
+		return ApiResult.ok(productService.getProductListForUser(currentUser, keyword, categoryId, paging.toPageable()));
+	}
+
+	@GetMapping("/{productId}")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 상세 조회")
+	public ApiResult<UserProductDetailResponse> getProductDetail(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@PathVariable Long productId
+	) {
+		return ApiResult.ok(productService.getProductDetailForUser(currentUser, productId));
+	}
+}
