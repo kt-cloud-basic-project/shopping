@@ -29,8 +29,8 @@ public class AdminUserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ApiResult<UserInfoResponse> userInfo(@Valid @RequestBody UserIdRequest request){
-        UserInfoResponse userInfo = userService.getUserInfo(request.userId());
+    public ApiResult<UserInfoResponse> userInfo(@RequestParam(required = false) String userId){
+        UserInfoResponse userInfo = userService.getUserInfo(userId);
         return ApiResult.ok(userInfo);
     }
     @PreAuthorize("hasRole('ADMIN')")

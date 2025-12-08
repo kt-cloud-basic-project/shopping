@@ -17,7 +17,7 @@ jobs:
         id: set-envs
         run: |
           PROFILE=dev
-          APPLICATION_NAME=dmbz-backend
+          APPLICATION_NAME=shoppingFourU
           API_ZIP=$APPLICATION_NAME-$PROFILE-$(date +'%Y%m%dT%H%M%S%Z').zip
           ORIGINAL_ZIP_NAME=shopping.zip
           DIR=build/distributions
