@@ -58,6 +58,8 @@ dependencies {
 	implementation 'com.slack.api:slack-api-client:1.43.1'
     implementation("io.netty:netty-resolver-dns-native-macos:4.1.117.Final:osx-aarch_64")
     implementation("io.netty:netty-resolver-dns:4.1.117.Final")
+
+
 }
 
 tasks.named('test') {
