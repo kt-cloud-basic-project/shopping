@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${db.host}:3306/${db.scheme}
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+    show-sql: false
+  data:
+    redis:
+      ssl:
+        enabled: true
+      cluster:
+        nodes: ${redis.host}
+        max-redirects: 3
+
+jwt:
+  secret: ${kt.jwt.secret}
+  access-token-expiration: ${kt.jwt.access-token-expiration}
+  refresh-token-expiration: ${kt.jwt.refresh-token-expiration}
+
+server:
+  port: ${shopping.server.port}
