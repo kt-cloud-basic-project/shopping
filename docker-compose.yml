@@ -9,3 +9,10 @@ services:
       - "3306:3306"
     platform: linux/arm64
 
+  local-redis:
+    image: redis
+    container_name: techup-redis
+    ports:
+      - "6379:6379"
+    platform: linux/arm64
+
