@@ -19,7 +19,7 @@ public class RedisConfiguration {
 	public RedissonClient redissonClient() {
 		var config = new Config();
 		var host = redisProperties.getCluster().getNodes().getFirst();
-		var uri = String.format("rediss://%s", host);
+		var uri = String.format("redis://%s", host);
 
 		config
 			.useSingleServer()
@@ -28,7 +28,7 @@ public class RedisConfiguration {
 		return Redisson.create(config);
 	}
 
-	@Bean
+	/*@Bean
 	@LocalProfile
 	public RedissonClient localRedissonClient() {
 		var config = new Config();
@@ -40,5 +40,5 @@ public class RedisConfiguration {
 			.setAddress(uri);
 
 		return Redisson.create(config);
-	}
+	}*/
 }
