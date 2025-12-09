@@ -27,7 +27,6 @@ import com.kt.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PaymentService {
 
@@ -38,6 +37,7 @@ public class PaymentService {
 	private final PaymentRepositoryCustom paymentRepositoryCustom;
 	private final DiscountRepository discountRepository;
 
+	@Transactional
 	public void create(PaymentCreateRequest request, Long userId) {
 		var order = orderRepository.findByIdAndUserIdOrThrow(request.orderId(), userId, ErrorCode.NOT_FOUND_ORDER);
 
