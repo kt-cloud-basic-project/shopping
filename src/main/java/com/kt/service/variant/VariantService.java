@@ -35,6 +35,10 @@ public class VariantService {
 		var variantIds = new ArrayList<Long>();
 
 		requests.forEach(request -> {
+			//중복된 variant 존재 여부 검증
+			Preconditions.validate(!variantRepository.existsByProductIdAndDetail(productId, request.detail()),
+				ErrorCode.CANNOT_CREATE_VARIANT);
+
 			var variant = variantRepository.save(new Variant(request.type(), request.detail(), product));
 			variantIds.add(variant.getId());
 		});
@@ -64,6 +68,10 @@ public class VariantService {
 
 
 	public void updateVariant(Long variantId, VariantUpdateRequest request) {
+		//중복된 variant 존재 여부 검증
+		Preconditions.validate(!variantRepository.existsByIdAndDetail(variantId, request.detail()),
+			ErrorCode.CANNOT_CREATE_VARIANT);
+
 		 var variant = variantRepository.findByIdAndDeletedFalseOrThrow(variantId, ErrorCode.NOT_FOUND_VARIANT);
 
 		 variant.updateDetail(request.detail());
