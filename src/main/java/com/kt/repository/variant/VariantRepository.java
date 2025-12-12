@@ -30,4 +30,6 @@ public interface VariantRepository extends JpaRepository<Variant, Long> {
 	boolean existsByProductIdAndDetail(Long productId, String detail);
 
 	boolean existsByIdAndDetail(Long variantId, String detail);
+
+	long countVariantByDeletedFalse();
 }

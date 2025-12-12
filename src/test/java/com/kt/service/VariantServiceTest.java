@@ -16,8 +16,6 @@ import com.kt.dto.variant.VariantCreateRequest;
 import com.kt.dto.variant.VariantListResponse;
 import com.kt.dto.variant.VariantUpdateRequest;
 import com.kt.repository.category.CategoryRepository;
-import com.kt.repository.orderproduct.OrderProductRepository;
-import com.kt.repository.orderproduct.OrderProductRepositoryCustom;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.variant.VariantRepository;
 import com.kt.service.variant.VariantService;
@@ -37,45 +35,38 @@ public class VariantServiceTest {
 	@Autowired
 	private ProductRepository productRepository;
 
-	// @Autowired
-	// private OrderProductRepository orderProductRepository;
-
 	@Autowired
 	private CategoryRepository categoryRepository;
 
-	// @Autowired
-	// private OrderProductRepositoryCustom orderProductRepositoryCustom;
+	private static final String TEST_PRODUCT_NAME = "상품이름";
+	private static final String TEST_COLOR = "아이보리";
+	private static final String TEST_SIZE = "M";
+
 
 	@BeforeEach
 	void setup() {
 		variantRepository.deleteAll();
 		productRepository.deleteAll();
 		categoryRepository.deleteAll();
-		// orderProductRepository.deleteAll();
 
 		initVariant();
 	}
 
 	void initVariant() {
-		var category = new Category(
-			"새로운카테고리"
+		var category = categoryRepository.saveAndFlush(
+			new Category("새로운카테고리")
 		);
-		categoryRepository.saveAndFlush(category);
 
-		var product = new Product(
-			"상품이름",
-			"상품설명",
-			20000L,
-			100L,
-			category
+		var product = productRepository.saveAndFlush(
+			new Product(TEST_PRODUCT_NAME, "상품설명", 20000L, 100L, category)
 		);
-		productRepository.saveAndFlush(product);
 
-		var variants = List.of(
-			new Variant(VariantType.COLOR, "아이보리", product),
-			new Variant(VariantType.SIZE, "M", product)
+		variantRepository.saveAllAndFlush(
+			List.of(
+				new Variant(VariantType.COLOR, TEST_COLOR, product),
+				new Variant(VariantType.SIZE, TEST_SIZE, product)
+			)
 		);
-		variantRepository.saveAllAndFlush(variants);
 	}
 
 
@@ -88,7 +79,7 @@ public class VariantServiceTest {
 		);
 
 		var product = productRepository
-			.findByName("상품이름")
+			.findByName(TEST_PRODUCT_NAME)
 			.orElseThrow();
 
 		//when
@@ -107,7 +98,7 @@ public class VariantServiceTest {
 	void productId를_입력하여_variant목록을_조회할_수_있다() {
 		//given
 		var product = productRepository
-			.findByName("상품이름")
+			.findByName(TEST_PRODUCT_NAME)
 			.orElseThrow();
 
 		//when
@@ -121,8 +112,8 @@ public class VariantServiceTest {
 				VariantListResponse::detail
 			)
 			.containsExactlyInAnyOrder(
-				tuple(VariantType.COLOR.getDescription(), List.of("아이보리")),
-				tuple(VariantType.SIZE.getDescription(), List.of("M"))
+				tuple(VariantType.COLOR.getDescription(), List.of(TEST_COLOR)),
+				tuple(VariantType.SIZE.getDescription(), List.of(TEST_SIZE))
 			);
 	}
 
@@ -131,11 +122,11 @@ public class VariantServiceTest {
 	void VariantUpdateRequest를_입력하여_variant를_수정할_수_있다() {
 		//given
 		var product = productRepository
-			.findByName("상품이름")
+			.findByName(TEST_PRODUCT_NAME)
 			.orElseThrow();
 
 		var variant = variantRepository
-			.findByProductIdAndDetail(product.getId(), "아이보리")
+			.findByProductIdAndDetail(product.getId(), TEST_COLOR)
 			.orElseThrow();
 
 		var request = new VariantUpdateRequest("그린");
@@ -146,6 +137,28 @@ public class VariantServiceTest {
 		//then
 		var updatedVariant = variantRepository.findById(variant.getId()).orElseThrow();
 		assertThat(updatedVariant.getDetail()).isEqualTo(request.detail());
-		assertThat(variantRepository.findByProductIdAndDetail(product.getId(), "아이보리")).isEmpty();
+		assertThat(variantRepository.findByProductIdAndDetail(product.getId(), TEST_COLOR)).isEmpty();
+	}
+
+
+	@Test
+	void variantId를_입력하여_variant를_삭제할_수_있다() {
+		//given
+		var product = productRepository
+			.findByName(TEST_PRODUCT_NAME)
+			.orElseThrow();
+
+		var variant = variantRepository
+			.findByProductIdAndDetail(product.getId(), TEST_COLOR)
+			.orElseThrow();
+
+		//when
+		variantService.deleteVariant(variant.getId());
+
+		//then
+		var deletedVariant = variantRepository.findById(variant.getId()).orElseThrow();
+		assertThat(deletedVariant.isDeleted()).isTrue();
+		assertThat(variantRepository.countVariantByDeletedFalse())
+			.isEqualTo(variantRepository.findAll().size() - 1);
 	}
 }
