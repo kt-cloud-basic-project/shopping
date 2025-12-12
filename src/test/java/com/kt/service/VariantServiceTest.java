@@ -126,4 +126,26 @@ public class VariantServiceTest {
 			);
 	}
 
+
+	@Test
+	void VariantUpdateRequest를_입력하여_variant를_수정할_수_있다() {
+		//given
+		var product = productRepository
+			.findByName("상품이름")
+			.orElseThrow();
+
+		var variant = variantRepository
+			.findByProductIdAndDetail(product.getId(), "아이보리")
+			.orElseThrow();
+
+		var request = new VariantUpdateRequest("그린");
+
+		//when
+		variantService.updateVariant(variant.getId(), request);
+
+		//then
+		var updatedVariant = variantRepository.findById(variant.getId()).orElseThrow();
+		assertThat(updatedVariant.getDetail()).isEqualTo(request.detail());
+		assertThat(variantRepository.findByProductIdAndDetail(product.getId(), "아이보리")).isEmpty();
+	}
 }

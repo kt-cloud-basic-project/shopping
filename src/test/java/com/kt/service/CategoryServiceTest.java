@@ -95,7 +95,7 @@ public class CategoryServiceTest {
 		categoryService.updateCategory(category.getId(), request);
 
 		//then
-		var updatedCategory = categoryRepository.findByIdOrThrow(category.getId(), ErrorCode.NOT_FOUND_CATEGORY);
+		var updatedCategory = categoryRepository.findById(category.getId()).orElseThrow();
 		assertThat(updatedCategory.getType()).isEqualTo("신발");
 		assertThat(categoryRepository.findByType("아우터")).isEmpty();
 	}
