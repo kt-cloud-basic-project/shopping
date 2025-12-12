@@ -12,12 +12,13 @@ public record UserAdminUpdateRequest(
         @Schema(description = "수정할 이름", example = "김케클")
         String name,
 
-        @Schema(description = "수정할 핸드폰 번호", example = "010-0401-0401")
-        @Pattern(regexp = "^$|^(0\\d{1,2})-(\\d{3,4})-(\\d{4})$")
-        String mobile,
-
         @Schema(description = "수정할 이메일", example = "Test@kmail.com")
         @Pattern(regexp = "^$|^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
-        String email
+        String email,
+
+        @Schema(description = "수정할 핸드폰 번호", example = "010-0401-0401")
+        @Pattern(regexp = "^$|^(0\\d{1,2})-(\\d{3,4})-(\\d{4})$")
+        String mobile
+
 ) {
 }

@@ -3,6 +3,7 @@ package com.kt.common.initializer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.kt.domain.discount.Discount;
@@ -16,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class DataInitializer {
 	private final MembershipRepository membershipRepository;
