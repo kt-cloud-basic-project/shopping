@@ -23,6 +23,8 @@ public class CategoryService {
 	private final ProductRepository productRepository;
 
 	public void create(CategoryRequest request) {
+		//중복된 카테고리명 검증
+		Preconditions.validate(!categoryRepository.existsByType(request.type()), ErrorCode.CANNOT_CREATE_CATEGORY);
 		categoryRepository.save(new Category(request.type()));
 	}
 
@@ -37,6 +39,9 @@ public class CategoryService {
 
 	public void updateCategory(Long categoryId, CategoryRequest request) {
 		var updatedCategory = categoryRepository.findByIdOrThrow(categoryId, ErrorCode.NOT_FOUND_CATEGORY);
+
+		//중복된 카테고리명 검증
+		Preconditions.validate(!categoryRepository.existsByType(request.type()), ErrorCode.CANNOT_CREATE_CATEGORY);
 
 		updatedCategory.update(request.type());
 	}
