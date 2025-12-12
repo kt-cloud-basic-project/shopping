@@ -2,7 +2,6 @@ package com.kt.common.exception;
 
 import java.util.Arrays;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -12,30 +11,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.kt.common.response.ErrorResponse;
-import com.kt.common.support.Message;
-import com.kt.common.support.MessageType;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import lombok.RequiredArgsConstructor;
 
 @Hidden
 @RestControllerAdvice
-@RequiredArgsConstructor
 public class ApiAdvice {
-	private final ApplicationEventPublisher eventPublisher;
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse.ErrorData> internalServerError(Exception e) {
 		e.printStackTrace();
-
-		eventPublisher.publishEvent(
-			Message.error(
-				MessageType.ERROR,
-				"Internal Server Error",
-				e.getMessage()
-			)
-		);
-
 		return ErrorResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러입니다. 백엔드팀에 문의하세요.");
 	}
 
