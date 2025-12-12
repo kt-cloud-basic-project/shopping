@@ -1,5 +1,6 @@
 package com.kt.service.variant;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,16 @@ public class VariantService {
 	private final VariantRepository variantRepository;
 	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
 
-	public void create(Long productId, List<VariantCreateRequest> requests) {
+	public List<Long> create(Long productId, List<VariantCreateRequest> requests) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		var variantIds = new ArrayList<Long>();
 
 		requests.forEach(request -> {
-			variantRepository.save(new Variant(request.type(), request.detail(), product));
+			var variant = variantRepository.save(new Variant(request.type(), request.detail(), product));
+			variantIds.add(variant.getId());
 		});
+
+		return variantIds;
 	}
 
 
