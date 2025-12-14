@@ -140,14 +140,14 @@ public class UserService {
         );
     }
 
-    public void ChangePassword(CustomUserDetails customUserDetails, UserChangePassword request){
+    public void changePassword(CustomUserDetails customUserDetails, UserChangePassword request){
         String loginId = customUserDetails.getUsername();
         var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         user.changePassword(passwordEncoder.encode(request.password()));
     }
 
-    public void WithDraw(CustomUserDetails customUserDetails){
+    public void withDraw(CustomUserDetails customUserDetails){
         String loginId = customUserDetails.getUsername();
         var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_USER));

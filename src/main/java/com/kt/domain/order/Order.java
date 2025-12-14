@@ -47,9 +47,6 @@ public class Order extends BaseEntity {
 	@OneToMany(mappedBy = "order")
 	private List<OrderProduct> orderProducts = new ArrayList<>();
 
-	@OneToOne(mappedBy = "order")
-	private Payment payment;
-
 	public Order(String receiverName, String receiverPhone, String receiverAddress, User user) {
 		this.receiverName = receiverName;
 		this.receiverPhone = receiverPhone;
@@ -89,5 +86,9 @@ public class Order extends BaseEntity {
 
 	public void updateStatus(OrderStatus newStatus) {
 		this.orderStatus = newStatus;
+
+		if(newStatus.equals(OrderStatus.DELIVERED)) {
+			this.deliveredAt = LocalDate.now();
+		}
 	}
 }

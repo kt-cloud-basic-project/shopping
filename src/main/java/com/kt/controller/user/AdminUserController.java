@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "User", description = "유저 관리자 관련 API")
+@Tag(name = "Admin User", description = "유저 관리자 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/users")
@@ -34,8 +34,8 @@ public class AdminUserController extends SwaggerAssistance {
     @GetMapping("/user")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "유저 정보 조회")
-    public ApiResult<UserInfoResponse> userInfo(@Valid @RequestBody UserIdRequest request){
-        UserInfoResponse userInfo = userService.getUserInfo(request.userId());
+    public ApiResult<UserInfoResponse> userInfo(@RequestParam("userId") String userId){
+        UserInfoResponse userInfo = userService.getUserInfo(userId);
         return ApiResult.ok(userInfo);
     }
     @PreAuthorize("hasRole('ADMIN')")

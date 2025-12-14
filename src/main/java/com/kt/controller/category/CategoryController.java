@@ -11,6 +11,7 @@ import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.category.CategoryListResponse;
 import com.kt.service.category.CategoryService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,7 @@ public class CategoryController extends SwaggerAssistance {
 
 	@GetMapping("")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "카테고리 목록 조회")
 	public ApiResult<CategoryListResponse> getCategoryList() {
 		return ApiResult.ok(categoryService.getCategoryList());
 	}

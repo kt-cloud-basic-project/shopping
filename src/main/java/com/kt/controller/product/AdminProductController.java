@@ -25,12 +25,13 @@ import com.kt.dto.product.request.ProductUpdateCategoryRequest;
 import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.service.product.ProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Product", description = "Product 관리자용 API")
+@Tag(name = "Admin Product", description = "Product 관리자용 API")
 @RestController
 @RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
@@ -39,6 +40,7 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
+	@Operation(summary = "상품 등록")
 	public ApiResult<Void> create(@Valid @RequestBody ProductCreateRequest request) {
 		productService.create(request);
 		return ApiResult.ok();
@@ -46,6 +48,7 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@GetMapping("")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 목록 조회")
 	public ApiResult<Page<AdminProductListResponse>> getProductList(Paging paging) {
 		Page<AdminProductListResponse> productList = productService.getProductList(paging.toPageable());
 		return ApiResult.ok(productList);
@@ -53,6 +56,7 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@GetMapping("/{productId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 상세 조회")
 	public ApiResult<AdminProductDetailResponse> getProductDetail(@PathVariable("productId") Long productId) {
 		var product = productService.getProductDetail(productId);
 		return ApiResult.ok(product);
@@ -60,6 +64,7 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@PutMapping("/{productId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 정보 수정")
 	public ApiResult<Void> update(@PathVariable("productId") Long productId, @Valid @RequestBody ProductUpdateRequest request) {
 		productService.updateProduct(productId, request);
 		return ApiResult.ok();
@@ -67,6 +72,7 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@PutMapping("/{productId}/category")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 카테고리 수정")
 	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @Valid @RequestBody
 		ProductUpdateCategoryRequest request) {
 		productService.updateProductCategory(productId, request);
@@ -75,6 +81,7 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@PatchMapping("/{productId}/toggle-sold-out")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 품절 (토글)")
 	public ApiResult<Void> soldOutWithToggle(@PathVariable("productId") Long productId) {
 		productService.updateProductSoldOutWithToggle(productId);
 		return ApiResult.ok();
@@ -82,6 +89,7 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@PatchMapping("/{productId}/in-activate")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 비활성화")
 	public ApiResult<Void> inActivate(@PathVariable("productId") Long productId) {
 		productService.updateProductInActive(productId);
 		return ApiResult.ok();
@@ -89,6 +97,7 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@PatchMapping("/{productId}/activate")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 활성화")
 	public ApiResult<Void> activate(@PathVariable("productId") Long productId) {
 		productService.updateProductActive(productId);
 		return ApiResult.ok();
@@ -96,12 +105,14 @@ public class AdminProductController extends SwaggerAssistance {
 
 	@PatchMapping("/sold-out")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "상품 다중 품절")
 	public ApiResult<Void> soldOut(@RequestBody ProductUpdateSoldOutReqeust request) {
 		productService.updateProductsSoldOut(request);
 		return ApiResult.ok();
 	}
 
 	@DeleteMapping("/{productId}")
+	@Operation(summary = "상품 삭제")
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> deleteProduct(@PathVariable("productId") Long productId) {
 		productService.deleteProduct(productId);

@@ -18,12 +18,13 @@ import com.kt.dto.category.CategoryRequest;
 import com.kt.dto.category.CategoryListResponse;
 import com.kt.service.category.CategoryService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Category", description = "Category 관리자용 API")
+@Tag(name = "Admin Category", description = "Category 관리자용 API")
 @RestController
 @RequestMapping("/api/admin/categories")
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class AdminCategoryController extends SwaggerAssistance {
 
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
+	@Operation(summary = "카테고리 등록")
 	public ApiResult<Void> create(@Valid @RequestBody CategoryRequest request) {
 		categoryService.create(request);
 		return ApiResult.ok();
@@ -40,12 +42,14 @@ public class AdminCategoryController extends SwaggerAssistance {
 
 	@GetMapping("")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "카테고리 목록 조회")
 	public ApiResult<CategoryListResponse> getCategoryList() {
 		return ApiResult.ok(categoryService.getCategoryList());
 	}
 
 	@PatchMapping("/{categoryId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "카테고리 수정")
 	public ApiResult<Void> update(@PathVariable Long categoryId, @Valid @RequestBody CategoryRequest request) {
 		categoryService.updateCategory(categoryId, request);
 		return ApiResult.ok();
@@ -53,6 +57,7 @@ public class AdminCategoryController extends SwaggerAssistance {
 
 	@DeleteMapping("{categoryId}")
 	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "카테고리 삭제")
 	public ApiResult<Void> delete(@PathVariable Long categoryId) {
 		categoryService.deleteCategory(categoryId);
 		return ApiResult.ok();

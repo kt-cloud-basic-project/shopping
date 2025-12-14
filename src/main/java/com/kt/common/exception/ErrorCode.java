@@ -37,6 +37,7 @@ public enum ErrorCode {
 	//category
 	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),
 	CANNOT_DELETE_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 삭제할 수 없습니다."),
+	CANNOT_CREATE_CATEGORY(HttpStatus.BAD_REQUEST, "이미 존재하는 카테고리입니다"),
 
 	//order
 	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다."),
