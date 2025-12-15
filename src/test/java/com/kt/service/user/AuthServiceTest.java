@@ -4,9 +4,7 @@ import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.user.Gender;
-import com.kt.domain.user.Role;
 import com.kt.domain.user.User;
-import com.kt.dto.auth.TokenResponse;
 import com.kt.dto.user.request.UserLoginRequest;
 import com.kt.dto.user.request.UserLogoutRequest;
 import com.kt.dto.user.response.UserLoginResponse;
@@ -31,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(
         properties = "spring.autoconfigure.exclude=org.redisson.spring.starter.RedissonAutoConfigurationV2"
 )
-public class AuthServieTest {
+public class AuthServiceTest {
     @Autowired
     private AuthService authService;
     @Autowired
