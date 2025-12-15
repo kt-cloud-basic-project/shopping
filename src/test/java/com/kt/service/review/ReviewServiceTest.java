@@ -32,6 +32,9 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.review.ReviewRepository;
 import com.kt.repository.user.UserRepository;
 
+import jakarta.transaction.Transactional;
+
+@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ReviewServiceTest {
@@ -70,30 +73,22 @@ public class ReviewServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		reviewRepository.deleteAll();
-		orderProductRepository.deleteAll();
-		orderRepository.deleteAll();
-		productRepository.deleteAll();
-		categoryRepository.deleteAll();
-		userRepository.deleteAll();
-		discountRepository.deleteAll();
-		membershipRepository.deleteAll();
 
 		Membership membership = membershipRepository.saveAndFlush(new Membership("SILVER"));
 
 		user = userRepository.saveAndFlush(User.normalUser(
-			"testuser",
+			"tester",
 			"password123!",
 			"테스트유저",
 			"test@test.com",
-			"01012345678",
+			"010-1234-5679",
 			Gender.MALE,
 			LocalDate.of(1990, 1, 1),
 			membership
 		));
 
 		anotherUser = userRepository.saveAndFlush(User.normalUser(
-			"anotheruser",
+			"another",
 			"password123!",
 			"다른유저",
 			"another@test.com",
