@@ -59,7 +59,9 @@ dependencies {
     implementation("io.netty:netty-resolver-dns-native-macos:4.1.117.Final:osx-aarch_64")
     implementation("io.netty:netty-resolver-dns:4.1.117.Final")
 
-
+	//prometheus
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
