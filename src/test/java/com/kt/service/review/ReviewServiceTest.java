@@ -81,7 +81,7 @@ public class ReviewServiceTest {
 
 		Membership membership = membershipRepository.saveAndFlush(new Membership("SILVER"));
 
-		user = userRepository.save(User.normalUser(
+		user = userRepository.saveAndFlush(User.normalUser(
 			"testuser",
 			"password123!",
 			"테스트유저",
@@ -92,7 +92,7 @@ public class ReviewServiceTest {
 			membership
 		));
 
-		anotherUser = userRepository.save(User.normalUser(
+		anotherUser = userRepository.saveAndFlush(User.normalUser(
 			"anotheruser",
 			"password123!",
 			"다른유저",
