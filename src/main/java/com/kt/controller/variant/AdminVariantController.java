@@ -37,9 +37,8 @@ public class AdminVariantController extends SwaggerAssistance {
 	@PostMapping("/{productId}/variants")
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "옵션 등록")
-	public ApiResult<Void> create(@PathVariable Long productId, @Valid @RequestBody List<VariantCreateRequest> requests) {
-		variantService.create(productId, requests);
-		return ApiResult.ok();
+	public ApiResult<List<Long>> create(@PathVariable Long productId, @Valid @RequestBody List<VariantCreateRequest> requests) {
+		return ApiResult.ok(variantService.create(productId, requests));
 	}
 
 	@GetMapping("/{productId}/variants")

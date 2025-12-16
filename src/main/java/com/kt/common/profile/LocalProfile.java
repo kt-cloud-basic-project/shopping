@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import org.springframework.context.annotation.Profile;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Profile({"local"})
+@Profile({"local", "test"})
 public @interface LocalProfile {
 }

@@ -24,4 +24,12 @@ public interface VariantRepository extends JpaRepository<Variant, Long> {
 	default Variant findByIdAndDeletedFalseOrThrow(Long variantId, ErrorCode errorCode) {
 		return findByIdAndDeletedFalse(variantId).orElseThrow(() -> new CustomException(errorCode));
 	}
+
+	Optional<Variant> findByProductIdAndDetail(Long productId, String detail);
+
+	boolean existsByProductIdAndDetail(Long productId, String detail);
+
+	boolean existsByIdAndDetail(Long variantId, String detail);
+
+	long countVariantByDeletedFalse();
 }
