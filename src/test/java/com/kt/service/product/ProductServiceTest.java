@@ -15,6 +15,8 @@ import com.kt.domain.product.Product;
 import com.kt.domain.variant.Variant;
 import com.kt.domain.variant.VariantType;
 import com.kt.dto.product.request.ProductCreateRequest;
+import com.kt.dto.product.request.ProductUpdateCategoryRequest;
+import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.dto.product.response.AdminProductListResponse;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
@@ -74,7 +76,7 @@ public class ProductServiceTest {
 
 
 	@Test
-	void ProductCreateRequest를_입력하여_상품을_등록할_수_있다() {
+	void ProductCreateRequest로_상품을_등록할_수_있다() {
 		//given
 		var category = categoryRepository
 			.findByType("아우터")
@@ -136,4 +138,56 @@ public class ProductServiceTest {
 		assertThat(productDetail).isNotNull();
 		assertThat(productDetail.name()).isEqualTo(TEST_PRODUCT_NAME);
 	}
+
+
+	@Test
+	void 관리자는_ProductUpdateRequest로_상품의_상세정보를_수정할_수_있다() {
+		//given
+		var product = productRepository
+			.findByName(TEST_PRODUCT_NAME)
+			.orElseThrow();
+
+		var request =  new ProductUpdateRequest(
+			"수정할이름",
+			"수정할 내용",
+			20000L,
+			50L
+		);
+
+		//when
+		var updatedProductId = productService.updateProduct(product.getId(), request);
+
+		//then
+		var updatedProduct = productRepository.findById(updatedProductId).orElseThrow();
+		assertThat(updatedProduct.getName()).isEqualTo("수정할이름");
+		assertThat(updatedProduct.getDescription()).isEqualTo("수정할 내용");
+		assertThat(updatedProduct.getPrice()).isEqualTo(20000L);
+		assertThat(updatedProduct.getStock()).isEqualTo(50L);
+	}
+
+
+	@Test
+	void 관리자는_ProductUpdateCategoryRequest로_상품의_카테고리를_수정할_수_있다() {
+		//given
+		var product = productRepository
+			.findByName(TEST_PRODUCT_NAME)
+			.orElseThrow();
+
+		var category = categoryRepository
+			.findByType(TEST_PRODUCT_CATEGORY2)
+			.orElseThrow();
+
+		var request = new ProductUpdateCategoryRequest(
+			category.getId()
+		);
+
+		//when
+		var updatedProductId = productService.updateProductCategory(product.getId(), request);
+
+		//then
+		var updatedProduct = productRepository.findById(updatedProductId).orElseThrow();
+		assertThat(updatedProduct.getCategory().getId()).isEqualTo(request.categoryId());
+		assertThat(updatedProduct.getCategory().getType()).isEqualTo(TEST_PRODUCT_CATEGORY2);
+	}
+
 }

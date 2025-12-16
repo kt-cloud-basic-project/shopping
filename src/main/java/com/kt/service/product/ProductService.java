@@ -72,7 +72,7 @@ public class ProductService {
 	}
 
 
-	public void updateProduct(Long productId,  ProductUpdateRequest request) {
+	public Long updateProduct(Long productId,  ProductUpdateRequest request) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 
 		product.update(
@@ -81,16 +81,20 @@ public class ProductService {
 			ObjectUtils.orElse(request.price(), product.getPrice()),
 			ObjectUtils.orElse(request.stock(), product.getStock())
 		);
+
+		return product.getId();
 	}
 
 
-	public void updateProductCategory(Long productId, ProductUpdateCategoryRequest request) {
+	public Long updateProductCategory(Long productId, ProductUpdateCategoryRequest request) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		var updateCategory = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
 
 		product.updateCategory(
 			ObjectUtils.orElse(updateCategory, product.getCategory())
 		);
+
+		return product.getId();
 	}
 
 

@@ -64,18 +64,16 @@ public class AdminProductController extends SwaggerAssistance {
 	@PutMapping("/{productId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "상품 정보 수정")
-	public ApiResult<Void> update(@PathVariable("productId") Long productId, @Valid @RequestBody ProductUpdateRequest request) {
-		productService.updateProduct(productId, request);
-		return ApiResult.ok();
+	public ApiResult<Long> update(@PathVariable("productId") Long productId, @Valid @RequestBody ProductUpdateRequest request) {
+		return ApiResult.ok(productService.updateProduct(productId, request));
 	}
 
 	@PutMapping("/{productId}/category")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "상품 카테고리 수정")
-	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @Valid @RequestBody
+	public ApiResult<Long> updateCategory(@PathVariable("productId") Long productId, @Valid @RequestBody
 		ProductUpdateCategoryRequest request) {
-		productService.updateProductCategory(productId, request);
-		return ApiResult.ok();
+		return ApiResult.ok(productService.updateProductCategory(productId, request));
 	}
 
 	@PatchMapping("/{productId}/toggle-sold-out")
