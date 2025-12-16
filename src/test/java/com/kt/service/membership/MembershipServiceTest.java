@@ -32,15 +32,6 @@ public class MembershipServiceTest {
 	@Autowired
 	private MembershipRepository membershipRepository;
 
-	@Autowired
-	private DiscountRepository discountRepository;
-
-	@BeforeEach
-	void setUp() {
-		discountRepository.deleteAllInBatch();
-		membershipRepository.deleteAllInBatch();
-	}
-
 	@Test
 	public void 멤버십_생성_가능() {
 
