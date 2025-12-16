@@ -49,7 +49,7 @@ public abstract class UserTestSupport {
 			)
 		);
 
-		CustomUserDetails.from(user);
+		customUserDetails = CustomUserDetails.from(user);
 	}
 }
 

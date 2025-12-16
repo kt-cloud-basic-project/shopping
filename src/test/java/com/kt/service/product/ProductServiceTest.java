@@ -16,6 +16,7 @@ import com.kt.dto.product.request.ProductUpdateCategoryRequest;
 import com.kt.dto.product.request.ProductUpdateRequest;
 import com.kt.dto.product.request.ProductUpdateSoldOutRequest;
 import com.kt.dto.product.response.AdminProductListResponse;
+import com.kt.dto.product.response.UserProductListResponse;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.util.UserTestSupport;
@@ -37,8 +38,10 @@ public class ProductServiceTest extends UserTestSupport {
 
 	private Category category1;
 	private Category category2;
+	private Category category3;
 	private Product product1;
 	private Product product2;
+	private Product product3;
 
 
 	@BeforeEach
@@ -67,11 +70,20 @@ public class ProductServiceTest extends UserTestSupport {
 				100L,
 				category2)
 		);
+
+		product3 = productRepository.saveAndFlush(
+			new Product("후드티셔츠",
+				"오버핏후드티셔츠",
+				50000L,
+				100L,
+				category3)
+		);
 	}
 
 	void initCategories() {
 		category1 = categoryRepository.saveAndFlush(new Category("아우터"));
 		category2 = categoryRepository.saveAndFlush(new Category("하의"));
+		category3 = categoryRepository.saveAndFlush(new Category("상의"));
 	}
 
 	@Test
@@ -106,7 +118,7 @@ public class ProductServiceTest extends UserTestSupport {
 		var productList = productService.getProductList(pageable);
 
 		//then
-		assertThat(productList.getContent()).hasSize(2);
+		assertThat(productList.getContent()).hasSize(3);
 		assertThat(productList.getContent())
 			.extracting(
 				AdminProductListResponse::name,
@@ -114,7 +126,8 @@ public class ProductServiceTest extends UserTestSupport {
 			)
 			.containsExactlyInAnyOrder(
 				tuple(product1.getName(), category1.getType()),
-				tuple(product2.getName(), category2.getType())
+				tuple(product2.getName(), category2.getType()),
+				tuple(product3.getName(), category3.getType())
 			);
 	}
 
@@ -220,5 +233,108 @@ public class ProductServiceTest extends UserTestSupport {
 		assertThat(updatedProducts)
 			.extracting(Product::getStatus)
 			.containsOnly(ProductStatus.SOLD_OUT);
+	}
+
+	@Test
+	void 사용자는_상품목록을_조회할_수_있다() {
+		//given
+		Pageable pageable =  PageRequest.of(0, 5);
+
+		//when
+		var productList = productService.getProductListForUser(customUserDetails, null, null, pageable);
+
+		//then
+		assertThat(productList.getContent()).hasSize(3);
+		assertThat(productList.getContent())
+			.extracting(
+				UserProductListResponse::id,
+				UserProductListResponse::category
+			)
+			.containsExactlyInAnyOrder(
+				tuple(product1.getId(), category1.getType()),
+				tuple(product2.getId(), category2.getType()),
+				tuple(product3.getId(), category3.getType())
+			);
+	}
+
+
+	@Test
+	void 사용자는_keyword로_상품목록을_조회할_수_있다() {
+		//given
+		var keyword = "후드";
+		Pageable pageable =  PageRequest.of(0, 5);
+
+		//when
+		var productList = productService.getProductListForUser(customUserDetails, keyword, null, pageable);
+
+		//then
+		assertThat(productList.getContent()).hasSize(2);
+		assertThat(productList.getContent())
+			.extracting(
+				UserProductListResponse::id,
+				UserProductListResponse::category
+			)
+			.containsExactlyInAnyOrder(
+				tuple(product1.getId(), category1.getType()),
+				tuple(product3.getId(), category3.getType())
+			);
+	}
+
+
+	@Test
+	void 사용자는_categoryId로_상품목록을_조회할_수_있다() {
+		//given
+		var categoryId = category1.getId();
+		Pageable pageable =  PageRequest.of(0, 5);
+
+		//when
+		var productList = productService.getProductListForUser(customUserDetails, null, categoryId, pageable);
+
+		//then
+		assertThat(productList.getContent()).hasSize(1);
+		assertThat(productList.getContent())
+			.extracting(
+				UserProductListResponse::id,
+				UserProductListResponse::category
+			)
+			.containsExactlyInAnyOrder(
+				tuple(product1.getId(), category1.getType())
+			);
+	}
+
+
+	@Test
+	void 사용자는_keyword와_categoryId로_상품목록을_조회할_수_있다() {
+		//given
+		var keyword = "후드";
+		var categoryId = category1.getId();
+		Pageable pageable =  PageRequest.of(0, 5);
+
+		//when
+		var productList = productService.getProductListForUser(customUserDetails, keyword, categoryId, pageable);
+
+		//then
+		assertThat(productList.getContent()).hasSize(1);
+		assertThat(productList.getContent())
+			.extracting(
+				UserProductListResponse::id,
+				UserProductListResponse::category
+			)
+			.containsExactlyInAnyOrder(
+				tuple(product1.getId(), category1.getType())
+			);
+	}
+
+
+	@Test
+	void 사용자는_productId로_상품의_상세정보를_조회할_수_있다() {
+		//when
+		var product = productService.getProductDetailForUser(customUserDetails, product1.getId());
+
+		//then
+		assertThat(product).isNotNull();
+		assertThat(product.name()).isEqualTo(product1.getName());
+		assertThat(product.category()).isEqualTo(product1.getCategory().getType());
+		assertThat(product.status()).isEqualTo(ProductStatus.ACTIVATED.getDescription());
 	}
 }
