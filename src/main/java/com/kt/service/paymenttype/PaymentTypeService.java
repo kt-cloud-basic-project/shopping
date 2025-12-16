@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.exception.ErrorCode;
 import com.kt.domain.paymenttype.PaymentType;
 import com.kt.dto.paymenttype.PaymentTypeCreateRequest;
 import com.kt.dto.paymenttype.PaymentTypeListResponse;
@@ -31,7 +32,7 @@ public class PaymentTypeService {
 
 	public void delete(Long id) {
 		var paymentType = paymentTypeRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("결제수단을 찾을 수 없습니다."));
+			.orElseThrow(() -> new IllegalArgumentException(ErrorCode.NOT_FOUND_PAYMENT_TYPE.getMessage()));
 
 		paymentType.delete();
 	}

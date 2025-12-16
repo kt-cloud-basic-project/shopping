@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.kt.common.exception.ErrorCode;
 import com.kt.domain.paymenttype.PaymentType;
 import com.kt.dto.paymenttype.PaymentTypeCreateRequest;
 import com.kt.dto.paymenttype.PaymentTypeListResponse;
@@ -88,6 +89,6 @@ class PaymentTypeServiceTest {
 		assertThatThrownBy(() ->
 			paymentTypeService.delete(notExistId)
 		).isInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("결제수단을 찾을 수 없습니다");
+			.hasMessageContaining(ErrorCode.NOT_FOUND_PAYMENT_TYPE.getMessage());
 	}
 }
