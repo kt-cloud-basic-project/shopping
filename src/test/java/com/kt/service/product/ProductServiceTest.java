@@ -12,11 +12,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.kt.domain.category.Category;
 import com.kt.domain.product.Product;
+import com.kt.domain.product.ProductStatus;
 import com.kt.domain.variant.Variant;
 import com.kt.domain.variant.VariantType;
 import com.kt.dto.product.request.ProductCreateRequest;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
 import com.kt.dto.product.request.ProductUpdateRequest;
+import com.kt.dto.product.request.ProductUpdateSoldOutRequest;
 import com.kt.dto.product.response.AdminProductListResponse;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
@@ -190,4 +192,72 @@ public class ProductServiceTest {
 		assertThat(updatedProduct.getCategory().getType()).isEqualTo(TEST_PRODUCT_CATEGORY2);
 	}
 
+
+	@Test
+	void 관리자는_productId로_상품의_품절상태를_업데이트할_수_있다() {
+		//given
+		var product = productRepository
+			.findByName(TEST_PRODUCT_NAME)
+			.orElseThrow();
+
+		//when
+		var updatedProductId = productService.updateProductSoldOutWithToggle(product.getId());
+
+		//then
+		var updatedProduct = productRepository.findById(updatedProductId).orElseThrow();
+		assertThat(updatedProduct.getStatus()).isEqualTo(ProductStatus.SOLD_OUT);
+	}
+
+
+	@Test
+	void 관리자는_productId로_상품의_상태를_비활성화할_수_있다() {
+		//given
+		var product = productRepository
+			.findByName(TEST_PRODUCT_NAME)
+			.orElseThrow();
+
+		//when
+		var updatedProductId = productService.updateProductInActive(product.getId());
+
+		//then
+		var updatedProduct = productRepository.findById(updatedProductId).orElseThrow();
+		assertThat(updatedProduct.getStatus()).isEqualTo(ProductStatus.IN_ACTIVATED);
+	}
+
+
+	@Test
+	void 관리자는_productId로_수량에_여유가_있을때_상품의_상태를_활성화할_수_있다() {
+		//given
+		var product = productRepository
+			.findByName(TEST_PRODUCT_NAME)
+			.orElseThrow();
+
+		//when
+		var updatedProductId = productService.updateProductActive(product.getId());
+
+		//then
+		var updatedProduct = productRepository.findById(updatedProductId).orElseThrow();
+		assertThat(updatedProduct.getStatus()).isEqualTo(ProductStatus.ACTIVATED);
+	}
+
+
+	@Test
+	void 관리자는_ProductUpdateSoldOutRequest로_여러_상품을_품절_처리할_수_있다() {
+		//given
+		var productIds = productRepository.findAll().stream()
+			.map(Product::getId)
+			.toList();
+
+		var request = new ProductUpdateSoldOutRequest(productIds);
+
+		//when
+		var updatedProductIds = productService.updateProductsSoldOut(request);
+
+		//then
+		var updatedProducts = productRepository.findAllById(productIds);
+
+		assertThat(updatedProducts)
+			.extracting(Product::getStatus)
+			.containsOnly(ProductStatus.SOLD_OUT);
+	}
 }

@@ -1,5 +1,6 @@
 package com.kt.service.product;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ import com.kt.domain.membership.Membership;
 import com.kt.domain.product.Product;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.product.request.ProductCreateRequest;
-import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
+import com.kt.dto.product.request.ProductUpdateSoldOutRequest;
 import com.kt.dto.product.response.AdminProductListResponse;
 import com.kt.dto.product.response.AdminProductDetailResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
@@ -98,8 +99,9 @@ public class ProductService {
 	}
 
 
-	public void updateProductSoldOutWithToggle(Long productId) {
+	public Long updateProductSoldOutWithToggle(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(!product.getStatus().equals(ProductStatus.DELETED), ErrorCode.DELETED_PRODUCT);
 
 		if (product.getStatus().equals(ProductStatus.SOLD_OUT)) {
 			Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
@@ -107,31 +109,42 @@ public class ProductService {
 		} else {
 			product.updateSoldOut();
 		}
+
+		return product.getId();
 	}
 
 
-	public void updateProductInActive(Long productId) {
+	public Long updateProductInActive(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(!product.getStatus().equals(ProductStatus.DELETED), ErrorCode.DELETED_PRODUCT);
 
 		product.updateInActive();
+
+		return product.getId();
 	}
 
 
-	public void updateProductActive(Long productId) {
+	public Long updateProductActive(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
+		Preconditions.validate(!product.getStatus().equals(ProductStatus.DELETED), ErrorCode.DELETED_PRODUCT);
 
 		product.updateActive();
+
+		return product.getId();
 	}
 
 
-	public void updateProductsSoldOut(ProductUpdateSoldOutReqeust request) {
+	public List<Long> updateProductsSoldOut(ProductUpdateSoldOutRequest request) {
 
 		request.productIds().forEach(productId -> {
 			var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+			Preconditions.validate(!product.getStatus().equals(ProductStatus.DELETED), ErrorCode.DELETED_PRODUCT);
 
 			product.updateSoldOut();
 		});
+
+		return request.productIds();
 	}
 
 
