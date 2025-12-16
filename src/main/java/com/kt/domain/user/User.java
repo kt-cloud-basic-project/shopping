@@ -6,11 +6,13 @@ import com.kt.common.support.BaseEntity;
 import com.kt.domain.membership.Membership; //멤버쉽 임의 생성
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Table(name = "users")
 @NoArgsConstructor
 public class User extends BaseEntity {
 
