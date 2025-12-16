@@ -87,6 +87,7 @@ public enum ErrorCode {
 	INVALID_VARIANT(HttpStatus.BAD_REQUEST, "해당 상품의 옵션이 아닙니다."),
 	CANNOT_DELETE_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 삭제할 수 없습니다."),
 	DELETED_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션이 존재하지 않습니다."),
+	CANNOT_CREATE_VARIANT(HttpStatus.BAD_REQUEST, "이미 존재하는 옵션입니다"),
 
 	//payment
 	NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제 정보를 찾을 수 없습니다"),

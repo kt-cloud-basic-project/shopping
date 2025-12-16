@@ -1,4 +1,4 @@
-package com.kt.service.category;
+package com.kt.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import com.kt.dto.category.CategoryRequest;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.variant.VariantRepository;
+import com.kt.service.category.CategoryService;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -94,7 +95,7 @@ public class CategoryServiceTest {
 		categoryService.updateCategory(category.getId(), request);
 
 		//then
-		var updatedCategory = categoryRepository.findByIdOrThrow(category.getId(), ErrorCode.NOT_FOUND_CATEGORY);
+		var updatedCategory = categoryRepository.findById(category.getId()).orElseThrow();
 		assertThat(updatedCategory.getType()).isEqualTo("신발");
 		assertThat(categoryRepository.findByType("아우터")).isEmpty();
 	}
