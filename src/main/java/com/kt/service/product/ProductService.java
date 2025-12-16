@@ -45,7 +45,7 @@ public class ProductService {
 	private final UserRepository userRepository;
 	private final DiscountRepository discountRepository;
 
-	public void create(ProductCreateRequest request) {
+	public Long create(ProductCreateRequest request) {
 		var category = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
 
 		var newProduct = new Product(
@@ -56,7 +56,7 @@ public class ProductService {
 			category
 		);
 
-		productRepository.save(newProduct);
+		return productRepository.save(newProduct).getId();
 	}
 
 

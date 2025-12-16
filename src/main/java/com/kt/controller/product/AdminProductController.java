@@ -41,9 +41,8 @@ public class AdminProductController extends SwaggerAssistance {
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "상품 등록")
-	public ApiResult<Void> create(@Valid @RequestBody ProductCreateRequest request) {
-		productService.create(request);
-		return ApiResult.ok();
+	public ApiResult<Long> create(@Valid @RequestBody ProductCreateRequest request) {
+		return ApiResult.ok(productService.create(request));
 	}
 
 	@GetMapping("")
