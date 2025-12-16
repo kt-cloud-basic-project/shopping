@@ -1,5 +1,6 @@
 package com.kt.service.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.domain.membership.Membership;
@@ -15,17 +16,28 @@ import com.kt.service.auth.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.redisson.api.RBucket;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
 @SpringBootTest(
         properties = "spring.autoconfigure.exclude=org.redisson.spring.starter.RedissonAutoConfigurationV2"
 )
@@ -42,6 +54,15 @@ public class AuthServiceTest {
     private MembershipRepository membershipRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private org.redisson.api.RedissonClient redissonClient;
+
+
+    private static final String AUTH_HEADER = "Authorization";
 
     @BeforeEach
     void setUp() {
@@ -63,6 +84,24 @@ public class AuthServiceTest {
 
         userRepository.save(user);
     }
+    @BeforeEach
+    void redissonStub() {
+        @SuppressWarnings("unchecked")
+        RBucket<Object> bucket = Mockito.mock(RBucket.class);
+
+        AtomicBoolean exists = new AtomicBoolean(false);
+
+        Mockito.when(redissonClient.getBucket(Mockito.anyString()))
+                .thenReturn(bucket);
+
+        Mockito.when(bucket.isExists())
+                .thenAnswer(inv -> exists.get());
+
+        Mockito.doAnswer(inv -> { exists.set(true); return null; })
+                .when(bucket).set(Mockito.any(), Mockito.any());
+
+    }
+
 
     // 로그인 테스트
     // 1. 유저 로그인 성공
@@ -95,36 +134,61 @@ public class AuthServiceTest {
 
     // 로그아웃 테스트
     // 1. 로그아웃 성공
+    // http기반 테스트 추후 분리예정
     @Test
     @DisplayName("로그아웃 성공 - 리프레시 토큰 삭제")
-    void logoutSuccess() {
+    void logout_Success() throws Exception {
 
-        UserLoginRequest request = new UserLoginRequest("login_user01", "password123");
-        UserLoginResponse tokenResponse = userService.login(request);
+        UserLoginResponse tokenResponse =
+                userService.login(new UserLoginRequest("login_user01", "password123"));
 
-        UserLogoutRequest refreshToken = new UserLogoutRequest(tokenResponse.refreshToken());
+        UserLogoutRequest body =
+                new UserLogoutRequest(tokenResponse.refreshToken());
 
-        userService.logout(refreshToken);
+        String jsonBody = objectMapper.writeValueAsString(body);
 
-        // 예: RefreshTokenRepository에서 더 이상 찾을 수 없어야 함
-        assertThat(refreshTokenRepository.findByToken(refreshToken.refreshToken())).isEmpty();
+        mockMvc.perform(post("/api/users/auth/logout")
+                        .header("Authorization", "Bearer " + tokenResponse.accessToken())
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted());
+
+//        UserLoginRequest request = new UserLoginRequest("login_user01", "password123");
+//        UserLoginResponse tokenResponse = userService.login(request);
+//
+//        UserLogoutRequest refreshToken = new UserLogoutRequest(tokenResponse.refreshToken());
+//
+//        userService.logout(refreshToken,);
+//
+//        // 예: RefreshTokenRepository에서 더 이상 찾을 수 없어야 함
+//        assertThat(refreshTokenRepository.findByToken(refreshToken.refreshToken())).isEmpty();
+        assertThat(refreshTokenRepository.findByToken(tokenResponse.refreshToken())).isEmpty();
     }
 
     // 2. 로그아웃 실페
     @Test
     @DisplayName("로그아웃 실패 - 이미 로그아웃된 토큰")
-    void logoutFailAlreadyLoggedOut() {
+    void logoutFailAlreadyLoggedOut() throws Exception {
 
-        UserLoginRequest request = new UserLoginRequest("login_user01", "password123");
-        UserLoginResponse tokenResponse = userService.login(request);
+        // given
+        UserLoginResponse tokenResponse =
+                userService.login(new UserLoginRequest("login_user01", "password123"));
 
-        UserLogoutRequest refreshToken = new UserLogoutRequest(tokenResponse.refreshToken());
+        UserLogoutRequest body = new UserLogoutRequest(tokenResponse.refreshToken());
+        String jsonBody = objectMapper.writeValueAsString(body);
 
-        userService.logout(refreshToken);
+        // 1st logout -> 성공
+        mockMvc.perform(post("/api/users/auth/logout")
+                        .header("Authorization", "Bearer " + tokenResponse.accessToken())
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted());
 
-        // 다시 로그아웃 시도 시 예외
-        assertThatThrownBy(() -> userService.logout(refreshToken))
-                .isInstanceOf(CustomException.class)
-                .hasMessageContaining(ErrorCode.INVALID_JWT_TOKEN.getMessage());
+        // 2nd logout -> 실패 기대
+        mockMvc.perform(post("/api/users/auth/logout")
+                        .header("Authorization", "Bearer " + tokenResponse.accessToken())
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
