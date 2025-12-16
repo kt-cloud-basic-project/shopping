@@ -3,6 +3,7 @@ package com.kt.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.security.JwtAuthenticationFilter;
 import com.kt.security.JwtTokenProvider;
+import com.kt.security.blacklist.TokenBlacklistStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,6 +35,7 @@ public class SecurityConfiguration {
 	private static final String[] DELETE_PERMIT_ALL = {"/api/v1/public/**"};
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
+    private final TokenBlacklistStore tokenBlacklistStore;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -68,7 +70,7 @@ public class SecurityConfiguration {
                 .logout(logout -> logout.disable())
                 .csrf(AbstractHttpConfigurer::disable);
 
-                http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,objectMapper), UsernamePasswordAuthenticationFilter.class);
+                http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,objectMapper,tokenBlacklistStore), UsernamePasswordAuthenticationFilter.class);
 
 
 		return http.build();

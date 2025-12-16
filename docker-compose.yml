@@ -15,4 +15,5 @@ services:
     ports:
       - "6379:6379"
     platform: linux/arm64
+    command: ["redis-server", "--ignore-warnings", "ARM64-COW-BUG"]
 
