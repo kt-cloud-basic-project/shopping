@@ -39,6 +39,7 @@ public class ProductServiceTest extends UserTestSupport {
 	private Category category1;
 	private Category category2;
 	private Category category3;
+
 	private Product product1;
 	private Product product2;
 	private Product product3;
@@ -233,6 +234,17 @@ public class ProductServiceTest extends UserTestSupport {
 		assertThat(updatedProducts)
 			.extracting(Product::getStatus)
 			.containsOnly(ProductStatus.SOLD_OUT);
+	}
+
+
+	@Test
+	void 관리자는_productId로_상품을_삭제할_수_있다() {
+		//when
+		var deletedProductId = productService.deleteProduct(product1.getId());
+
+		//then
+		var deletedProduct = productRepository.findById(deletedProductId).orElseThrow();
+		assertThat(deletedProduct.getStatus()).isEqualTo(ProductStatus.DELETED);
 	}
 
 	@Test

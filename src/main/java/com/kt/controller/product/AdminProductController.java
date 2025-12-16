@@ -109,8 +109,7 @@ public class AdminProductController extends SwaggerAssistance {
 	@DeleteMapping("/{productId}")
 	@Operation(summary = "상품 삭제")
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<Void> deleteProduct(@PathVariable("productId") Long productId) {
-		productService.deleteProduct(productId);
-		return ApiResult.ok();
+	public ApiResult<Long> deleteProduct(@PathVariable("productId") Long productId) {
+		return ApiResult.ok(productService.deleteProduct(productId));
 	}
 }

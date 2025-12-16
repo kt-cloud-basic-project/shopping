@@ -194,7 +194,7 @@ public class ProductService {
 	}
 
 
-	public void deleteProduct(Long productId) {
+	public Long deleteProduct(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		Preconditions.validate(!orderProductRepositoryCustom.hasInvalidStatusWithProductId(productId), ErrorCode.CANNOT_DELETE_PRODUCT);
 
@@ -202,6 +202,8 @@ public class ProductService {
 		product.getVariants().forEach(variant -> {
 			variantService.deleteVariant(variant.getId());
 		});
+
+		return product.getId();
 	}
 
 
