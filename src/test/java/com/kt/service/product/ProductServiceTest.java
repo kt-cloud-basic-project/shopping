@@ -97,4 +97,43 @@ public class ProductServiceTest {
 		assertThat(savedProduct.getName()).isEqualTo("새상품");
 		assertThat(savedProduct.getCategory().getId()).isEqualTo(category.getId());
 	}
+
+
+
+	@Test
+	void 관리자는_상품목록을_조회할_수_있다() {
+		//given
+		Pageable pageable =  PageRequest.of(0, 10);
+
+		//when
+		var productList = productService.getProductList(pageable);
+
+		//then
+		assertThat(productList.getContent()).hasSize(2);
+		assertThat(productList.getContent())
+			.extracting(
+				AdminProductListResponse::name,
+				AdminProductListResponse::category
+			)
+			.containsExactlyInAnyOrder(
+				tuple(TEST_PRODUCT_NAME, TEST_PRODUCT_CATEGORY),
+				tuple(TEST_PRODUCT_NAME2, TEST_PRODUCT_CATEGORY2)
+			);
+	}
+
+
+	@Test
+	void 관리자는_productId로_상품의_상세정보를_조회할_수_있다() {
+		//given
+		var product = productRepository
+			.findByName(TEST_PRODUCT_NAME)
+			.orElseThrow();
+
+		//when
+		var productDetail = productService.getProductDetail(product.getId());
+
+		//then
+		assertThat(productDetail).isNotNull();
+		assertThat(productDetail.name()).isEqualTo(TEST_PRODUCT_NAME);
+	}
 }
