@@ -37,17 +37,14 @@ public class ReviewController extends SwaggerAssistance {
 
 	// review와 orderProduct는 종속관계가 아니다..
 	@PostMapping("/order-product/{orderProductId}/reviews")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "리뷰 등록")
-	public ApiResult<Void> create(
+	public ApiResult<Long> create(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long orderProductId,
 		@Valid @RequestBody ReviewCreateRequest request
 	) {
-
-		reviewService.create(currentUser.getId(), orderProductId, request);
-
-		return ApiResult.ok();
+		return ApiResult.ok(reviewService.create(currentUser.getId(), orderProductId, request));
 	}
 
 	@GetMapping("/reviews/me")
@@ -66,28 +63,22 @@ public class ReviewController extends SwaggerAssistance {
 	@PutMapping("/reviews/{reviewId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "리뷰 수정")
-	public ApiResult<Void> update(
+	public ApiResult<Long> update(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long reviewId,
 		@Valid @RequestBody ReviewUpdateRequest request
 	) {
-
-		reviewService.update(currentUser.getId(), reviewId, request);
-
-		return ApiResult.ok();
+		return ApiResult.ok(reviewService.update(currentUser.getId(), reviewId, request));
 	}
 
 	@DeleteMapping("/reviews/{reviewId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "리뷰 삭제")
-	public ApiResult<Void> delete(
+	public ApiResult<Long> delete(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long reviewId
 	) {
-
-		reviewService.delete(currentUser.getId(), reviewId);
-
-		return ApiResult.ok();
+		return ApiResult.ok(reviewService.delete(currentUser.getId(), reviewId));
 	}
 
 	@GetMapping("/products/{productId}/reviews")
