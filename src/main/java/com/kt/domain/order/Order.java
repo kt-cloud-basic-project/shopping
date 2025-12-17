@@ -9,6 +9,7 @@ import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.payment.Payment;
 import com.kt.domain.user.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

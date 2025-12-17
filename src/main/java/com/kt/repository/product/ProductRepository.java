@@ -21,4 +21,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 		return findByIdAndDeletedFalse(productId).orElseThrow(() -> new CustomException(errorCode));
 	}
 
+	Optional<Product> findByName(String name);
 }

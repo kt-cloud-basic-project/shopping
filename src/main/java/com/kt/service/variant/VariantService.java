@@ -1,5 +1,6 @@
 package com.kt.service.variant;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,20 @@ public class VariantService {
 	private final VariantRepository variantRepository;
 	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
 
-	public void create(Long productId, List<VariantCreateRequest> requests) {
+	public List<Long> create(Long productId, List<VariantCreateRequest> requests) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		var variantIds = new ArrayList<Long>();
 
 		requests.forEach(request -> {
-			variantRepository.save(new Variant(request.type(), request.detail(), product));
+			//중복된 variant 존재 여부 검증
+			Preconditions.validate(!variantRepository.existsByProductIdAndDetail(productId, request.detail()),
+				ErrorCode.CANNOT_CREATE_VARIANT);
+
+			var variant = variantRepository.save(new Variant(request.type(), request.detail(), product));
+			variantIds.add(variant.getId());
 		});
+
+		return variantIds;
 	}
 
 
@@ -59,6 +68,10 @@ public class VariantService {
 
 
 	public void updateVariant(Long variantId, VariantUpdateRequest request) {
+		//중복된 variant 존재 여부 검증
+		Preconditions.validate(!variantRepository.existsByIdAndDetail(variantId, request.detail()),
+			ErrorCode.CANNOT_CREATE_VARIANT);
+
 		 var variant = variantRepository.findByIdAndDeletedFalseOrThrow(variantId, ErrorCode.NOT_FOUND_VARIANT);
 
 		 variant.updateDetail(request.detail());
