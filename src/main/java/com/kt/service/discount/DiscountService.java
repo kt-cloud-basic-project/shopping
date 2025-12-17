@@ -60,7 +60,12 @@ public class DiscountService {
 	public Long update(Long discountId, DiscountUpdateRequest request) {
 
 		var discount = discountRepository.findByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
-		Preconditions.validate(request.type() == DiscountType.PERCENTAGE && (request.value() < 1 || request.value() > 100), ErrorCode.INVALID_PERCENTAGE_DISCOUNT_VALUE);
+
+		if (request.type() == DiscountType.PERCENTAGE) {
+			boolean isValidPercentage = request.value() > 0 && request.value() < 100;
+
+			Preconditions.validate(isValidPercentage, ErrorCode.INVALID_PERCENTAGE_DISCOUNT_VALUE);
+		}
 
 		discount.update(
 			request.name(),
