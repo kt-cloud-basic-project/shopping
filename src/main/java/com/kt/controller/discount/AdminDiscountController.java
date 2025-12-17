@@ -41,16 +41,13 @@ public class AdminDiscountController extends SwaggerAssistance {
 
 	// 역할을 어디에 두어야 하는가 -> 멤버십 페이지 -> 멤버십 선택 -> 할인 정책 생성 -> 멤버십에서 제어해야한다? 아니면 할인에서 제어한다?
 	@PostMapping("/memberships/{membershipId}/discount")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "할인 정책 등록")
-	public ApiResult<Void> create(
+	public ApiResult<Long> create(
 		@PathVariable Long membershipId,
 		@Valid @RequestBody DiscountCreateRequest request
 	) {
-
-		discountService.create(membershipId, request);
-
-		return ApiResult.ok();
+		return ApiResult.ok(discountService.create(membershipId, request));
 	}
 
 	@GetMapping("discounts")
@@ -68,26 +65,20 @@ public class AdminDiscountController extends SwaggerAssistance {
 	@PutMapping("/discounts/{discountId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "할인 정책 수정")
-	public ApiResult<Void> update(
+	public ApiResult<Long> update(
 		@PathVariable Long discountId,
 		@Valid @RequestBody DiscountUpdateRequest request
 	) {
-
-		discountService.update(discountId, request);
-
-		return ApiResult.ok();
+		return ApiResult.ok(discountService.update(discountId, request));
 	}
 
 	@DeleteMapping("/discounts/{discountId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "할인 정책 삭제")
-	public ApiResult<Void> delete(
+	public ApiResult<Long> delete(
 		@PathVariable Long discountId
 	) {
-
-		discountService.delete(discountId);
-
-		return ApiResult.ok();
+		return ApiResult.ok(discountService.delete(discountId));
 	}
 
 	@GetMapping("/discounts/{discountId}/detail")
