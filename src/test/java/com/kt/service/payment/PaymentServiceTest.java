@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.exception.CustomException;
-import com.kt.common.exception.ErrorCode;
 import com.kt.domain.discount.Discount;
 import com.kt.domain.discount.DiscountType;
 import com.kt.domain.membership.Membership;
@@ -35,6 +34,7 @@ import com.kt.repository.user.UserRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Transactional
 class PaymentServiceTest {
 
 	@Autowired PaymentService paymentService;
