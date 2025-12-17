@@ -1,4 +1,4 @@
-package com.kt.service;
+package com.kt.service.variant;
 
 import java.util.List;
 
@@ -18,7 +18,6 @@ import com.kt.dto.variant.VariantUpdateRequest;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.variant.VariantRepository;
-import com.kt.service.variant.VariantService;
 
 import static org.assertj.core.api.Assertions.*;
 

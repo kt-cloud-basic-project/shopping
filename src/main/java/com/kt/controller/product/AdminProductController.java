@@ -1,5 +1,7 @@
 package com.kt.controller.product;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +20,7 @@ import com.kt.common.request.Paging;
 import com.kt.common.response.ApiResult;
 import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.product.request.ProductCreateRequest;
-import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
+import com.kt.dto.product.request.ProductUpdateSoldOutRequest;
 import com.kt.dto.product.response.AdminProductListResponse;
 import com.kt.dto.product.response.AdminProductDetailResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
@@ -41,9 +43,8 @@ public class AdminProductController extends SwaggerAssistance {
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "상품 등록")
-	public ApiResult<Void> create(@Valid @RequestBody ProductCreateRequest request) {
-		productService.create(request);
-		return ApiResult.ok();
+	public ApiResult<Long> create(@Valid @RequestBody ProductCreateRequest request) {
+		return ApiResult.ok(productService.create(request));
 	}
 
 	@GetMapping("")
@@ -65,57 +66,50 @@ public class AdminProductController extends SwaggerAssistance {
 	@PutMapping("/{productId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "상품 정보 수정")
-	public ApiResult<Void> update(@PathVariable("productId") Long productId, @Valid @RequestBody ProductUpdateRequest request) {
-		productService.updateProduct(productId, request);
-		return ApiResult.ok();
+	public ApiResult<Long> update(@PathVariable("productId") Long productId, @Valid @RequestBody ProductUpdateRequest request) {
+		return ApiResult.ok(productService.updateProduct(productId, request));
 	}
 
 	@PutMapping("/{productId}/category")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "상품 카테고리 수정")
-	public ApiResult<Void> updateCategory(@PathVariable("productId") Long productId, @Valid @RequestBody
+	public ApiResult<Long> updateCategory(@PathVariable("productId") Long productId, @Valid @RequestBody
 		ProductUpdateCategoryRequest request) {
-		productService.updateProductCategory(productId, request);
-		return ApiResult.ok();
+		return ApiResult.ok(productService.updateProductCategory(productId, request));
 	}
 
 	@PatchMapping("/{productId}/toggle-sold-out")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "상품 품절 (토글)")
-	public ApiResult<Void> soldOutWithToggle(@PathVariable("productId") Long productId) {
-		productService.updateProductSoldOutWithToggle(productId);
-		return ApiResult.ok();
+	public ApiResult<Long> soldOutWithToggle(@PathVariable("productId") Long productId) {
+		return ApiResult.ok(productService.updateProductSoldOutWithToggle(productId));
 	}
 
 	@PatchMapping("/{productId}/in-activate")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "상품 비활성화")
-	public ApiResult<Void> inActivate(@PathVariable("productId") Long productId) {
-		productService.updateProductInActive(productId);
-		return ApiResult.ok();
+	public ApiResult<Long> inActivate(@PathVariable("productId") Long productId) {
+		return ApiResult.ok(productService.updateProductInActive(productId));
 	}
 
 	@PatchMapping("/{productId}/activate")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "상품 활성화")
-	public ApiResult<Void> activate(@PathVariable("productId") Long productId) {
-		productService.updateProductActive(productId);
-		return ApiResult.ok();
+	public ApiResult<Long> activate(@PathVariable("productId") Long productId) {
+		return ApiResult.ok(productService.updateProductActive(productId));
 	}
 
 	@PatchMapping("/sold-out")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "상품 다중 품절")
-	public ApiResult<Void> soldOut(@RequestBody ProductUpdateSoldOutReqeust request) {
-		productService.updateProductsSoldOut(request);
-		return ApiResult.ok();
+	public ApiResult<List<Long>> soldOut(@RequestBody ProductUpdateSoldOutRequest request) {
+		return ApiResult.ok(productService.updateProductsSoldOut(request));
 	}
 
 	@DeleteMapping("/{productId}")
 	@Operation(summary = "상품 삭제")
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<Void> deleteProduct(@PathVariable("productId") Long productId) {
-		productService.deleteProduct(productId);
-		return ApiResult.ok();
+	public ApiResult<Long> deleteProduct(@PathVariable("productId") Long productId) {
+		return ApiResult.ok(productService.deleteProduct(productId));
 	}
 }
