@@ -9,7 +9,6 @@ import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.discount.Discount;
 import com.kt.domain.discount.DiscountType;
-import com.kt.domain.user.User;
 import com.kt.dto.discount.DiscountCreateRequest;
 import com.kt.dto.discount.DiscountDetailResponse;
 import com.kt.dto.discount.DiscountListResponse;
@@ -32,7 +31,7 @@ public class DiscountService {
 	private final DiscountRepositoryCustom discountRepositoryCustom;
 	private final UserRepository userRepository;
 
-	public void create(Long membershipId, DiscountCreateRequest request) {
+	public Long create(Long membershipId, DiscountCreateRequest request) {
 
 		var membership = membershipRepository.findByIdOrThrow(membershipId, ErrorCode.NOT_FOUND_MEMBERSHIP);
 
@@ -51,14 +50,14 @@ public class DiscountService {
 			membership
 		);
 
-		discountRepository.save(discount);
+		return discountRepository.save(discount).getId();
 	}
 
 	public Page<DiscountListResponse> getAllDiscount(Pageable pageable) {
 		return discountRepositoryCustom.getAllDiscount(pageable);
 	}
 
-	public void update(Long discountId, DiscountUpdateRequest request) {
+	public Long update(Long discountId, DiscountUpdateRequest request) {
 
 		var discount = discountRepository.findByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
 		Preconditions.validate(request.type() == DiscountType.PERCENTAGE && (request.value() < 1 || request.value() > 100), ErrorCode.INVALID_PERCENTAGE_DISCOUNT_VALUE);
@@ -68,13 +67,17 @@ public class DiscountService {
 			request.type(),
 			request.value()
 		);
+
+		return discount.getId();
 	}
 
-	public void delete(Long discountId) {
+	public Long delete(Long discountId) {
 
 		var discount = discountRepository.findByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
 
 		discountRepository.delete(discount);
+
+		return discount.getId();
 	}
 
 	public DiscountDetailResponse detail(Long discountId) {
