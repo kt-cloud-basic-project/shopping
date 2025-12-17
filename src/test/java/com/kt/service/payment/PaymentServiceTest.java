@@ -37,15 +37,24 @@ import com.kt.repository.user.UserRepository;
 @Transactional
 class PaymentServiceTest {
 
-	@Autowired PaymentService paymentService;
-	@Autowired PaymentRepository paymentRepository;
-	@Autowired OrderRepository orderRepository;
-	@Autowired OrderProductRepository orderProductRepository;
-	@Autowired ProductRepository productRepository;
-	@Autowired PaymentTypeRepository paymentTypeRepository;
-	@Autowired UserRepository userRepository;
-	@Autowired MembershipRepository membershipRepository;
-	@Autowired DiscountRepository discountRepository;
+	@Autowired
+	PaymentService paymentService;
+	@Autowired
+	PaymentRepository paymentRepository;
+	@Autowired
+	OrderRepository orderRepository;
+	@Autowired
+	OrderProductRepository orderProductRepository;
+	@Autowired
+	ProductRepository productRepository;
+	@Autowired
+	PaymentTypeRepository paymentTypeRepository;
+	@Autowired
+	UserRepository userRepository;
+	@Autowired
+	MembershipRepository membershipRepository;
+	@Autowired
+	DiscountRepository discountRepository;
 
 	User user;
 	Order order;
@@ -53,15 +62,6 @@ class PaymentServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		paymentRepository.deleteAll();
-		orderProductRepository.deleteAll();
-		orderRepository.deleteAll();
-		productRepository.deleteAll();
-		discountRepository.deleteAll();
-		paymentTypeRepository.deleteAll();
-		userRepository.deleteAll();
-		membershipRepository.deleteAll();
-
 		Membership membership = membershipRepository.save(new Membership("SILVER"));
 
 		user = userRepository.save(
