@@ -1,4 +1,4 @@
-package com.kt.service;
+package com.kt.service.category;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,13 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.kt.common.exception.ErrorCode;
 import com.kt.domain.category.Category;
 import com.kt.dto.category.CategoryRequest;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.variant.VariantRepository;
-import com.kt.service.category.CategoryService;
 
 import static org.assertj.core.api.Assertions.*;
 

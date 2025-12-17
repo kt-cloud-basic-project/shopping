@@ -16,6 +16,7 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
         show_sql: false
+        default_schema: shopping-test
     show-sql: false
 #  data:
 #    redis:
