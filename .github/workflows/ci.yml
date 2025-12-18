@@ -33,20 +33,11 @@ jobs:
         with:
           gradle-version: 8.5
 
-      - name: Run Admin Test
+      - name: Run Test
         uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
-          arguments: admin:test
-          # gradle test -> admin, user모두
-          # 멀티모듈 user, admin 모듈이 분리
-          # arguments: user:test admin:test
-      
-      - name: Run User Test
-        uses: gradle/gradle-build-action@v3
-        with:
-          gradle-version: wrapper
-          arguments: user:test
+          arguments: test
 
       - name: send slack notification
         uses: 8398a7/action-slack@v3
