@@ -53,7 +53,7 @@ class UserServiceTest {
     @Test
     @DisplayName("회원가입 테스트")
     @Transactional
-    public void CreateSuccessTest() {
+    public void 회원가입_성공() {
         UserCreateRequest request = new UserCreateRequest(
                 "test_user01",
                 "password",
@@ -80,7 +80,7 @@ class UserServiceTest {
     @Test
     @DisplayName("회원가입 성공 - 관리자")
     @Transactional
-    void createAdminSuccess() {
+    void 관리자_회원가입_성공() {
 
         UserCreateRequest request = new UserCreateRequest(
                 "admin01",
@@ -107,7 +107,7 @@ class UserServiceTest {
     @Test
     @DisplayName("회원가입 실패 - 로그인 아이디 중복")
     @Transactional
-    void createFailDuplicateLoginId() {
+    void 회워가입_실패_중복아이디() {
 
         UserCreateRequest request = new UserCreateRequest(
                 "dup_user",
@@ -159,7 +159,7 @@ class UserServiceTest {
     @Test
     @DisplayName("정보조회 - 내 정보 조회 성공")
     @Transactional
-    void getMyInfoSuccess() {
+    void 내정보_조회_성공() {
 
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
@@ -235,7 +235,7 @@ class UserServiceTest {
     @Test
     @DisplayName("정보조회 - 관리자 타 유저 정보 조회 성공")
     @Transactional
-    void getUserInfoByAdminSuccess() {
+    void 관리자_다른유저_정보조회_성공() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
 
@@ -276,7 +276,7 @@ class UserServiceTest {
     @Test
     @DisplayName("정보수정 - 유저 본인 정보 수정 성공")
     @Transactional
-    void updateMyInfoSuccess() {
+    void 내정보_수정_성공() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
 
@@ -360,7 +360,7 @@ class UserServiceTest {
     @Test
     @DisplayName("정보수정 - 관리자 타 유저 정보 수정 성공")
     @Transactional
-    void updateUserByAdminSuccess() {
+    void 관리자_유저정보_수정_성공() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
 
@@ -410,7 +410,7 @@ class UserServiceTest {
     @Test
     @DisplayName("회원탈퇴 성공 - 소프트 딜리트 처리")
     @Transactional
-    void deleteMyAccountSuccess() {
+    void 회원탈퇴_성공() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
 
@@ -448,7 +448,7 @@ class UserServiceTest {
     @Test
     @DisplayName("회원탈퇴 후 재가입 성공 - 탈퇴한 loginId 재사용 가능")
     @Transactional
-    void rejoinAfterSoftDeleteSuccess() {
+    void 탈퇴이후_동일아이디_회원가입_성공() {
 
         UserCreateRequest request1 = new UserCreateRequest(
                 "rejoin_user",

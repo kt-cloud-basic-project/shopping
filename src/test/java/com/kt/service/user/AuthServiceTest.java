@@ -107,7 +107,7 @@ public class AuthServiceTest {
     // 1. 유저 로그인 성공
     @Test
     @DisplayName("로그인 성공 - 유저")
-    void loginSuccess() {
+    void 로그인_성공() {
 
         UserLoginRequest request = new UserLoginRequest("login_user01", "password123");
 
@@ -122,7 +122,7 @@ public class AuthServiceTest {
     // 2. 유저 로그인 실패(아이디/비밀번호 오기입)
     @Test
     @DisplayName("로그인 실패 - 비밀번호 불일치")
-    void loginFailWrongPassword() {
+    void 로그인_실패_비밀번호_불일치() {
 
         UserLoginRequest request = new UserLoginRequest("login_user01", "wrongPassword");
 
@@ -137,7 +137,7 @@ public class AuthServiceTest {
     // http기반 테스트 추후 분리예정
     @Test
     @DisplayName("로그아웃 성공 - 리프레시 토큰 삭제")
-    void logout_Success() throws Exception {
+    void 로그아웃_성공() throws Exception {
 
         UserLoginResponse tokenResponse =
                 userService.login(new UserLoginRequest("login_user01", "password123"));
@@ -168,7 +168,7 @@ public class AuthServiceTest {
     // 2. 로그아웃 실페
     @Test
     @DisplayName("로그아웃 실패 - 이미 로그아웃된 토큰")
-    void logoutFailAlreadyLoggedOut() throws Exception {
+    void 로그아웃_실패_로그아웃_연속시도() throws Exception {
 
         // given
         UserLoginResponse tokenResponse =
