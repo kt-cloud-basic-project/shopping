@@ -3,7 +3,6 @@ on: pull_request
 
 env:
   DB_PASSWORD: root
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
   pr-test:
