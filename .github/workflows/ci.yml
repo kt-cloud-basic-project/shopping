@@ -35,6 +35,8 @@ jobs:
           gradle-version: 8.5
 
       - name: Run Test
+        env:
+          DB_PASSWORD: root
         uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
