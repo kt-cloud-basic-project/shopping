@@ -21,21 +21,17 @@ public class WishlistService {
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
 
-	public void addWishlist(Long userId, Long productId) {  // loginId → userId
-		//1. 사용자 조회
-		User user = userRepository.findById(userId)  // findById로 변경
+	public void addWishlist(Long userId, Long productId) {
+		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
-		// 2. 상품 조회
 		Product product = productRepository.findById(productId)
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PRODUCT));
 
-		// ✨ 이 부분이 빠져있었어요!
 		if (wishlistRepository.existsByUserIdAndProductId(userId, productId)) {
 			throw new CustomException(ErrorCode.ALREADY_WISHLISTED);
 		}
 
-		// 3. 찜 저장
 		Wishlist wishlist = new Wishlist(user, product);
 		wishlistRepository.save(wishlist);
 	}
