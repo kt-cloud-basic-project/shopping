@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/shopping-test
     username: root
-    password: 1234
+    password: ${DB_PASSWORD:1234}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 1000
@@ -18,6 +18,9 @@ spring:
         show_sql: false
         default_schema: shopping-test
     show-sql: false
+  autoconfigure:
+    exclude:
+      - org.redisson.spring.starter.RedissonAutoConfigurationV2
 #  data:
 #    redis:
 #      host: ${redis.host:localhost}

@@ -1,0 +1,53 @@
+name: pr-test
+on: pull_request
+
+env:
+  DB_PASSWORD: root
+
+jobs:
+  pr-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@main
+
+    #  - name: Start Redis
+    #    uses: supercharge/redis-github-action@1.1.0
+    #    with:
+    #      redis-version: 6
+
+    #  - name: Start Mysql Service
+    #    run: |
+    #      sudo /etc/init.d/mysql start
+    #      mysql -e 'CREATE DATABASE `shopping-test`;' -uroot -proot
+    # 하이픈 있는 데이터베이스 이름은 백틱으로 감싸야한다 또는 하이픈 제거
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@main
+        with:
+          java-version: '21'
+          cache: 'gradle'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.5
+
+    #  - name: Run Test
+    #    env:
+    #      DB_PASSWORD: root
+    #    uses: gradle/gradle-build-action@v3
+    #    with:
+    #      gradle-version: wrapper
+    #      arguments: test
+
+      - name: send slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: GitHub Actions
+          fields: repo,commit,author,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
