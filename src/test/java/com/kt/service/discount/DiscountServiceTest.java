@@ -16,17 +16,18 @@ import org.springframework.test.context.ActiveProfiles;
 import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.domain.category.Category;
-import com.kt.domain.discount.Discount;
+import com.kt.domain.discount.DiscountTargetType;
 import com.kt.domain.discount.DiscountType;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.product.Product;
 import com.kt.domain.user.Gender;
 import com.kt.domain.user.User;
 import com.kt.domain.variant.Variant;
-import com.kt.dto.discount.DiscountCreateRequest;
-import com.kt.dto.discount.DiscountUpdateRequest;
+import com.kt.dto.discount.request.DiscountCreateRequest;
+import com.kt.dto.discount.request.DiscountUpdateRequest;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.discount.DiscountRepository;
+import com.kt.repository.discountmembership.DiscountMembershipRepository;
 import com.kt.repository.membership.MembershipRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
@@ -55,6 +56,12 @@ public class DiscountServiceTest {
 
 	@Autowired
 	private ProductRepository productRepository;
+
+	@Autowired
+	private DiscountMembershipRepository discountMembershipRepository;
+
+	@Autowired
+	private DiscountCalcService discountCalcService;
 
 	private Membership bronzeMembership;
 	private Membership silverMembership;
@@ -100,14 +107,17 @@ public class DiscountServiceTest {
 
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			membershipId,
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
 
 		//when then
 		assertThatThrownBy(() -> {
-			discountService.create(membershipId, request);
+			discountService.create(request);
 		}).isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.NOT_FOUND_MEMBERSHIP.getMessage());
 
@@ -118,22 +128,28 @@ public class DiscountServiceTest {
 
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
 
-		discountService.create(silverMembership.getId(), request);
+		discountService.create(request);
 
 		DiscountCreateRequest request2 = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
 
 		//when then
 		assertThatThrownBy(() -> {
-			discountService.create(silverMembership.getId(), request2);
+			discountService.create(request2);
 		}).isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.DISCOUNT_ALREADY_EXISTS.getMessage());
 	}
@@ -143,14 +159,17 @@ public class DiscountServiceTest {
 
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			150
+			true,
+			150L
 		);
 
 		//when & then
 		assertThatThrownBy(() -> {
-			discountService.create(silverMembership.getId(), request);
+			discountService.create(request);
 		}).isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.INVALID_PERCENTAGE_DISCOUNT_VALUE.getMessage());
 	}
@@ -160,13 +179,16 @@ public class DiscountServiceTest {
 
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
-			com.kt.domain.discount.DiscountType.PERCENTAGE,
-			10
+			DiscountType.PERCENTAGE,
+			true,
+			10L
 		);
 
 		//when
-		discountService.create(silverMembership.getId(), request);
+		discountService.create(request);
 
 		//then
 		var savedDiscount = discountRepository.findAll().getFirst();
@@ -186,12 +208,15 @@ public class DiscountServiceTest {
 
 		for (int i = 0; i < 3; i++) {
 			DiscountCreateRequest request = new DiscountCreateRequest(
+				DiscountTargetType.MEMBERSHIP,
+				membershipIds.get(i),
 				"테스트 퍼센트 할인" + i,
 				DiscountType.PERCENTAGE,
-				10 + i
+				true,
+				10L + i
 			);
 
-			discountService.create(membershipIds.get(i), request);
+			discountService.create(request);
 		}
 
 		//when
@@ -203,9 +228,9 @@ public class DiscountServiceTest {
 		assertThat(discounts)
 			.extracting("name", "type", "value")
 			.containsExactlyInAnyOrder(
-				tuple("테스트 퍼센트 할인0", DiscountType.PERCENTAGE, 10),
-				tuple("테스트 퍼센트 할인1", DiscountType.PERCENTAGE, 11),
-				tuple("테스트 퍼센트 할인2", DiscountType.PERCENTAGE, 12)
+				tuple("테스트 퍼센트 할인0", DiscountType.PERCENTAGE, 10L),
+				tuple("테스트 퍼센트 할인1", DiscountType.PERCENTAGE, 11L),
+				tuple("테스트 퍼센트 할인2", DiscountType.PERCENTAGE, 12L)
 			);
 	}
 
@@ -216,8 +241,9 @@ public class DiscountServiceTest {
 		//given
 		DiscountUpdateRequest request = new DiscountUpdateRequest(
 			"테스트 퍼센트 할인 수정",
-			com.kt.domain.discount.DiscountType.PERCENTAGE,
-			15
+			DiscountType.PERCENTAGE,
+			true,
+			15L
 		);
 
 		// then
@@ -232,19 +258,23 @@ public class DiscountServiceTest {
 
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
 
-		discountService.create(silverMembership.getId(), request);
+		discountService.create(request);
 
 		var savedDiscount = discountRepository.findAll().getFirst();
 
 		DiscountUpdateRequest request2 = new DiscountUpdateRequest(
 			"테스트 퍼센트 할인 수정",
 			DiscountType.PERCENTAGE,
-			150
+			true,
+			150L
 		);
 
 		//when & then
@@ -258,18 +288,22 @@ public class DiscountServiceTest {
 	void 할인_수정_성공() {
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
 
-		discountService.create(silverMembership.getId(), request);
+		discountService.create(request);
 		var savedDiscount = discountRepository.findAll().getFirst();
 
 		DiscountUpdateRequest updateRequest = new DiscountUpdateRequest(
 			"테스트 퍼센트 할인 수정",
 			DiscountType.PERCENTAGE,
-			15
+			false,
+			15L
 		);
 
 		//when
@@ -277,9 +311,9 @@ public class DiscountServiceTest {
 		var updatedDiscount = discountRepository.findById(savedDiscount.getId()).get();
 
 		//then
-		assertThat(updatedDiscount.getMembership().getId()).isEqualTo(savedDiscount.getMembership().getId());
 		assertThat(updatedDiscount.getName()).isEqualTo("테스트 퍼센트 할인 수정");
 		assertThat(updatedDiscount.getType()).isEqualTo(DiscountType.PERCENTAGE);
+		assertThat(updatedDiscount.isCombinable()).isFalse();
 		assertThat(updatedDiscount.getValue()).isEqualTo(15);
 	}
 
@@ -298,15 +332,19 @@ public class DiscountServiceTest {
 	void 할인_삭제_성공() {
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
 
-		discountService.create(silverMembership.getId(), request);
+		discountService.create(request);
 		var savedDiscount = discountRepository.findAll().getFirst();
 
 		//when
+		discountMembershipRepository.deleteById(savedDiscount.getId());
 		discountService.delete(savedDiscount.getId());
 
 		//then
@@ -319,7 +357,7 @@ public class DiscountServiceTest {
 
 		// when then
 		assertThatThrownBy(() -> {
-			discountService.detail(discountId);
+			discountService.getDetailMembership(discountId);
 		}).isInstanceOf(CustomException.class)
 			.hasMessageContaining(ErrorCode.NOT_FOUND_DISCOUNT.getMessage());
 	}
@@ -328,16 +366,19 @@ public class DiscountServiceTest {
 	void 할인_상세조회_성공() {
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
 
-		discountService.create(silverMembership.getId(), request);
+		discountService.create(request);
 		var savedDiscount = discountRepository.findAll().getFirst();
 
 		//when
-		var discountDetail = discountService.detail(savedDiscount.getId());
+		var discountDetail = discountService.getDetailMembership(savedDiscount.getId());
 
 		//then
 		assertThat(discountDetail.membershipId()).isEqualTo(silverMembership.getId());
@@ -352,11 +393,14 @@ public class DiscountServiceTest {
 	void 나에게_적용된_할인_상세정보() {
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
 			"테스트 퍼센트 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
-		discountService.create(silverMembership.getId(), request);
+		discountService.create(request);
 		var savedDiscount = discountRepository.findAll().getFirst();
 
 		//when
@@ -371,28 +415,129 @@ public class DiscountServiceTest {
 	}
 
 	@Test
-	void 상품_구매시_퍼센트_할인_적용() {
+	void 멤버십_퍼센트_할인_계산() {
 		//given
 		DiscountCreateRequest request = new DiscountCreateRequest(
-			"테스트 퍼센트 할인",
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
+			"실버 멤버십 10% 할인",
 			DiscountType.PERCENTAGE,
-			10
+			true,
+			10L
 		);
-		discountService.create(silverMembership.getId(), request);
+		discountService.create(request);
 
-		Discount savedDiscount = discountRepository.findByMembershipId(user.getMembership().getId())
-			.orElseThrow();
+		//when
+		var discount = discountRepository.findAll().getFirst();
+		var result = discountCalcService.calculate(100000L, discount, List.of());
 
-		Long ProductPrice = product.getPrice();
+		//then
+		assertThat(result.originalPrice()).isEqualTo(100000L);
+		assertThat(result.discountPrice()).isEqualTo(10000L);
+		assertThat(result.discountedPrice()).isEqualTo(90000L);
+	}
 
-		Long finalPrice = savedDiscount.calcDiscountFinalPrice(ProductPrice);
-		Long discountAmount = savedDiscount.calcDiscountAmount(ProductPrice);
-		System.out.println("finalPrice = " + finalPrice);
-		System.out.println("discountAmount = " + discountAmount);
+	@Test
+	void 상품_정액_할인_계산() {
+		//given
+		DiscountCreateRequest request = new DiscountCreateRequest(
+			DiscountTargetType.PRODUCT,
+			product.getId(),
+			"상품 5000원 할인",
+			DiscountType.FIXED_AMOUNT,
+			true,
+			5000L
+		);
+		discountService.create(request);
 
-		//when then
-		assertThat(finalPrice).isEqualTo(26910L);
-		assertThat(discountAmount).isEqualTo(2990L);
+		//when
+		var discount = discountRepository.findAll().getFirst();
+		var result = discountCalcService.calculate(30000L, null, List.of(discount));
+
+		//then
+		assertThat(result.originalPrice()).isEqualTo(30000L);
+		assertThat(result.discountPrice()).isEqualTo(5000L);
+		assertThat(result.discountedPrice()).isEqualTo(25000L);
+	}
+
+	@Test
+	void 멤버십_상품_할인_중복_적용() {
+		//given
+		DiscountCreateRequest membershipDiscountRequest = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
+			"실버 멤버십 10% 할인",
+			DiscountType.PERCENTAGE,
+			true,
+			10L
+		);
+		discountService.create(membershipDiscountRequest);
+
+		DiscountCreateRequest productDiscountRequest = new DiscountCreateRequest(
+			DiscountTargetType.PRODUCT,
+			product.getId(),
+			"상품 3000원 할인",
+			DiscountType.FIXED_AMOUNT,
+			true,
+			3000L
+		);
+		discountService.create(productDiscountRequest);
+
+		//when
+		var discounts = discountRepository.findAll();
+		var membershipDiscount = discounts.stream()
+			.filter(d -> d.getTargetType() == DiscountTargetType.MEMBERSHIP)
+			.findFirst().get();
+		var productDiscount = discounts.stream()
+			.filter(d -> d.getTargetType() == DiscountTargetType.PRODUCT)
+			.findFirst().get();
+
+		var result = discountCalcService.calculate(50000L, membershipDiscount, List.of(productDiscount));
+
+		//then
+		assertThat(result.originalPrice()).isEqualTo(50000L);
+		assertThat(result.discountPrice()).isEqualTo(8000L);
+		assertThat(result.discountedPrice()).isEqualTo(42000L);
+	}
+
+	@Test
+	void 중복_불가_할인은_더_큰_값_선택() {
+		//   given
+		DiscountCreateRequest membershipDiscountRequest = new DiscountCreateRequest(
+			DiscountTargetType.MEMBERSHIP,
+			silverMembership.getId(),
+			"실버 멤버십 15% 할인",
+			DiscountType.PERCENTAGE,
+			false,
+			15L
+		);
+		discountService.create(membershipDiscountRequest);
+
+		DiscountCreateRequest productDiscountRequest = new DiscountCreateRequest(
+			DiscountTargetType.PRODUCT,
+			product.getId(),
+			"상품 5000원 할인",
+			DiscountType.FIXED_AMOUNT,
+			true,
+			5000L
+		);
+		discountService.create(productDiscountRequest);
+
+		//when
+		var discounts = discountRepository.findAll();
+		var membershipDiscount = discounts.stream()
+			.filter(d -> d.getTargetType() == DiscountTargetType.MEMBERSHIP)
+			.findFirst().get();
+		var productDiscount = discounts.stream()
+			.filter(d -> d.getTargetType() == DiscountTargetType.PRODUCT)
+			.findFirst().get();
+
+		var result = discountCalcService.calculate(40000L, membershipDiscount, List.of(productDiscount));
+
+		//then
+		assertThat(result.originalPrice()).isEqualTo(40000L);
+		assertThat(result.discountPrice()).isEqualTo(6000L);
+		assertThat(result.discountedPrice()).isEqualTo(34000L);
 	}
 
 }
