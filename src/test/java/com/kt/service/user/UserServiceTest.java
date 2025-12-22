@@ -42,9 +42,6 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp(){
-				userRepository.deleteAll();
-				membershipRepository.deleteAll();
-
         Membership membership1 = new Membership("BRONZE");
         membershipRepository.save(membership1);
     }
@@ -53,7 +50,6 @@ class UserServiceTest {
     // 1. 유저회원가입(성공)
     @Test
     @DisplayName("회원가입 테스트")
-    @Transactional
     public void CreateSuccessTest() {
         UserCreateRequest request = new UserCreateRequest(
                 "test_user01",
@@ -80,7 +76,6 @@ class UserServiceTest {
     // 2. 관리자 회원가입(성공)
     @Test
     @DisplayName("회원가입 성공 - 관리자")
-    @Transactional
     void createAdminSuccess() {
 
         UserCreateRequest request = new UserCreateRequest(
@@ -107,7 +102,6 @@ class UserServiceTest {
     // 3. 회원가입 실패 - 아이디 중복
     @Test
     @DisplayName("회원가입 실패 - 로그인 아이디 중복")
-    @Transactional
     void createFailDuplicateLoginId() {
 
         UserCreateRequest request = new UserCreateRequest(
@@ -159,7 +153,6 @@ class UserServiceTest {
     // 1. 유저의 본인 정보 조회
     @Test
     @DisplayName("정보조회 - 내 정보 조회 성공")
-    @Transactional
     void getMyInfoSuccess() {
 
 
@@ -169,8 +162,8 @@ class UserServiceTest {
                 "login_user01",
                 "password123",
                 "로그인유저",
-                "login1@kt.com",
-                "010-1234-5678",
+                "login@kt.com",
+                "010-0000-0000",
                 Gender.MALE,
                 LocalDate.of(2000, 1, 1),
                 membership
@@ -189,7 +182,7 @@ class UserServiceTest {
 
 
         assertThat(response.name()).isEqualTo("로그인유저");
-        assertThat(response.email()).isEqualTo("login1@kt.com");
+        assertThat(response.email()).isEqualTo("login@kt.com");
     }
 
     // 2. 유저의 다른 유저 정보 조회 - 권한부족 실패 -> 컨트롤러에서 @PreAuthorize로 막는케이스
@@ -235,7 +228,6 @@ class UserServiceTest {
     // 3. 관리자의 다른 유저정보 조회
     @Test
     @DisplayName("정보조회 - 관리자 타 유저 정보 조회 성공")
-    @Transactional
     void getUserInfoByAdminSuccess() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
@@ -276,7 +268,6 @@ class UserServiceTest {
     // 1. 유저 본인 정보 수정
     @Test
     @DisplayName("정보수정 - 유저 본인 정보 수정 성공")
-    @Transactional
     void updateMyInfoSuccess() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
@@ -285,8 +276,8 @@ class UserServiceTest {
                 "login_user",
                 "password123",
                 "로그인유저",
-                "login2@kt.com",
-                "010-4567-6789",
+                "login@kt.com",
+                "010-0000-0000",
                 Gender.MALE,
                 LocalDate.of(2000, 1, 1),
                 membership
@@ -360,7 +351,6 @@ class UserServiceTest {
     // 3. 관리자 타 유저 정보 수정
     @Test
     @DisplayName("정보수정 - 관리자 타 유저 정보 수정 성공")
-    @Transactional
     void updateUserByAdminSuccess() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
@@ -410,7 +400,6 @@ class UserServiceTest {
     // 1. 회원탈퇴 성공(소프트 딜리트)
     @Test
     @DisplayName("회원탈퇴 성공 - 소프트 딜리트 처리")
-    @Transactional
     void deleteMyAccountSuccess() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
@@ -448,7 +437,6 @@ class UserServiceTest {
     // 2. 탈퇴한 유저 정보 기반으로 재가입 성공
     @Test
     @DisplayName("회원탈퇴 후 재가입 성공 - 탈퇴한 loginId 재사용 가능")
-    @Transactional
     void rejoinAfterSoftDeleteSuccess() {
 
         UserCreateRequest request1 = new UserCreateRequest(
