@@ -72,7 +72,7 @@ class UserServiceTest {
 
         assertThat(savedUser.getLoginId()).isEqualTo("test_user01");
         assertThat(savedUser.getEmail()).isEqualTo("user@kt.com");
-        assertThat(savedUser.getRole().name()).isEqualTo(Role.USER);
+        assertThat(savedUser.getRole().name()).isEqualTo(Role.USER.toString());
 
     }
 
