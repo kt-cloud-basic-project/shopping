@@ -19,7 +19,14 @@ jobs:
       - name: Start Mysql Service
         run: |
           sudo /etc/init.d/mysql start
+          # Wait for MySQL to be ready
+          for i in {1..30}; do
+            mysql -uroot -proot -e "SELECT 1" &>/dev/null && break
+            echo "Waiting for MySQL to start..."
+            sleep 2
+          done
           mysql -e 'CREATE DATABASE `shopping-test`;' -uroot -proot
+          echo "MySQL is ready and database created"
     # 하이픈 있는 데이터베이스 이름은 백틱으로 감싸야한다 또는 하이픈 제거
 
       - name: Set up JDK 21
