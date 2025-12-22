@@ -26,9 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ActiveProfiles("test")
-@SpringBootTest(
-        properties = "spring.autoconfigure.exclude=org.redisson.spring.starter.RedissonAutoConfigurationV2"
-)
+@SpringBootTest
 public class AuthServiceTest {
     @Autowired
     private AuthService authService;
