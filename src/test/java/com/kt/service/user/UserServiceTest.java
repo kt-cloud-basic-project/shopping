@@ -169,8 +169,8 @@ class UserServiceTest {
                 "login_user01",
                 "password123",
                 "로그인유저",
-                "login@kt.com",
-                "010-0000-0000",
+                "login1@kt.com",
+                "010-1234-5678",
                 Gender.MALE,
                 LocalDate.of(2000, 1, 1),
                 membership
@@ -189,7 +189,7 @@ class UserServiceTest {
 
 
         assertThat(response.name()).isEqualTo("로그인유저");
-        assertThat(response.email()).isEqualTo("login@kt.com");
+        assertThat(response.email()).isEqualTo("login1@kt.com");
     }
 
     // 2. 유저의 다른 유저 정보 조회 - 권한부족 실패 -> 컨트롤러에서 @PreAuthorize로 막는케이스
@@ -285,8 +285,8 @@ class UserServiceTest {
                 "login_user",
                 "password123",
                 "로그인유저",
-                "login@kt.com",
-                "010-0000-0000",
+                "login2@kt.com",
+                "010-4567-6789",
                 Gender.MALE,
                 LocalDate.of(2000, 1, 1),
                 membership
