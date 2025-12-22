@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.domain.discount.Discount;
+import com.kt.domain.discount.DiscountTargetType;
 import com.kt.domain.discount.DiscountType;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.order.Order;
@@ -22,6 +23,7 @@ import com.kt.domain.paymenttype.PaymentType;
 import com.kt.domain.product.Product;
 import com.kt.domain.user.Gender;
 import com.kt.domain.user.User;
+import com.kt.dto.discount.request.DiscountCreateRequest;
 import com.kt.dto.payment.PaymentCreateRequest;
 import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.membership.MembershipRepository;
@@ -111,9 +113,10 @@ class PaymentServiceTest {
 		discountRepository.save(
 			new Discount(
 				"멤버십 할인",
+				DiscountTargetType.MEMBERSHIP,
 				DiscountType.PERCENTAGE,
-				10,
-				user.getMembership()
+				true,
+				10L
 			)
 		);
 

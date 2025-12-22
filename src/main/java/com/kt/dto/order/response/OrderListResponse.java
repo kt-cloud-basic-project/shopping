@@ -1,10 +1,11 @@
 package com.kt.dto.order.response;
 
 import java.util.List;
+import java.util.Map;
 
-import com.kt.domain.discount.Discount;
 import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
+import com.kt.dto.discount.response.DiscountResult;
 import com.querydsl.core.annotations.QueryProjection;
 
 public record OrderListResponse(
@@ -13,13 +14,16 @@ public record OrderListResponse(
 	List<OrderItemResponse> items
 	) {
 
-	public static OrderListResponse from(Order order, Discount discount) {
+	public static OrderListResponse from(Order order, Map<Long, DiscountResult> orderProductDiscounts) {
 		return new OrderListResponse(
 		order.getId(),
 		order.getOrderStatus(),
 		order.getOrderProducts()
 			.stream()
-			.map(op -> OrderItemResponse.from(op, discount))
+			.map(op -> {
+				DiscountResult discountResult = orderProductDiscounts.get(op.getId());
+				return OrderItemResponse.from(op, discountResult);
+			})
 			.toList()
 		);
 }

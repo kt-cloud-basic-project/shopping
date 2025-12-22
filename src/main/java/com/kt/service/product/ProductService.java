@@ -45,6 +45,7 @@ public class ProductService {
 	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
 	private final UserRepository userRepository;
 	private final DiscountRepository discountRepository;
+	//private final DiscountCalculator discountCalculator;
 
 	public Long create(ProductCreateRequest request) {
 		var category = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
@@ -155,14 +156,19 @@ public class ProductService {
 			return Page.empty(pageable);
 		}
 
-		// 로그인 유저는 할인 적용
-		Discount discount = getDiscountForUser(currentUser);
+		//Discount discount = discountCalculator.findMembershipDiscount(currentUser.getId());
 
-		return products.map(product -> UserProductListResponse.from(
-			product,
-			discount != null ? discount.calcDiscountAmount(product.getPrice()) : 0L,
-			discount != null ? discount.calcDiscountFinalPrice(product.getPrice()) : product.getPrice()
-		));
+		return products.map(product -> {
+			//DiscountCalcResult priceResult = discountCalculator.calculate(discount, product.getPrice());
+
+			return UserProductListResponse.from(
+				product,
+				null,
+				null
+				//priceResult.discountPrice(),
+				//priceResult.discountedPrice()
+			);
+		});
 	}
 
 	public UserProductDetailResponse getProductDetailForUser(CustomUserDetails currentUser, Long productId) {
@@ -171,28 +177,11 @@ public class ProductService {
 
 		var variants = variantService.getVariantList(productId);
 
-		// 로그인 유저는 할인 적용
-		Discount discount = getDiscountForUser(currentUser);
-		final Long discountAmount = discount != null ? discount.calcDiscountAmount(product.getPrice()) : 0L;
-		final Long discountedPrice = discount != null ? discount.calcDiscountFinalPrice(product.getPrice()) : product.getPrice();
+		//DiscountCalcResult priceResult = discountCalculator.getUserMembershipDiscount(currentUser.getId(), product.getPrice());
 
-		return UserProductDetailResponse.from(product, variants, discountAmount, discountedPrice);
+		return UserProductDetailResponse.from(product, variants, null,null); //priceResult.discountPrice(), priceResult.discountedPrice());
 
 	}
-
-	private Discount getDiscountForUser(CustomUserDetails currentUser) {
-		if(currentUser == null) {
-			return null;
-		}
-
-		var user = userRepository.findByIdOrThrow(currentUser.getId(), ErrorCode.NOT_FOUND_USER);
-
-		return Optional.ofNullable(user.getMembership())
-			.map(Membership::getId)
-			.flatMap(discountRepository::findByMembershipId)
-			.orElse(null);
-	}
-
 
 	public Long deleteProduct(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
