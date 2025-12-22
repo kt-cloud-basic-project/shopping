@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Transactional
 class UserServiceTest {
 
     // 유저 유닛 테스트 작성
