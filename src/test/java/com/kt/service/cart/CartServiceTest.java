@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
@@ -36,6 +37,7 @@ import com.kt.repository.variant.VariantRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Transactional
 public class CartServiceTest {
 	@Autowired
 	CartRepository cartRepository;
@@ -71,14 +73,6 @@ public class CartServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		cartRepository.deleteAll();
-		variantRepository.deleteAll();
-		productRepository.deleteAll();
-		userRepository.deleteAll();
-		discountRepository.deleteAll();
-		membershipRepository.deleteAll();
-		categoryRepository.deleteAll();
-
 		initCartTestData();
 	}
 
@@ -137,10 +131,29 @@ public class CartServiceTest {
 	}
 
 	@Test
-	void 장바구니_생성_실패__재고부족() {
+	void 장바구니_생성_실패__요청수량이_재고보다_많음() {
 		//given
+		savedProduct.updateStock(10L);
+
 		CartCreateRequest request = new CartCreateRequest(
-			11,
+			11,         // 재고보다 1개 많음
+			savedVariant.getId(),
+			savedProduct.getId()
+		);
+
+		//when & then
+		assertThatThrownBy(() -> cartService.create(user.getId(), request))
+			.isInstanceOf(CustomException.class)
+			.hasMessageContaining(ErrorCode.NOT_ENOUGH_STOCK.getMessage());
+	}
+
+	@Test
+	void 장바구니_생성_실패__재고가_0이면_실패(){
+		//given
+		savedProduct.updateStock(0L);
+
+		CartCreateRequest request = new CartCreateRequest(
+			1,
 			savedVariant.getId(),
 			savedProduct.getId()
 		);
@@ -214,8 +227,10 @@ public class CartServiceTest {
 	}
 
 	@Test
-	void 장바구니_수량_변경_실패__재고부족() {
+	void 장바구니_수량_변경_실패__요청수량이_재고보다_많음() {
 		//given
+		savedProduct.updateStock(10L);
+
 		CartCreateRequest request = new CartCreateRequest(1, savedVariant.getId(), savedProduct.getId());
 		Long cartId = cartService.create(user.getId(), request);
 
