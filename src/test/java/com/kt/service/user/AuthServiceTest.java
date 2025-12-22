@@ -43,6 +43,10 @@ public class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
+				refreshTokenRepository.deleteAll();
+				userRepository.deleteAll();
+				membershipRepository.deleteAll();
+
         Membership membership = new Membership("BRONZE");
         membershipRepository.save(membership);
 

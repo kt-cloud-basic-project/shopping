@@ -42,6 +42,9 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp(){
+				userRepository.deleteAll();
+				membershipRepository.deleteAll();
+
         Membership membership1 = new Membership("BRONZE");
         membershipRepository.save(membership1);
     }
