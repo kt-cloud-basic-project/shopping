@@ -11,9 +11,9 @@ public record PaymentDetailResponse(
 	String userName, // 결제자 이름
 	OrderStatus orderStatus, // 주문 상태
 	String paymentTypeName, // 결제수단이름
-	Integer totalPrice, // 상품 총 가격
-	Integer deliveryFee, // 배송비
-	Integer finalPrice, // 최종 결제 가격
+	Long totalPrice, // 상품 총 가격
+	Long deliveryFee, // 배송비
+	Long finalPrice, // 최종 결제 가격
 	LocalDateTime createdAt // 결제 일시
 ) {
 

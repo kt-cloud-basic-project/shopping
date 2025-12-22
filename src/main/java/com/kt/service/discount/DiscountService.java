@@ -8,15 +8,24 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.discount.Discount;
+import com.kt.domain.discount.DiscountTargetType;
 import com.kt.domain.discount.DiscountType;
-import com.kt.dto.discount.DiscountCreateRequest;
-import com.kt.dto.discount.DiscountDetailResponse;
-import com.kt.dto.discount.DiscountListResponse;
-import com.kt.dto.discount.DiscountUpdateRequest;
-import com.kt.dto.discount.DiscountUserResponse;
+import com.kt.domain.discountMembership.DiscountMembership;
+import com.kt.domain.discountProduct.DiscountProduct;
+import com.kt.dto.discount.request.DiscountCreateRequest;
+import com.kt.dto.discount.response.DiscountMembershipDetailResponse;
+import com.kt.dto.discount.response.DiscountListResponse;
+import com.kt.dto.discount.request.DiscountUpdateRequest;
+import com.kt.dto.discount.response.DiscountProductDetailResponse;
+import com.kt.dto.discount.response.DiscountUserResponse;
 import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.discount.DiscountRepositoryCustom;
+import com.kt.repository.discountmembership.DiscountMembershipCustom;
+import com.kt.repository.discountmembership.DiscountMembershipRepository;
+import com.kt.repository.discountproduct.DiscountProductCustom;
+import com.kt.repository.discountproduct.DiscountProductRepository;
 import com.kt.repository.membership.MembershipRepository;
+import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,12 +39,13 @@ public class DiscountService {
 	private final MembershipRepository membershipRepository;
 	private final DiscountRepositoryCustom discountRepositoryCustom;
 	private final UserRepository userRepository;
+	private final DiscountMembershipRepository discountMembershipRepository;
+	private final ProductRepository productRepository;
+	private final DiscountProductRepository discountProductRepository;
+	private final DiscountMembershipCustom DiscountMembershipCustom;
+	private final DiscountProductCustom DiscountProductCustom;
 
-	public Long create(Long membershipId, DiscountCreateRequest request) {
-
-		var membership = membershipRepository.findByIdOrThrow(membershipId, ErrorCode.NOT_FOUND_MEMBERSHIP);
-
-		Preconditions.validate(!discountRepository.existsByMembershipId(membershipId), ErrorCode.DISCOUNT_ALREADY_EXISTS);
+	public Long create(DiscountCreateRequest request) {
 
 		if (request.type() == DiscountType.PERCENTAGE) {
 			boolean isValidPercentage = request.value() > 0 && request.value() < 100;
@@ -45,12 +55,29 @@ public class DiscountService {
 
 		var discount = new Discount(
 			request.name(),
+			request.targetType(),
 			request.type(),
-			request.value(),
-			membership
+			request.isCombinable(),
+			request.value()
 		);
 
-		return discountRepository.save(discount).getId();
+		if(request.targetType().equals(DiscountTargetType.MEMBERSHIP)) {
+			var membership = membershipRepository.findByIdOrThrow(request.targetId(), ErrorCode.NOT_FOUND_MEMBERSHIP);
+			Preconditions.validate(!discountMembershipRepository.existsByMembershipId(membership.getId()), ErrorCode.DISCOUNT_ALREADY_EXISTS);
+
+			var savedDiscount = discountRepository.save(discount);
+			discountMembershipRepository.save(new DiscountMembership(savedDiscount, membership));
+
+			return savedDiscount.getId();
+
+		} else {
+			var product = productRepository.findByIdOrThrow(request.targetId(), ErrorCode.NOT_FOUND_PRODUCT);
+
+			var savedDiscount = discountRepository.save(discount);
+			discountProductRepository.save(new DiscountProduct(savedDiscount, product));
+
+			return savedDiscount.getId();
+		}
 	}
 
 	public Page<DiscountListResponse> getAllDiscount(Pageable pageable) {
@@ -70,6 +97,7 @@ public class DiscountService {
 		discount.update(
 			request.name(),
 			request.type(),
+			request.isCombinable(),
 			request.value()
 		);
 
@@ -77,27 +105,31 @@ public class DiscountService {
 	}
 
 	public Long delete(Long discountId) {
-
 		var discount = discountRepository.findByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
+
+		if(discount.getTargetType().equals(DiscountTargetType.MEMBERSHIP)) {
+			discountMembershipRepository.deleteByDiscountId(discount.getId());
+		} else {
+			discountProductRepository.deleteByDiscountId(discount.getId());
+		}
 
 		discountRepository.delete(discount);
 
 		return discount.getId();
 	}
 
-	public DiscountDetailResponse detail(Long discountId) {
+	public DiscountMembershipDetailResponse getDetailMembership(Long discountId) {
 
-		// 해결 방법: EntityGraph 사용
-		var discount = discountRepository.findDiscountDetailByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
+		var discount = discountRepository.findByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
 
-		return new DiscountDetailResponse(
-			discount.getMembership().getId(),
-			discount.getMembership().getLevel(),
-			discount.getId(),
-			discount.getName(),
-			discount.getType(),
-			discount.getValue()
-		);
+		return DiscountMembershipCustom.findDiscountDetailByDiscountId(discount.getId());
+	}
+
+	public DiscountProductDetailResponse getDetailProduct(Long discountId) {
+
+		var discount = discountRepository.findByIdOrThrow(discountId, ErrorCode.NOT_FOUND_DISCOUNT);
+
+		return DiscountProductCustom.findDiscountDetailByDiscountId(discount.getId());
 	}
 
 	public DiscountUserResponse getMyDiscount(Long userId) {
