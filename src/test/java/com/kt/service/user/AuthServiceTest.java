@@ -25,8 +25,11 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.transaction.Transactional;
+
 @ActiveProfiles("test")
 @SpringBootTest
+@Transactional
 public class AuthServiceTest {
     @Autowired
     private AuthService authService;
@@ -43,10 +46,6 @@ public class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-				refreshTokenRepository.deleteAll();
-				userRepository.deleteAll();
-				membershipRepository.deleteAll();
-
         Membership membership = new Membership("BRONZE");
         membershipRepository.save(membership);
 
