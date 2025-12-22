@@ -1,23 +1,27 @@
 package com.kt.service.cart;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.cart.Cart;
 import com.kt.domain.discount.Discount;
-import com.kt.domain.membership.Membership;
+import com.kt.domain.discountMembership.DiscountMembership;
+import com.kt.domain.discountProduct.DiscountProduct;
 import com.kt.domain.product.Product;
-import com.kt.domain.user.User;
 import com.kt.dto.cart.CartCreateRequest;
 import com.kt.dto.cart.response.CartResponse;
+import com.kt.dto.discount.response.DiscountResult;
 import com.kt.repository.cart.CartRepository;
-import com.kt.repository.discount.DiscountRepository;
+import com.kt.repository.discountmembership.DiscountMembershipRepository;
+import com.kt.repository.discountproduct.DiscountProductRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.repository.variant.VariantRepository;
+import com.kt.service.discount.DiscountCalcService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +36,8 @@ public class CartService {
 	private final CartRepository cartRepository;
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
-	private final DiscountRepository discountRepository;
 	private final VariantRepository variantRepository;
+	private final DiscountCalcService discountCalcService;
 
     public Long create(Long userId, CartCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
@@ -62,25 +66,33 @@ public class CartService {
 	public Page<CartResponse> getCartList(Long userId, Paging paging) {
 		Page<Cart> carts = cartRepository.findByUserId(userId, paging.toPageable());
 
-		// 빈 카트 반환(빈 카트 일 시 User 정보를 가져올 수 없기 때문)
 		if (carts.isEmpty()) {
 			return Page.empty(paging.toPageable());
 		}
 
-		// carts안에 있는 user는 모두 동일한 user이므로 첫번째 것만 가져와서 membershipId를 얻음
-		User user = carts.getContent().getFirst().getUser();
+		// 멤버십 할인 조회
+		Discount membershipDiscount = discountCalcService.getMembershipDiscount(userId);
 
-		// 할인은 있을 수도 없을 수도(optional)
-		Discount discount = Optional.ofNullable(user.getMembership())
-			.map(Membership::getId)
-			.flatMap(discountRepository::findByMembershipId)
-			.orElse(null);
+		// 상품별 할인 조회
+		Map<Long, List<Discount>> productDiscount = discountCalcService.getProductsDiscount(
+			carts.getContent().stream()
+			.map(cart -> cart.getProduct().getId())
+			.distinct()
+			.toList());
 
-		return carts.map(cart -> CartResponse.from(
-			cart,
-			discount != null ? discount.calcDiscountAmount(cart.getTotalPrice()) : 0L,
-			discount != null ? discount.calcDiscountFinalPrice(cart.getTotalPrice()) : cart.getTotalPrice()
-		));
+		return carts.map(cart -> {
+			DiscountResult result = discountCalcService.calculate(
+				cart.getTotalPrice(),
+				membershipDiscount,
+				productDiscount.getOrDefault(cart.getProduct().getId(), List.of())
+			);
+
+			return CartResponse.from(
+				cart,
+				result.discountPrice(),
+				result.discountedPrice()
+			);
+		});
 	}
 
 	public void updateQuantity(Long cartId, Long userId, Integer productCount) {
