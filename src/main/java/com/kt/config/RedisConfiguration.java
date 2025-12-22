@@ -6,6 +6,7 @@ import org.redisson.config.Config;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,6 +14,7 @@ import com.kt.common.profile.AppProfile;
 import com.kt.common.profile.DevProfile;
 import com.kt.common.profile.LocalProfile;
 
+@Profile("!test")
 @Configuration
 @RequiredArgsConstructor
 public class RedisConfiguration {

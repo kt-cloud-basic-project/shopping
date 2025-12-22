@@ -5,7 +5,7 @@ spring:
     password: ${DB_PASSWORD:1234}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: 1000
+      maximum-pool-size: 100
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -16,7 +16,6 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
         show_sql: false
-        default_schema: shopping-test
     show-sql: false
   autoconfigure:
     exclude:
