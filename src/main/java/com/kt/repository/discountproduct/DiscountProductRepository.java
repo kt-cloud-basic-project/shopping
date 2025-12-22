@@ -1,5 +1,8 @@
 package com.kt.repository.discountproduct;
 
+import java.util.List;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kt.common.exception.CustomException;
@@ -15,4 +18,7 @@ public interface DiscountProductRepository extends JpaRepository<DiscountProduct
 	boolean existsByProductId(Long id);
 
 	void deleteByDiscountId(Long productId);
+
+	@EntityGraph(attributePaths = {"discount", "product"})
+	List<DiscountProduct> findByProductIdIn(List<Long> productIds);
 }

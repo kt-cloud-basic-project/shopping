@@ -72,7 +72,6 @@ public class DiscountService {
 
 		} else {
 			var product = productRepository.findByIdOrThrow(request.targetId(), ErrorCode.NOT_FOUND_PRODUCT);
-			Preconditions.validate(!discountProductRepository.existsByProductId(product.getId()), ErrorCode.DISCOUNT_ALREADY_EXISTS);
 
 			var savedDiscount = discountRepository.save(discount);
 			discountProductRepository.save(new DiscountProduct(savedDiscount, product));
