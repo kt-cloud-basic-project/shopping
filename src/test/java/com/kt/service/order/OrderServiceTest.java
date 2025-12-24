@@ -32,7 +32,9 @@ import com.kt.dto.order.OrderCreateRequest;
 import com.kt.dto.order.OrderProductRequest;
 import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.OrderUpdateRequest;
+import com.kt.dto.order.response.OrderDetailResponse;
 import com.kt.dto.order.response.OrderListResponse;
+import com.kt.dto.order.response.OrderProductResponse;
 import com.kt.repository.category.CategoryRepository;
 import com.kt.repository.membership.MembershipRepository;
 import com.kt.repository.order.OrderRepository;
@@ -241,6 +243,49 @@ public class OrderServiceTest {
 		assertThat(orders.getContent())
 			.extracting(OrderListResponse::id)
 			.containsExactlyInAnyOrder(orderId, anotherOrderId);
+	}
+
+	@Test
+	void 주문_목록_조회_빈_리스트_반환() {
+		//given
+		Paging paging = new Paging(1, 10);
+
+		//when
+		Page<OrderListResponse> orders = orderService.getOrderList(user.getId(), paging);
+
+		//then
+		assertThat(orders).isEmpty();
+	}
+
+	@Test
+	void 주문_상세_조회_성공() {
+		//given
+		OrderProductRequest productRequest = new OrderProductRequest(
+			savedProduct.getId(),
+			1L,
+			savedVariant.getId()
+		);
+
+		OrderCreateRequest request = new OrderCreateRequest(user.getName(), user.getMobile(),
+			savedAddress.getId(), List.of(productRequest));
+
+		//when
+		Long orderId = orderService.create(user.getId(), request);
+		OrderDetailResponse orderDetail = orderService.getOrderDetail(user.getId(), orderId);
+
+		//then
+		assertThat(orderDetail.orderStatus()).isEqualTo(OrderStatus.ORDERED);
+		assertThat(orderDetail.receiverName()).isEqualTo(user.getName());
+		assertThat(orderDetail.receiverPhone()).isEqualTo(user.getMobile());
+		assertThat(orderDetail.receiverAddress()).isEqualTo(savedAddress.getAddress());
+		assertThat(orderDetail.orderedAt()).isNotNull();
+		assertThat(orderDetail.products()).hasSize(1);
+
+		OrderProductResponse product = orderDetail.products().getFirst();
+
+		assertThat(product.productCount()).isEqualTo(productRequest.productCount());
+		assertThat(product.productId()).isEqualTo(savedProduct.getId());
+		assertThat(product.productVariantId()).isEqualTo(savedVariant.getId());
 	}
 
 	@Test
