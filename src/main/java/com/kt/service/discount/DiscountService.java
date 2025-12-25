@@ -1,5 +1,6 @@
 package com.kt.service.discount;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ import com.kt.dto.discount.response.DiscountListResponse;
 import com.kt.dto.discount.request.DiscountUpdateRequest;
 import com.kt.dto.discount.response.DiscountProductDetailResponse;
 import com.kt.dto.discount.response.DiscountUserResponse;
+import com.kt.event.MembershipDiscountEvent;
+import com.kt.event.ProductDiscountEvent;
 import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.discount.DiscountRepositoryCustom;
 import com.kt.repository.discountmembership.DiscountMembershipCustom;
@@ -44,6 +47,7 @@ public class DiscountService {
 	private final DiscountProductRepository discountProductRepository;
 	private final DiscountMembershipCustom DiscountMembershipCustom;
 	private final DiscountProductCustom DiscountProductCustom;
+	private final ApplicationEventPublisher eventPublisher;
 
 	public Long create(DiscountCreateRequest request) {
 
@@ -68,6 +72,15 @@ public class DiscountService {
 			var savedDiscount = discountRepository.save(discount);
 			discountMembershipRepository.save(new DiscountMembership(savedDiscount, membership));
 
+			eventPublisher.publishEvent(
+				new MembershipDiscountEvent(
+					savedDiscount.getId(),
+					membership.getId(),
+					savedDiscount.getName(),
+					savedDiscount.getValue()
+				)
+			);
+
 			return savedDiscount.getId();
 
 		} else {
@@ -75,6 +88,16 @@ public class DiscountService {
 
 			var savedDiscount = discountRepository.save(discount);
 			discountProductRepository.save(new DiscountProduct(savedDiscount, product));
+
+			eventPublisher.publishEvent(
+				new ProductDiscountEvent(
+					savedDiscount.getId(),
+					product.getId(),
+					product.getName(),
+					savedDiscount.getName(),
+					savedDiscount.getValue()
+				)
+			);
 
 			return savedDiscount.getId();
 		}
