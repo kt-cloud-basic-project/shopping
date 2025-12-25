@@ -25,10 +25,11 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.transaction.Transactional;
+
 @ActiveProfiles("test")
-@SpringBootTest(
-        properties = "spring.autoconfigure.exclude=org.redisson.spring.starter.RedissonAutoConfigurationV2"
-)
+@SpringBootTest
+@Transactional
 public class AuthServiceTest {
     @Autowired
     private AuthService authService;

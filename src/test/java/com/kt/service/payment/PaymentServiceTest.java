@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kt.domain.discount.Discount;
 import com.kt.domain.discount.DiscountTargetType;
 import com.kt.domain.discount.DiscountType;
+import com.kt.domain.discountMembership.DiscountMembership;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
@@ -26,6 +27,7 @@ import com.kt.domain.user.User;
 import com.kt.dto.discount.request.DiscountCreateRequest;
 import com.kt.dto.payment.PaymentCreateRequest;
 import com.kt.repository.discount.DiscountRepository;
+import com.kt.repository.discountmembership.DiscountMembershipRepository;
 import com.kt.repository.membership.MembershipRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -33,6 +35,8 @@ import com.kt.repository.payment.PaymentRepository;
 import com.kt.repository.paymenttype.PaymentTypeRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
+
+import jakarta.persistence.EntityManager;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -57,14 +61,19 @@ class PaymentServiceTest {
 	MembershipRepository membershipRepository;
 	@Autowired
 	DiscountRepository discountRepository;
+	@Autowired
+	DiscountMembershipRepository discountMembershipRepository;
+	@Autowired
+	EntityManager entityManager;
 
 	User user;
 	Order order;
 	PaymentType paymentType;
+	Membership membership;
 
 	@BeforeEach
 	void setUp() {
-		Membership membership = membershipRepository.save(new Membership("SILVER"));
+		membership = membershipRepository.saveAndFlush(new Membership("SILVER"));
 
 		user = userRepository.save(
 			User.normalUser(
@@ -92,6 +101,10 @@ class PaymentServiceTest {
 		);
 
 		paymentType = paymentTypeRepository.save(new PaymentType("CARD"));
+
+		/*영속성 문제로 임시적으로 오류 해결*/
+		entityManager.flush();
+		entityManager.clear();
 	}
 
 	@Test
@@ -110,7 +123,7 @@ class PaymentServiceTest {
 
 	@Test
 	void 멤버십_할인_적용_결제_가능() {
-		discountRepository.save(
+		Discount membershipDiscount = discountRepository.save(
 			new Discount(
 				"멤버십 할인",
 				DiscountTargetType.MEMBERSHIP,
@@ -118,6 +131,10 @@ class PaymentServiceTest {
 				true,
 				10L
 			)
+		);
+
+		discountMembershipRepository.saveAndFlush(
+			new DiscountMembership(membershipDiscount, membership)
 		);
 
 		paymentService.create(결제요청(), user.getId());
