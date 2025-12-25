@@ -25,6 +25,7 @@ import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
+import com.kt.domain.shoppingaddress.ShoppingAddress;
 import com.kt.domain.user.User;
 import com.kt.dto.discount.response.DiscountResult;
 import com.kt.dto.order.OrderCreateRequest;
@@ -62,7 +63,17 @@ public class OrderService {
 
 	public Long create(Long userId, OrderCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
-		var address = shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
+		ShoppingAddress address;
+
+		if (request.receiverAddressId() != null) {
+			address = shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
+
+			// 사용자 본인이 등록한 배송지인지 검증
+			Preconditions.validate(address.getUser().getId().equals(userId), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
+		} else {
+			address = shoppingAddressRepository.findFirstByUserIdAndIsDefaultTrueOrderByIdDesc(userId)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SHOPPING_ADDRESS));
+		}
 
 		// 1. 주문 생성
 		var newOrder = new Order(

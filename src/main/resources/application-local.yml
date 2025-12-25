@@ -28,3 +28,7 @@ slack:
 
 server:
   port: 8080
+
+#logstash:
+#  host: ${logstashhost:localhost}
+#  port: ${logstashport:9601}
