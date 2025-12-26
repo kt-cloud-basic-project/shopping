@@ -95,6 +95,8 @@ public enum ErrorCode {
 	NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제 정보를 찾을 수 없습니다"),
 	NOT_FOUND_PAYMENT_TYPE(HttpStatus.BAD_REQUEST, "결제수단을 찾을 수 없습니다"),
 
+	//wishlist
+	ALREADY_WISHLISTED(HttpStatus.BAD_REQUEST, "이미 찜한 상품입니다.")
 	;
 
 	private final HttpStatus status;
