@@ -17,7 +17,6 @@ import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.CustomUserDetails;
 import com.kt.security.JwtTokenProvider;
-import com.kt.security.blacklist.TokenBlacklistStore;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +46,6 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ShoppingAddressRepository shoppingAddressRepository;
-    private final TokenBlacklistStore tokenBlacklistStore;
     private static final String DEFAULT_MEMBERSHIP_LEVEL = "BRONZE";
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String AUTH_HEADER = "Authorization";
@@ -112,7 +110,7 @@ public class UserService {
         return UserLoginResponse.of(accessToken,refreshToken);
     }
 
-    public void logout(UserLogoutRequest request,String authorization){
+    public void logout(UserLogoutRequest request){
         if(request.refreshToken() == null || request.refreshToken().isBlank()){
             throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
         }
@@ -122,19 +120,6 @@ public class UserService {
 
         refreshTokenRepository.findByToken(request.refreshToken())
                 .ifPresent(token -> refreshTokenRepository.delete(token));
-
-        String accessToken = resolveBearer(authorization);
-
-        // 로그아웃시 블랙리스트에 jti로 구분하고 유효기간 등록
-        String jti = jwtTokenProvider.getJti(accessToken);
-        Date expDate = jwtTokenProvider.getExpiration(accessToken);
-
-        Instant now = Instant.now();
-        Instant exp = expDate.toInstant();
-
-        Duration ttl = Duration.between(now, exp);
-        tokenBlacklistStore.blacklistAccessToken(jti, ttl);
-
 
     }
 

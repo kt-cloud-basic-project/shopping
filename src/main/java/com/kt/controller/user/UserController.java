@@ -44,8 +44,8 @@ public class UserController extends SwaggerAssistance {
     @PostMapping("auth/logout")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "로그아웃")
-    public ApiResult<Void> logout(@RequestHeader(value = "Authorization",required = false) String authorization, @Valid @RequestBody UserLogoutRequest request) {
-        userService.logout(request,authorization);
+    public ApiResult<Void> logout(@Valid @RequestBody UserLogoutRequest request) {
+        userService.logout(request);
         return ApiResult.ok();
     }
 

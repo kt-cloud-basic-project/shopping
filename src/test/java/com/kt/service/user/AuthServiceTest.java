@@ -13,6 +13,7 @@ import com.kt.repository.auth.RefreshTokenRepository;
 import com.kt.repository.membership.MembershipRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.auth.AuthService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+@Transactional
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @SpringBootTest(
@@ -65,12 +66,16 @@ public class AuthServiceTest {
     private static final String AUTH_HEADER = "Authorization";
 
     @BeforeEach
-    void setUp() {
-        Membership membership = new Membership("BRONZE");
-        membershipRepository.save(membership);
+    void init() {
+        // 1) clean
+        refreshTokenRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+        membershipRepository.deleteAllInBatch();
 
-        // 로그인 테스트용 유저 저장
-        User user = User.normalUser(
+        // 2) seed
+        Membership membership = membershipRepository.save(new Membership("BRONZE"));
+
+        userRepository.save(User.normalUser(
                 "login_user01",
                 passwordEncoder.encode("password123"),
                 "로그인유저",
@@ -79,11 +84,14 @@ public class AuthServiceTest {
                 Gender.MALE,
                 LocalDate.of(2000, 1, 1),
                 membership
-        );
+        ));
 
-
-        userRepository.save(user);
+        System.out.println("init users=" + userRepository.count()
+                + ", membership=" + membershipRepository.count()
+                + ", refresh=" + refreshTokenRepository.count());
     }
+
+
     @BeforeEach
     void redissonStub() {
         @SuppressWarnings("unchecked")
@@ -139,6 +147,8 @@ public class AuthServiceTest {
     @DisplayName("로그아웃 성공 - 리프레시 토큰 삭제")
     void 로그아웃_성공() throws Exception {
 
+        System.out.println("before login found=" + userRepository.findByLoginIdAndIsDeletedFalse("login_user01"));
+
         UserLoginResponse tokenResponse =
                 userService.login(new UserLoginRequest("login_user01", "password123"));
 
@@ -163,6 +173,7 @@ public class AuthServiceTest {
 //        // 예: RefreshTokenRepository에서 더 이상 찾을 수 없어야 함
 //        assertThat(refreshTokenRepository.findByToken(refreshToken.refreshToken())).isEmpty();
         assertThat(refreshTokenRepository.findByToken(tokenResponse.refreshToken())).isEmpty();
+
     }
 
     // 2. 로그아웃 실페
@@ -189,6 +200,6 @@ public class AuthServiceTest {
                         .header("Authorization", "Bearer " + tokenResponse.accessToken())
                         .content(jsonBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 }

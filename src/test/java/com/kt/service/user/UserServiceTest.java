@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(
         properties = "spring.autoconfigure.exclude=org.redisson.spring.starter.RedissonAutoConfigurationV2"
@@ -72,7 +73,8 @@ class UserServiceTest {
 
         assertThat(savedUser.getLoginId()).isEqualTo("test_user01");
         assertThat(savedUser.getEmail()).isEqualTo("user@kt.com");
-        assertThat(savedUser.getRole().name()).isEqualTo(Role.USER);
+        assertThat(savedUser.getRole()).isEqualTo(Role.USER);
+
 
     }
 

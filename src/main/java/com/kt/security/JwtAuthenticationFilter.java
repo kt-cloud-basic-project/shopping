@@ -7,7 +7,6 @@ import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 
 import com.kt.common.response.ApiResult;
-import com.kt.security.blacklist.TokenBlacklistStore;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -26,8 +25,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
-    private final TokenBlacklistStore tokenBlacklistStore;
-
 
     @Override
     protected void doFilterInternal(
@@ -44,12 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         try{
             jwtTokenProvider.validateAccessTokenOrThrow(token);
-
-            String jti = jwtTokenProvider.getJti(token);
-            if (tokenBlacklistStore.isBlacklisted(jti)) {
-                setErrorResponse(response, ErrorCode.ACCESS_TOKEN_BLACKLISTED);
-                return;
-            }
 
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -77,7 +68,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         response.getWriter().write(objectMapper.writeValueAsString(body));
     }
-
-
 
 }
