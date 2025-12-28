@@ -33,7 +33,7 @@ public class ReviewService {
 	private final OrderProductRepository orderProductRepository;
 	private final ProductRepository productRepository;
 
-	public void create(Long userId, Long orderProductId, ReviewCreateRequest request) {
+	public Long create(Long userId, Long orderProductId, ReviewCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		// 주문상품인지 조회
@@ -64,8 +64,7 @@ public class ReviewService {
 			request.star()
 		);
 
-		reviewRepository.save(review);
-
+		return reviewRepository.save(review).getId();
 	}
 
 	public Page<ReviewListResponse> getMyAllReview(Long userId, Pageable pageable) {
@@ -74,7 +73,7 @@ public class ReviewService {
 		return reviewRepositoryCustom.getMyAllReview(user.getId(), pageable);
 	}
 
-	public void update(Long userId, Long reviewId, ReviewUpdateRequest request) {
+	public Long update(Long userId, Long reviewId, ReviewUpdateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
@@ -86,9 +85,11 @@ public class ReviewService {
 			request.description(),
 			request.star()
 		);
+
+		return review.getId();
 	}
 
-	public void delete(Long userId, Long reviewId) {
+	public Long delete(Long userId, Long reviewId) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
@@ -97,14 +98,16 @@ public class ReviewService {
 
 		review.delete();
 
+		return review.getId();
 	}
 
-	public void hide(Long reviewId) {
+	public Long hide(Long reviewId) {
 
 		var review = reviewRepository.findByIdOrThrow(reviewId, ErrorCode.NOT_FOUND_REVIEW);
 
 		review.delete();
 
+		return review.getId();
 	}
   
 	public Page<ReviewListResponse> getProductAllReview(Long productId, Pageable pageable) {

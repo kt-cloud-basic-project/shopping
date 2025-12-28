@@ -39,6 +39,7 @@ public enum ErrorCode {
 	//category
 	NOT_FOUND_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 찾을 수 없습니다."),
 	CANNOT_DELETE_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리를 삭제할 수 없습니다."),
+	CANNOT_CREATE_CATEGORY(HttpStatus.BAD_REQUEST, "이미 존재하는 카테고리입니다"),
 
 	//order
 	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다."),
@@ -74,6 +75,8 @@ public enum ErrorCode {
 	//discount
 	NOT_FOUND_DISCOUNT(HttpStatus.BAD_REQUEST, "할인 정책을 찾을 수 없습니다."),
 	INVALID_PERCENTAGE_DISCOUNT_VALUE(HttpStatus.BAD_REQUEST, "퍼센트 할인은 1부터 99 사이의 값이어야 합니다."),
+	NOT_FOUND_DISCOUNT_MEMBERSHIP(HttpStatus.BAD_REQUEST, "멤버십 할인 정책을 찾을 수 없습니다."),
+	NOT_FOUND_DISCOUNT_PRODUCT(HttpStatus.BAD_REQUEST, "상품 할인 정책을 찾을 수 없습니다."),
 
 	//cart
 	NOT_FOUND_CART(HttpStatus.BAD_REQUEST, "해당 장바구니를 찾을 수 없습니다."),
@@ -87,11 +90,14 @@ public enum ErrorCode {
 	INVALID_VARIANT(HttpStatus.BAD_REQUEST, "해당 상품의 옵션이 아닙니다."),
 	CANNOT_DELETE_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션을 삭제할 수 없습니다."),
 	DELETED_VARIANT(HttpStatus.BAD_REQUEST, "해당 옵션이 존재하지 않습니다."),
+	CANNOT_CREATE_VARIANT(HttpStatus.BAD_REQUEST, "이미 존재하는 옵션입니다"),
 
 	//payment
 	NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제 정보를 찾을 수 없습니다"),
+	NOT_FOUND_PAYMENT_TYPE(HttpStatus.BAD_REQUEST, "결제수단을 찾을 수 없습니다"),
 
-
+	//wishlist
+	ALREADY_WISHLISTED(HttpStatus.BAD_REQUEST, "이미 찜한 상품입니다.")
 	;
 
 	private final HttpStatus status;

@@ -3,7 +3,9 @@ package com.kt.service.order;
 import static com.kt.common.support.ObjectUtils.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -16,12 +18,15 @@ import com.kt.common.exception.ErrorCode;
 import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.discount.Discount;
+import com.kt.domain.discount.policy.DiscountPolicy;
+import com.kt.domain.discount.policy.DiscountPolicyFactory;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
 import com.kt.domain.user.User;
+import com.kt.dto.discount.response.DiscountResult;
 import com.kt.dto.order.OrderCreateRequest;
 import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.OrderUpdateRequest;
@@ -29,6 +34,7 @@ import com.kt.dto.order.response.OrderListResponse;
 import com.kt.dto.order.response.OrderDetailResponse;
 import com.kt.dto.order.response.OrderProductResponse;
 import com.kt.repository.discount.DiscountRepository;
+import com.kt.repository.discountmembership.DiscountMembershipRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.order.OrderRepositoryCustom;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -36,6 +42,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.repository.variant.VariantRepository;
+import com.kt.service.discount.DiscountCalcService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -49,8 +56,9 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
 	private final VariantRepository variantRepository;
-	private final DiscountRepository discountRepository;
 	private final OrderRepositoryCustom orderRepositoryCustom;
+	private final DiscountMembershipRepository discountMembershipRepository;
+	private final DiscountCalcService discountCalcService;
 
 	public Long create(Long userId, OrderCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
@@ -101,25 +109,39 @@ public class OrderService {
 	}
 
 	public Page<OrderListResponse> getOrderList(Long userId, Paging paging) {
-		//Page<Order> orderList = orderRepository.findByUserId(userId, paging.toPageable());
 		Page<Order> orders = orderRepositoryCustom.getOrders(userId, paging.toPageable());
 
 		if (orders.isEmpty()) {
 			return Page.empty(paging.toPageable());
 		}
 
-		User user = orders.getContent().getFirst().getUser();
+		// 멤버십 할인 조회
+		Discount membershipDiscount = discountCalcService.getMembershipDiscount(userId);
 
-		// 할인은 있을 수도 없을 수도(optional)
-		Discount discount = Optional.ofNullable(user.getMembership())
-			.map(Membership::getId)
-			.flatMap(discountRepository::findByMembershipId)
-			.orElse(null);
+		// 상품별 할인 조회
+		Map<Long, List<Discount>> productDiscount = discountCalcService.getProductsDiscount(
+			orders.getContent().stream()
+				.flatMap(order -> order.getOrderProducts().stream())
+				.map(op -> op.getProduct().getId())
+				.distinct()
+				.toList()
+		);
 
-		return orders.map(order -> OrderListResponse.from(
-			order,
-			discount
-		));
+		return orders.map(order ->  {
+			Map<Long, DiscountResult> orderProductDiscounts = new HashMap<>();
+
+			for (var orderProduct : order.getOrderProducts()) {
+				DiscountResult discountResult = discountCalcService.calculate(
+					orderProduct.getProduct().getPrice() * orderProduct.getCount(),
+					membershipDiscount,
+					productDiscount.getOrDefault(orderProduct.getProduct().getId(), List.of())
+				);
+
+				orderProductDiscounts.put(orderProduct.getId(), discountResult);
+			}
+
+			return OrderListResponse.from(order, orderProductDiscounts);
+		});
 	}
 
 	public void cancel(Long orderId, Long userId) {
@@ -139,23 +161,32 @@ public class OrderService {
 	public OrderDetailResponse getOrderDetail(Long userId, Long orderId) {
 		var order = orderRepository.findByIdAndUserIdOrThrow(orderId, userId, ErrorCode.NOT_FOUND_ORDER);
 
-		User user = order.getUser();
+		// 멤버십 할인 조회
+		Discount membershipDiscount = discountCalcService.getMembershipDiscount(userId);
 
-		// 할인은 있을 수도 없을 수도(optional)
-		Discount discount = Optional.ofNullable(user.getMembership())
-			.map(Membership::getId)
-			.flatMap(discountRepository::findByMembershipId)
-			.orElse(null);
+		// 상품별 할인 조회
+		Map<Long, List<Discount>> productDiscount = discountCalcService.getProductsDiscount(
+			order.getOrderProducts().stream()
+				.map(op -> op.getProduct().getId())
+				.distinct()
+				.toList()
+		);
 
 		List<OrderProductResponse> products = orderProductRepository.findByOrderId(orderId).stream()
-			.map(
-			orderProduct -> {
+			.map(orderProduct -> {
 				var product = Objects.requireNonNull(orderProduct.getProduct(), ErrorCode.NOT_FOUND_PRODUCT.getMessage());
+
+				DiscountResult discountResult = discountCalcService.calculate(
+					product.getPrice() * orderProduct.getCount(),
+					membershipDiscount,
+					productDiscount.getOrDefault(product.getId(), List.of())
+				);
 
 				return OrderProductResponse.from(
 					orderProduct,
 					product,
-					discount
+					discountResult.discountPrice(),
+					discountResult.discountedPrice()
 				);
 			}
 		).toList();

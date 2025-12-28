@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://${db.host}:3306/${db.scheme}
+    url: jdbc:mysql://${db.host}:${db.port}/${db.scheme}
     username: ${db.username}
     password: ${db.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,6 +22,10 @@ jwt:
   secret: ${kt.jwt.secret}
   access-token-expiration: ${kt.jwt.access-token-expiration}
   refresh-token-expiration: ${kt.jwt.refresh-token-expiration}
+
+slack:
+  bot-token: ${slack.token}
+  log-channel: ${slack.channel}
 
 server:
   port: ${shopping.server.port}

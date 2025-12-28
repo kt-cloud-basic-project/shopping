@@ -17,3 +17,18 @@ services:
     platform: linux/arm64
     command: ["redis-server", "--ignore-warnings", "ARM64-COW-BUG"]
 
+  local-prometheus:
+    image: prom/prometheus:latest
+    container_name: my-prometheus-container
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  local-grafana:
+    image: grafana/grafana:latest
+    container_name: my-grafana-container
+    ports:
+      - "3001:3000"
+    depends_on:
+      - local-prometheus
+

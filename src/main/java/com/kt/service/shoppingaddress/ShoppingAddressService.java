@@ -55,7 +55,7 @@ public class ShoppingAddressService {
 		}
 	}
 
-	public void create(Long userId, ShoppingAddressCreateRequest request) {
+	public Long create(Long userId, ShoppingAddressCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var addressList = shoppingAddressRepository.findByUserId(user.getId());
@@ -75,7 +75,7 @@ public class ShoppingAddressService {
 			isDefault
 		);
 
-		shoppingAddressRepository.save(newAddress);
+		return shoppingAddressRepository.save(newAddress).getId();
 	}
 
 	public List<ShoppingAddressListResponse> getMyShoppingAddress(Long userId) {
@@ -88,7 +88,7 @@ public class ShoppingAddressService {
 			.toList();
 	}
 
-	public void update(Long userId, Long addressId, ShoppingAddressUpdateRequest request) {
+	public Long update(Long userId, Long addressId, ShoppingAddressUpdateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var address = shoppingAddressRepository.findByIdOrThrow(addressId, ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
@@ -109,9 +109,11 @@ public class ShoppingAddressService {
 			request.infoDesc(),
 			isDefault
 		);
+
+		return address.getId();
 	}
 
-	public void defaultAddress(Long userId, Long addressId) {
+	public Long defaultAddress(Long userId, Long addressId) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var address = shoppingAddressRepository.findByIdOrThrow(addressId, ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
@@ -123,9 +125,10 @@ public class ShoppingAddressService {
 
 		address.setDefault();
 
+		return address.getId();
 	}
 
-	public void delete(Long userId, Long addressId) {
+	public Long delete(Long userId, Long addressId) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
 
 		var address = shoppingAddressRepository.findByIdOrThrow(addressId, ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
@@ -148,5 +151,7 @@ public class ShoppingAddressService {
 		}
 
 		shoppingAddressRepository.delete(address);
+
+		return address.getId();
 	}
 }

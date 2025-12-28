@@ -6,7 +6,6 @@ on:
 
 env:
   DB_PASSWORD: root
-#  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
   dev-deploy:
@@ -89,10 +88,12 @@ jobs:
           deployment_package: ${{ env.DIR }}/${{ env.API_ZIP }}
 
 
-#      - name: send slack notification
-#        uses: 8398a7/action-slack@v3
-#        with:
-#          status: ${{ job.status }}
-#          author_name: GitHub Actions
-#          fields: repo,commit,author,ref,workflow,job,took
-#        if: always()
+      - name: send slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: GitHub Actions
+          fields: repo,commit,author,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
