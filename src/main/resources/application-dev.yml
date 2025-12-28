@@ -23,5 +23,13 @@ jwt:
   access-token-expiration: ${kt.jwt.access-token-expiration:300000}
   refresh-token-expiration: ${kt.jwt.refresh-token-expiration:43200000}
 
+slack:
+  bot-token: ${slack.token}
+  log-channel: ${slack.channel}
+
 server:
   port: ${shopping.server.port:8080}
+
+logstash:
+  host: ${logstashhost:localhost}
+  port: ${logstashport:9601}
