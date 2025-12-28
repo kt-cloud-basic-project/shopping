@@ -36,15 +36,12 @@ public class AdminMembershipController extends SwaggerAssistance {
 	private final MembershipService membershipService;
 
 	@PostMapping
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "멤버십 등록")
-	public ApiResult<Void> create(
+	public ApiResult<Long> create(
 		@Valid @RequestBody MembershipCreateRequest request
 	) {
-
-		membershipService.create(request);
-
-		return ApiResult.ok();
+		return ApiResult.ok(membershipService.create(request));
 	}
 
 	@GetMapping
@@ -62,26 +59,20 @@ public class AdminMembershipController extends SwaggerAssistance {
 	@PutMapping("/{membershipId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "멤버십 수정")
-	public ApiResult<Void> update(
+	public ApiResult<Long> update(
 		@PathVariable Long membershipId,
 		@Valid @RequestBody MembershipUpdateRequest request
 	) {
-
-		membershipService.update(membershipId, request);
-
-		return ApiResult.ok();
+		return ApiResult.ok(membershipService.update(membershipId, request));
 	}
 
 	@DeleteMapping("/{membershipId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "멤버십 삭제")
-	public ApiResult<Void> delete(
+	public ApiResult<Long> delete(
 		@PathVariable Long membershipId
 	) {
-
-		membershipService.delete(membershipId);
-
-		return ApiResult.ok();
+		return ApiResult.ok(membershipService.delete(membershipId));
 	}
 
 }

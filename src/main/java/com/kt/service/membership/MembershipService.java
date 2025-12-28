@@ -24,12 +24,12 @@ public class MembershipService {
 	private final MembershipRepository membershipRepository;
 	private final MembershipRepositoryCustom membershipRepositoryCustom;
 
-	public void create(MembershipCreateRequest request) {
+	public Long create(MembershipCreateRequest request) {
 		Membership membership = new Membership(
 			request.level()
 		);
 
-		membershipRepository.save(membership);
+		return membershipRepository.save(membership).getId();
 	}
 
 	public Page<MembershipListResponse> getAllMembership(Pageable pageable) {
@@ -37,18 +37,22 @@ public class MembershipService {
 		return membershipRepositoryCustom.getAllMembership(pageable);
 	}
 
-	public void update(Long membershipId, MembershipUpdateRequest request) {
+	public Long update(Long membershipId, MembershipUpdateRequest request) {
 		var membership = membershipRepository.findByIdOrThrow(membershipId, ErrorCode.NOT_FOUND_MEMBERSHIP);
 
 		Preconditions.validate(membershipRepository.findByLevel(request.level()).isEmpty(), ErrorCode.ALREADY_EXIST_MEMBERSHIP_LEVEL);
 
 		membership.update(request.level());
+
+		return membership.getId();
 	}
 
-	public void delete(Long membershipId) {
+	public Long delete(Long membershipId) {
 		var membership = membershipRepository.findByIdOrThrow(membershipId, ErrorCode.NOT_FOUND_MEMBERSHIP);
 
 		membership.delete();
+
+		return membership.getId();
 	}
 
 }

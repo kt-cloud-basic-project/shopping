@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.kt.common.exception.ErrorCode;
 import com.kt.domain.category.Category;
 import com.kt.dto.category.CategoryRequest;
 import com.kt.repository.category.CategoryRepository;
@@ -94,7 +93,7 @@ public class CategoryServiceTest {
 		categoryService.updateCategory(category.getId(), request);
 
 		//then
-		var updatedCategory = categoryRepository.findByIdOrThrow(category.getId(), ErrorCode.NOT_FOUND_CATEGORY);
+		var updatedCategory = categoryRepository.findById(category.getId()).orElseThrow();
 		assertThat(updatedCategory.getType()).isEqualTo("신발");
 		assertThat(categoryRepository.findByType("아우터")).isEmpty();
 	}

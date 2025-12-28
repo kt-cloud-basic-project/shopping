@@ -37,16 +37,13 @@ public class ShoppingAddressController extends SwaggerAssistance {
 	private final ShoppingAddressService shoppingAddressService;
 
 	@PostMapping
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "배송지 등록")
-	public ApiResult<Void> create(
+	public ApiResult<Long> create(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@Valid @RequestBody ShoppingAddressCreateRequest request
 	) {
-
-		shoppingAddressService.create(currentUser.getId(), request);
-
-		return ApiResult.ok();
+		return ApiResult.ok(shoppingAddressService.create(currentUser.getId(), request));
 	}
 
 	@GetMapping
@@ -64,41 +61,32 @@ public class ShoppingAddressController extends SwaggerAssistance {
 	@PutMapping("/{addressId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "배송지 수정")
-	public ApiResult<Void> update(
+	public ApiResult<Long> update(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long addressId,
 		@Valid @RequestBody ShoppingAddressUpdateRequest request
 	) {
-
-		shoppingAddressService.update(currentUser.getId(), addressId, request);
-
-		return ApiResult.ok();
+		return ApiResult.ok(shoppingAddressService.update(currentUser.getId(), addressId, request));
 	}
 
 	@PatchMapping("/{addressId}/default")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "기본 배송지 설정")
-	public ApiResult<Void> defaultAddress(
+	public ApiResult<Long> defaultAddress(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long addressId
 	) {
-
-		shoppingAddressService.defaultAddress(currentUser.getId(), addressId);
-
-		return ApiResult.ok();
+		return ApiResult.ok(shoppingAddressService.defaultAddress(currentUser.getId(), addressId));
 	}
 
 	@DeleteMapping("/{addressId}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "배송지 삭제")
-	public ApiResult<Void> delete(
+	public ApiResult<Long> delete(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long addressId
 	) {
-
-		shoppingAddressService.delete(currentUser.getId(), addressId);
-
-		return ApiResult.ok();
+		return ApiResult.ok(shoppingAddressService.delete(currentUser.getId(), addressId));
 	}
 
 }

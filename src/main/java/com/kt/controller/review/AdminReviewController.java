@@ -26,12 +26,9 @@ public class AdminReviewController extends SwaggerAssistance {
 
 	@DeleteMapping("/reviews/{reviewId}/hide")
 	@ResponseStatus(HttpStatus.OK)
-	public ApiResult<Void> hide(
+	public ApiResult<Long> hide(
 		@PathVariable Long reviewId
 	) {
-
-		reviewService.hide(reviewId);
-
-		return ApiResult.ok();
+		return ApiResult.ok(reviewService.hide(reviewId));
 	}
 }

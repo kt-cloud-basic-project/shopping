@@ -12,10 +12,10 @@ spring:
     show-sql: true
   data:
     redis:
-      host: localhost
-      port: 6379
-      ssl:
-        enabled: false
+        host: localhost
+        port: 6379
+        ssl:
+          enabled: false
 
 jwt:
   secret: ${kt.jwt.secret}
