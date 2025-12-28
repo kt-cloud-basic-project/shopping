@@ -88,7 +88,7 @@ public class UserService {
 
         if(!passwordEncoder.matches(request.password(), user.getPassword())){
             throw new CustomException(ErrorCode.FAIL_LOGIN);
-        }else if(user.isDeleted()){
+        }else if(user.Deleted()){
             throw new CustomException(ErrorCode.FAIL_LOGIN); // 삭제된 계정이지만 보안을 위해 ID,PASSWORD 로그인실패 처리
         }
 

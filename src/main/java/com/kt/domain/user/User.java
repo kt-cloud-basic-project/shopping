@@ -98,6 +98,8 @@ public class User extends BaseEntity {
         this.isDeleted = true;
     }
 
+    public boolean Deleted(){return isDeleted; }
+
     // 결제기능 사용을 위한 보유금액 추가
     public void addMoney(long amount) {
         this.money += amount;
