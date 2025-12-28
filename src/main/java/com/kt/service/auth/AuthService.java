@@ -43,7 +43,7 @@ public class AuthService {
 
         // RTR방식 -> access토큰을 갱신할때 refresh토큰을 함께 갱신하는방법
         // 장점: refresh토큰이 탈취당했을때를 대비할수있어 보안성이높음
-        // 단점: stateless하지않고 서버에 부담을 줄수있다? jwt의 장점이 희석된다
+        // 단점: 요청을 보낼때마다 새로 발급하여 db에 저장하면 stateless하지않고 서버에 부담을 줄수있다? jwt의 장점이 희석된다
         // 일단 보류
         /*String newRefreshToken = jwtTokenProvider.createRefreshToken();
         refreshTokenService.save(userId, newRefreshToken);
