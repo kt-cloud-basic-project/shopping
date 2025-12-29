@@ -1,18 +1,20 @@
-package com.kt.service.notify;
+package com.kt.notify;
 
-import com.kt.dto.notify.MailSendRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Service
+@Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class EMailSendService implements MailSendService {
+
     private final JavaMailSender mailSender;
 
     @Override

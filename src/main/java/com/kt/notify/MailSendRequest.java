@@ -1,4 +1,4 @@
-package com.kt.dto.notify;
+package com.kt.notify;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
