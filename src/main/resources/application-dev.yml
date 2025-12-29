@@ -29,3 +29,7 @@ slack:
 
 server:
   port: ${shopping.server.port}
+
+logstash:
+  host: ${logstashhost:localhost}
+  port: ${logstashport:9601}

@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### logstash ###
+elk/logstash/tmp
+
+### ec2 file ###
+ec2-user@16.184.48.154
+ec20user@16.184.48.154

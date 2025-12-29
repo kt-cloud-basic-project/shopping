@@ -1,17 +1,12 @@
 package com.kt.domain.discount;
 
-import com.kt.domain.membership.Membership;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,42 +24,35 @@ public class Discount {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
+	private DiscountTargetType targetType;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private DiscountType type;
 
 	@Column(nullable = false)
-	private Integer value;
+	private boolean isCombinable;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "membership_id")
-	private Membership membership;
+	/**
+	 * DB는 null 차단
+	 * Java 객체는 null 허용?
+	 * 생성 중간 단계에서 불완전 객체 발생 가능 -> Long -> long
+	 */
+	@Column(nullable = false)
+	private long value;
 
-	public Discount(String name, DiscountType type, Integer value, Membership membership) {
+	public Discount(String name, DiscountTargetType targetType, DiscountType type, boolean isCombinable, long value) {
+		this.name = name;
+		this.targetType = targetType;
+		this.type = type;
+		this.isCombinable = isCombinable;
+		this.value = value;
+	}
+
+	public void update(String name, DiscountType type, boolean isCombinable, long value) {
 		this.name = name;
 		this.type = type;
-		this.value = value;
-		this.membership = membership;
-	}
-
-	public void update(String name, DiscountType type, Integer value) {
-		this.name = name;
-		this.type = type;
+		this.isCombinable = isCombinable;
 		this.value = value;
 	}
-
-	public Long calcDiscountFinalPrice(Long originalPrice) {
-		if (originalPrice == null || originalPrice <= 0) {
-			return 0L;
-		}
-
-		if (this.type == DiscountType.FIXED_AMOUNT) {
-			return Math.max(0, originalPrice - this.value);
-		} else {
-			return Math.max(0, originalPrice - (originalPrice * this.value / 100));
-		}
-	}
-
-	public Long calcDiscountAmount(Long originalPrice) {
-		return originalPrice - calcDiscountFinalPrice(originalPrice);
-	}
-
 }

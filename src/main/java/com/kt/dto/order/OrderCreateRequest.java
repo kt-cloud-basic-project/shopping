@@ -18,7 +18,7 @@ public record OrderCreateRequest(
 	String receiverPhone,
 
 	@Schema(description = "주문자 배송지 아이디", example = "1")
-	@NotNull(message = "배송지 정보 입력은 필수입니다")
+	// @NotNull(message = "배송지 정보 입력은 필수입니다")
 	Long receiverAddressId,
 
 	@ArraySchema(

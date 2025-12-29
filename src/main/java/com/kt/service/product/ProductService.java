@@ -1,5 +1,6 @@
 package com.kt.service.product;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ import com.kt.domain.membership.Membership;
 import com.kt.domain.product.Product;
 import com.kt.domain.product.ProductStatus;
 import com.kt.dto.product.request.ProductCreateRequest;
-import com.kt.dto.product.request.ProductUpdateSoldOutReqeust;
+import com.kt.dto.product.request.ProductUpdateSoldOutRequest;
 import com.kt.dto.product.response.AdminProductListResponse;
 import com.kt.dto.product.response.AdminProductDetailResponse;
 import com.kt.dto.product.request.ProductUpdateCategoryRequest;
@@ -44,8 +45,9 @@ public class ProductService {
 	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
 	private final UserRepository userRepository;
 	private final DiscountRepository discountRepository;
+	//private final DiscountCalculator discountCalculator;
 
-	public void create(ProductCreateRequest request) {
+	public Long create(ProductCreateRequest request) {
 		var category = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
 
 		var newProduct = new Product(
@@ -56,7 +58,7 @@ public class ProductService {
 			category
 		);
 
-		productRepository.save(newProduct);
+		return productRepository.save(newProduct).getId();
 	}
 
 
@@ -72,7 +74,7 @@ public class ProductService {
 	}
 
 
-	public void updateProduct(Long productId,  ProductUpdateRequest request) {
+	public Long updateProduct(Long productId,  ProductUpdateRequest request) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 
 		product.update(
@@ -81,21 +83,26 @@ public class ProductService {
 			ObjectUtils.orElse(request.price(), product.getPrice()),
 			ObjectUtils.orElse(request.stock(), product.getStock())
 		);
+
+		return product.getId();
 	}
 
 
-	public void updateProductCategory(Long productId, ProductUpdateCategoryRequest request) {
+	public Long updateProductCategory(Long productId, ProductUpdateCategoryRequest request) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		var updateCategory = categoryRepository.findByIdOrThrow(request.categoryId(), ErrorCode.NOT_FOUND_CATEGORY);
 
 		product.updateCategory(
 			ObjectUtils.orElse(updateCategory, product.getCategory())
 		);
+
+		return product.getId();
 	}
 
 
-	public void updateProductSoldOutWithToggle(Long productId) {
+	public Long updateProductSoldOutWithToggle(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(!product.getStatus().equals(ProductStatus.DELETED), ErrorCode.DELETED_PRODUCT);
 
 		if (product.getStatus().equals(ProductStatus.SOLD_OUT)) {
 			Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
@@ -103,31 +110,42 @@ public class ProductService {
 		} else {
 			product.updateSoldOut();
 		}
+
+		return product.getId();
 	}
 
 
-	public void updateProductInActive(Long productId) {
+	public Long updateProductInActive(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+		Preconditions.validate(!product.getStatus().equals(ProductStatus.DELETED), ErrorCode.DELETED_PRODUCT);
 
 		product.updateInActive();
+
+		return product.getId();
 	}
 
 
-	public void updateProductActive(Long productId) {
+	public Long updateProductActive(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		Preconditions.validate(product.getStock() >= 1, ErrorCode.INVALID_PRODUCT_STOCK);
+		Preconditions.validate(!product.getStatus().equals(ProductStatus.DELETED), ErrorCode.DELETED_PRODUCT);
 
 		product.updateActive();
+
+		return product.getId();
 	}
 
 
-	public void updateProductsSoldOut(ProductUpdateSoldOutReqeust request) {
+	public List<Long> updateProductsSoldOut(ProductUpdateSoldOutRequest request) {
 
 		request.productIds().forEach(productId -> {
 			var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
+			Preconditions.validate(!product.getStatus().equals(ProductStatus.DELETED), ErrorCode.DELETED_PRODUCT);
 
 			product.updateSoldOut();
 		});
+
+		return request.productIds();
 	}
 
 
@@ -138,14 +156,19 @@ public class ProductService {
 			return Page.empty(pageable);
 		}
 
-		// 로그인 유저는 할인 적용
-		Discount discount = getDiscountForUser(currentUser);
+		//Discount discount = discountCalculator.findMembershipDiscount(currentUser.getId());
 
-		return products.map(product -> UserProductListResponse.from(
-			product,
-			discount != null ? discount.calcDiscountAmount(product.getPrice()) : 0L,
-			discount != null ? discount.calcDiscountFinalPrice(product.getPrice()) : product.getPrice()
-		));
+		return products.map(product -> {
+			//DiscountCalcResult priceResult = discountCalculator.calculate(discount, product.getPrice());
+
+			return UserProductListResponse.from(
+				product,
+				null,
+				null
+				//priceResult.discountPrice(),
+				//priceResult.discountedPrice()
+			);
+		});
 	}
 
 	public UserProductDetailResponse getProductDetailForUser(CustomUserDetails currentUser, Long productId) {
@@ -154,30 +177,13 @@ public class ProductService {
 
 		var variants = variantService.getVariantList(productId);
 
-		// 로그인 유저는 할인 적용
-		Discount discount = getDiscountForUser(currentUser);
-		final Long discountAmount = discount != null ? discount.calcDiscountAmount(product.getPrice()) : 0L;
-		final Long discountedPrice = discount != null ? discount.calcDiscountFinalPrice(product.getPrice()) : product.getPrice();
+		//DiscountCalcResult priceResult = discountCalculator.getUserMembershipDiscount(currentUser.getId(), product.getPrice());
 
-		return UserProductDetailResponse.from(product, variants, discountAmount, discountedPrice);
+		return UserProductDetailResponse.from(product, variants, null,null); //priceResult.discountPrice(), priceResult.discountedPrice());
 
 	}
 
-	private Discount getDiscountForUser(CustomUserDetails currentUser) {
-		if(currentUser == null) {
-			return null;
-		}
-
-		var user = userRepository.findByIdOrThrow(currentUser.getId(), ErrorCode.NOT_FOUND_USER);
-
-		return Optional.ofNullable(user.getMembership())
-			.map(Membership::getId)
-			.flatMap(discountRepository::findByMembershipId)
-			.orElse(null);
-	}
-
-
-	public void deleteProduct(Long productId) {
+	public Long deleteProduct(Long productId) {
 		var product = productRepository.findByIdOrThrow(productId, ErrorCode.NOT_FOUND_PRODUCT);
 		Preconditions.validate(!orderProductRepositoryCustom.hasInvalidStatusWithProductId(productId), ErrorCode.CANNOT_DELETE_PRODUCT);
 
@@ -185,6 +191,8 @@ public class ProductService {
 		product.getVariants().forEach(variant -> {
 			variantService.deleteVariant(variant.getId());
 		});
+
+		return product.getId();
 	}
 
 

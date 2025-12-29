@@ -16,6 +16,7 @@ spring:
         port: 6379
         ssl:
           enabled: false
+
 jwt:
   secret: ${kt.jwt.secret}
   access-token-expiration: 300000
