@@ -77,7 +77,7 @@ public class PaymentService {
 
 		paymentRepository.save(payment);
 
-		order.updateStatus(OrderStatus.SHIPPED);
+		order.updateStatus(OrderStatus.PAID);
 	}
 
 	public Page<PaymentListResponse> getMyAllPayment(Long userId, Pageable pageable) {
