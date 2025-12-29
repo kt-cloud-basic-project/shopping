@@ -1,4 +1,7 @@
 package com.kt.event;
 
-public record CartItemAddedEvent() {
+public record CartItemAddedEvent(
+	Long userId,
+	Long productId
+) {
 }
