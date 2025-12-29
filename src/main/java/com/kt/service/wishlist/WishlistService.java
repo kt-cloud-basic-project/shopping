@@ -8,7 +8,6 @@ import com.kt.common.exception.ErrorCode;
 import com.kt.domain.product.Product;
 import com.kt.domain.user.User;
 import com.kt.domain.wishlist.Wishlist;
-import com.kt.event.CartItemAddedEvent;
 import com.kt.event.WishlistAddedEvent;
 import com.kt.repository.WishlistRepository;
 import com.kt.repository.product.ProductRepository;
