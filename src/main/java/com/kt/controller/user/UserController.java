@@ -2,12 +2,14 @@ package com.kt.controller.user;
 
 import com.kt.common.support.SwaggerAssistance;
 import com.kt.dto.auth.TokenResponse;
+import com.kt.dto.notify.MailSendRequest;
 import com.kt.dto.user.request.*;
 import com.kt.dto.user.response.UserInfoResponse;
 import com.kt.dto.user.response.UserLoginResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.common.response.ApiResult;
 import com.kt.service.auth.AuthService;
+import com.kt.service.notify.MailSendService;
 import com.kt.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 @Tag(name = "User", description = "유저 관련 API")
 @RestController
@@ -24,6 +27,7 @@ public class UserController extends SwaggerAssistance {
 
     private final UserService userService;
     private final AuthService authService;
+    private final MailSendService mailSendService;
 
     @PostMapping("auth/signup")
     @ResponseStatus(HttpStatus.CREATED)
@@ -86,6 +90,13 @@ public class UserController extends SwaggerAssistance {
     public ApiResult<TokenResponse> reissue(@RequestBody TokenResponse request){
         TokenResponse newToken = authService.reissue(request.accessToken(), request.refreshToken());
         return ApiResult.ok(newToken);
+    }
+
+    @PostMapping("/send")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ApiResult<Void> sendMail(@RequestBody MailSendRequest mailSendRequest){
+        mailSendService.sendEmail(mailSendRequest);
+        return ApiResult.ok();
     }
 
 }
