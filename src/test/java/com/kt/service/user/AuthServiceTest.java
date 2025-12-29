@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.redisson.api.RBucket;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,12 +36,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
+@AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
-@SpringBootTest(
-        properties = "spring.autoconfigure.exclude=org.redisson.spring.starter.RedissonAutoConfigurationV2"
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuthServiceTest {
     @Autowired
     private AuthService authService;
@@ -59,9 +58,6 @@ public class AuthServiceTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    @MockBean
-    private org.redisson.api.RedissonClient redissonClient;
-
 
     private static final String AUTH_HEADER = "Authorization";
 
@@ -91,24 +87,6 @@ public class AuthServiceTest {
                 + ", refresh=" + refreshTokenRepository.count());
     }
 
-
-    @BeforeEach
-    void redissonStub() {
-        @SuppressWarnings("unchecked")
-        RBucket<Object> bucket = Mockito.mock(RBucket.class);
-
-        AtomicBoolean exists = new AtomicBoolean(false);
-
-        Mockito.when(redissonClient.getBucket(Mockito.anyString()))
-                .thenReturn(bucket);
-
-        Mockito.when(bucket.isExists())
-                .thenAnswer(inv -> exists.get());
-
-        Mockito.doAnswer(inv -> { exists.set(true); return null; })
-                .when(bucket).set(Mockito.any(), Mockito.any());
-
-    }
 
 
     // 로그인 테스트
