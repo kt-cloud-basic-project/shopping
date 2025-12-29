@@ -7,3 +7,9 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         jdbc:
           time_zone: Asia/Seoul
+  config:
+    import: classpath:application-integration.yml
+
+logstash:
+  host: ${logstashhost:localhost}
+  port: ${logstashport:9601}
