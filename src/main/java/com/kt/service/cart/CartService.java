@@ -15,6 +15,7 @@ import com.kt.domain.product.Product;
 import com.kt.dto.cart.CartCreateRequest;
 import com.kt.dto.cart.response.CartResponse;
 import com.kt.dto.discount.response.DiscountResult;
+import com.kt.event.CartItemAddedEvent;
 import com.kt.repository.cart.CartRepository;
 import com.kt.repository.discountmembership.DiscountMembershipRepository;
 import com.kt.repository.discountproduct.DiscountProductRepository;
@@ -23,11 +24,12 @@ import com.kt.repository.user.UserRepository;
 import com.kt.repository.variant.VariantRepository;
 import com.kt.service.discount.DiscountCalcService;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -38,6 +40,7 @@ public class CartService {
 	private final ProductRepository productRepository;
 	private final VariantRepository variantRepository;
 	private final DiscountCalcService discountCalcService;
+	private final ApplicationEventPublisher eventPublisher;
 
     public Long create(Long userId, CartCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
@@ -59,6 +62,10 @@ public class CartService {
 			product
 		);
 		cartRepository.save(newCart);
+
+		eventPublisher.publishEvent(
+			new CartItemAddedEvent(userId, product.getId())
+		);
 
 		return newCart.getId();
     }
