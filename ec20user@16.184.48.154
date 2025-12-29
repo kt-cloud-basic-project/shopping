@@ -15,7 +15,6 @@ services:
     ports:
       - "6379:6379"
     platform: linux/arm64
-    command: ["redis-server", "--ignore-warnings", "ARM64-COW-BUG"]
 
   local-prometheus:
     image: prom/prometheus:latest
@@ -24,6 +23,7 @@ services:
       - "9091:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
   local-grafana:
     image: grafana/grafana:latest
     container_name: my-grafana-container
@@ -33,14 +33,12 @@ services:
       - local-prometheus
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g -XX:UseSVE=0
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - xpack.security.enabled=false
-      - JAVA_TOOL_OPTIONS=-XX:UseSVE=0
-      - CLI_JAVA_OPTS=-XX:UseSVE=0
     ports:
       - "9200:9200"
     volumes:
@@ -54,7 +52,7 @@ services:
     container_name: logstash
     environment:
       - LS_JAVA_OPTS=-Xms512m -Xmx512m -Djava.io.tmpdir=/usr/share/logstash/tmp
-      - ENVIRONMENT=local
+      - ENVIRONMENT=local       # 전에 쓰던 env 값
     volumes:
       - ./elk/logstash/tmp:/usr/share/logstash/tmp
       - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
@@ -67,7 +65,7 @@ services:
       - elk
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:9.2.2
+    image: docker.elastic.co/kibana/kibana:8.17.0
     container_name: kibana
     depends_on:
       - elasticsearch
