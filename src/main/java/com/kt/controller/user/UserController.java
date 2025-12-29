@@ -8,7 +8,6 @@ import com.kt.dto.user.response.UserLoginResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.common.response.ApiResult;
 import com.kt.service.auth.AuthService;
-import com.kt.notify.MailSendService;
 import com.kt.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

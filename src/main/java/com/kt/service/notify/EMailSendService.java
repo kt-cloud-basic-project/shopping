@@ -1,5 +1,6 @@
-package com.kt.notify;
+package com.kt.service.notify;
 
+import com.kt.dto.notify.MailSendRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +9,10 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 @Profile("!test")
 @RequiredArgsConstructor
 public class EMailSendService implements MailSendService {
