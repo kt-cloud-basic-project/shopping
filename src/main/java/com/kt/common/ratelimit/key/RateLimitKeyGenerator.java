@@ -4,6 +4,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.kt.common.exception.CustomException;
+import com.kt.common.exception.ErrorCode;
 import com.kt.common.ratelimit.annotation.KeyType;
 import com.kt.common.support.ClientIpResolver;
 import com.kt.security.CustomUserDetails;
@@ -39,10 +41,11 @@ public class RateLimitKeyGenerator {
 	private Long extractUserId() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails userDetails) {
-			return userDetails.getId();
+		// USER_ID는 무조건 인증된 사용자만 접근해야한다
+		if (auth == null || !(auth.getPrincipal() instanceof CustomUserDetails userDetails)) {
+			throw new CustomException(ErrorCode.FORBIDDEN);
 		}
 
-		return 0L;
+		return userDetails.getId();
 	}
 }
