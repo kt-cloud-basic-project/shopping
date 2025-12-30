@@ -12,6 +12,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.response.ErrorResponse;
+import com.kt.common.support.ClientIpResolver;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,7 +45,7 @@ public class GlobalRateLimitFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		String clientIp = getClientIp(request);
+		String clientIp = ClientIpResolver.getClientIp(request);
 
 		AtomicInteger counter = ipRequestCounter.get(clientIp, key -> new AtomicInteger(0));
 		int currentCount = counter.incrementAndGet();
@@ -70,39 +71,11 @@ public class GlobalRateLimitFilter extends OncePerRequestFilter {
 
 		String jsonResponse = String.format(
 			"{\"code\":\"%s\",\"message\":\"%s\"}",
-			ErrorCode.EXCEED_REQUEST_LIMIT.getStatus().toString(),
-			ErrorCode.EXCEED_REQUEST_LIMIT.getMessage() + String.format("[요청 횟수 제한을 초과했습니다. IP: %s, 현재 요청수: %d]", clientIp, currentCount)
+			ErrorCode.GLOBAL_EXCEED_REQUEST_LIMIT.getStatus().toString(),
+			ErrorCode.GLOBAL_EXCEED_REQUEST_LIMIT.getMessage() + String.format("[IP: %s, 현재 요청수: %d]", clientIp, currentCount)
 		);
 
 		response.getWriter().write(jsonResponse);
 		response.getWriter().flush();
-	}
-
-	private String getClientIp(HttpServletRequest request) {
-		String ip = request.getHeader("X-Forwarded-For");
-
-		if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("Proxy-Client-IP");
-		}
-		if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("WL-Proxy-Client-IP");
-		}
-		if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("HTTP_CLIENT_IP");
-		}
-		if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-		}
-		if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getRemoteAddr();
-		}
-
-		if (ip != null && ip.contains(",")) {
-			ip = ip.split(",")[0].trim();
-		}
-
-		log.debug("Extracted IP: {}", ip);
-
-		return ip;
 	}
 }
