@@ -1,6 +1,7 @@
 package com.kt.controller.wishlist;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,11 +25,32 @@ public class WishlistController {
 	@PostMapping("/{productId}")
 	@Operation(summary = "찜 추가")
 	public ApiResult<Void> addWishlist(
-		@PathVariable Long productId,
-		@AuthenticationPrincipal CustomUserDetails currentUser
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@PathVariable Long productId
 	) {
 		wishlistService.addWishlist(currentUser.getId(), productId);
 		return ApiResult.ok();
 	}
+
+	@DeleteMapping("/{productId}")
+	@Operation(summary="찜 삭제")
+	public ApiResult<Void> removeWishlist(
+		@AuthenticationPrincipal CustomUserDetails currentUser,
+		@PathVariable Long productId
+	) {
+		wishlistService.removeWishlist(currentUser.getId(),productId);
+		return ApiResult.ok();
+	}
+
+	@DeleteMapping
+	@Operation(summary="찜 전체 삭제")
+	public ApiResult<Void> removeAllWishlist(
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		wishlistService.removeAllWishlist(currentUser.getId());
+		return ApiResult.ok();
+	}
+
+
 
 }
