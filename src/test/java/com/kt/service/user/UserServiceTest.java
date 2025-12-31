@@ -19,6 +19,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -26,9 +28,9 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ActiveProfiles("test")
-@SpringBootTest
 @Transactional
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserServiceTest {
 
     // 유저 유닛 테스트 작성
@@ -51,7 +53,8 @@ class UserServiceTest {
     // 1. 유저회원가입(성공)
     @Test
     @DisplayName("회원가입 테스트")
-    public void CreateSuccessTest() {
+    @Transactional
+    public void 회원가입_성공() {
         UserCreateRequest request = new UserCreateRequest(
                 "test_user01",
                 "password",
@@ -70,14 +73,16 @@ class UserServiceTest {
 
         assertThat(savedUser.getLoginId()).isEqualTo("test_user01");
         assertThat(savedUser.getEmail()).isEqualTo("user@kt.com");
-        assertThat(savedUser.getRole().name()).isEqualTo(Role.USER.toString());
+        assertThat(savedUser.getRole()).isEqualTo(Role.USER);
+
 
     }
 
     // 2. 관리자 회원가입(성공)
     @Test
     @DisplayName("회원가입 성공 - 관리자")
-    void createAdminSuccess() {
+    @Transactional
+    void 관리자_회원가입_성공() {
 
         UserCreateRequest request = new UserCreateRequest(
                 "admin01",
@@ -103,7 +108,8 @@ class UserServiceTest {
     // 3. 회원가입 실패 - 아이디 중복
     @Test
     @DisplayName("회원가입 실패 - 로그인 아이디 중복")
-    void createFailDuplicateLoginId() {
+    @Transactional
+    void 회워가입_실패_중복아이디() {
 
         UserCreateRequest request = new UserCreateRequest(
                 "dup_user",
@@ -154,7 +160,8 @@ class UserServiceTest {
     // 1. 유저의 본인 정보 조회
     @Test
     @DisplayName("정보조회 - 내 정보 조회 성공")
-    void getMyInfoSuccess() {
+    @Transactional
+    void 내정보_조회_성공() {
 
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
@@ -229,7 +236,8 @@ class UserServiceTest {
     // 3. 관리자의 다른 유저정보 조회
     @Test
     @DisplayName("정보조회 - 관리자 타 유저 정보 조회 성공")
-    void getUserInfoByAdminSuccess() {
+    @Transactional
+    void 관리자_다른유저_정보조회_성공() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
 
@@ -269,7 +277,8 @@ class UserServiceTest {
     // 1. 유저 본인 정보 수정
     @Test
     @DisplayName("정보수정 - 유저 본인 정보 수정 성공")
-    void updateMyInfoSuccess() {
+    @Transactional
+    void 내정보_수정_성공() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
 
@@ -352,7 +361,8 @@ class UserServiceTest {
     // 3. 관리자 타 유저 정보 수정
     @Test
     @DisplayName("정보수정 - 관리자 타 유저 정보 수정 성공")
-    void updateUserByAdminSuccess() {
+    @Transactional
+    void 관리자_유저정보_수정_성공() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
 
@@ -401,7 +411,8 @@ class UserServiceTest {
     // 1. 회원탈퇴 성공(소프트 딜리트)
     @Test
     @DisplayName("회원탈퇴 성공 - 소프트 딜리트 처리")
-    void deleteMyAccountSuccess() {
+    @Transactional
+    void 회원탈퇴_성공() {
 
         Membership membership = membershipRepository.findByLevel("BRONZE").orElseThrow();
 
@@ -438,7 +449,8 @@ class UserServiceTest {
     // 2. 탈퇴한 유저 정보 기반으로 재가입 성공
     @Test
     @DisplayName("회원탈퇴 후 재가입 성공 - 탈퇴한 loginId 재사용 가능")
-    void rejoinAfterSoftDeleteSuccess() {
+    @Transactional
+    void 탈퇴이후_동일아이디_회원가입_성공() {
 
         UserCreateRequest request1 = new UserCreateRequest(
                 "rejoin_user",

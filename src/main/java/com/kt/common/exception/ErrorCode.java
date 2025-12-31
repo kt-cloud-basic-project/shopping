@@ -19,6 +19,7 @@ public enum ErrorCode {
 	ERROR_SYSTEM(HttpStatus.INTERNAL_SERVER_ERROR, "시스템 오류가 발생했습니다."),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     INVALID_FORMAT(HttpStatus.BAD_REQUEST,"잘못된 형식의 값입니다."),
+    ACCESS_TOKEN_BLACKLISTED(HttpStatus.BAD_REQUEST,"이미 로그아웃 한 유저입니다"),
 
 	//user
 	NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."),

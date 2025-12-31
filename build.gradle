@@ -67,6 +67,13 @@ dependencies {
     implementation("io.netty:netty-resolver-dns-native-macos:4.1.117.Final:osx-aarch_64")
     implementation("io.netty:netty-resolver-dns:4.1.117.Final")
 
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//prometheus
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
     implementation 'com.bucket4j:bucket4j-core:8.10.1'
     implementation 'com.bucket4j:bucket4j-caffeine:8.10.1'

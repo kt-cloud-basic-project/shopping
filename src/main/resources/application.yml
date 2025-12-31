@@ -13,3 +13,4 @@ spring:
 logstash:
   host: ${logstashhost:localhost}
   port: ${logstashport:9601}
+

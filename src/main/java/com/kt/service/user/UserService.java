@@ -17,14 +17,21 @@ import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.CustomUserDetails;
 import com.kt.security.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import static com.kt.common.support.ObjectUtils.orElseIfEmpty;
 
@@ -40,6 +47,8 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final ShoppingAddressRepository shoppingAddressRepository;
     private static final String DEFAULT_MEMBERSHIP_LEVEL = "BRONZE";
+    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String AUTH_HEADER = "Authorization";
 
     public boolean checkLoginIdDuplicated(String loginId) {
         return userRepository.existsByLoginIdAndIsDeletedFalse(loginId);
@@ -79,7 +88,7 @@ public class UserService {
 
         if(!passwordEncoder.matches(request.password(), user.getPassword())){
             throw new CustomException(ErrorCode.FAIL_LOGIN);
-        }else if(user.isDeleted()){
+        }else if(user.Deleted()){
             throw new CustomException(ErrorCode.FAIL_LOGIN); // 삭제된 계정이지만 보안을 위해 ID,PASSWORD 로그인실패 처리
         }
 
@@ -222,5 +231,13 @@ public class UserService {
         var user = userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         user.changeRole(request.role());
+    }
+
+    private String resolveBearer(String request) {
+        if (request == null || !request.startsWith("Bearer ")) {
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+        }
+
+        return request.substring(BEARER_PREFIX.length());
     }
 }

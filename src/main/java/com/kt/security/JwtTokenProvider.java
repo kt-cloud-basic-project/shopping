@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -33,17 +34,20 @@ public class JwtTokenProvider {
 
     private final CustomUserDetailsService userDetailsService;
 
+    //OS 기본 charset에 의존할 수 있어서 명시적으로 UTF-8 설정
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
 
     public String generateAccessToken(User user) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenValidityInMs);
+        String jti = UUID.randomUUID().toString();
 
         return Jwts.builder()
                 .subject(user.getLoginId())
+                .id(jti)
                 .claim("role", user.getRole().name())
                 .issuedAt(now)
                 .expiration(expiry)
@@ -114,5 +118,27 @@ public class JwtTokenProvider {
                 userDetails.getAuthorities()
         );
     }
+
+    // parseClaims가 pricate이라 parseClaims로 access토큰 블랙리스트 등록을위해서 따로 설정
+    public String getJti(String token) {
+        try {
+            return parseClaims(token).getPayload().getId();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getId();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+        }
+    }
+
+    public Date getExpiration(String token) {
+        try {
+            return parseClaims(token).getPayload().getExpiration();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getExpiration();
+        }catch (JwtException | IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
+        }
+    }
+
 
 }
