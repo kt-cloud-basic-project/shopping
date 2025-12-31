@@ -9,6 +9,7 @@ import org.springframework.ai.chat.client.ChatClientRequest;
 import org.springframework.ai.chat.client.ChatClientResponse;
 import org.springframework.ai.chat.client.advisor.api.AdvisorChain;
 import org.springframework.ai.chat.client.advisor.api.BaseAdvisor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.kt.integration.openai.client.OpenAIClient;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class OpenAICustomAdvisor implements BaseAdvisor {
 	private static final SearchData EMPTY_SEARCH_DATA =
 		new SearchData("", "", 0.0, null, null);
