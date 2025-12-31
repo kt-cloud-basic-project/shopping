@@ -14,6 +14,7 @@ import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.ApplicationEventPublisher;
 
 @Service
@@ -43,5 +44,18 @@ public class WishlistService {
 		eventPublisher.publishEvent(
 			new WishlistAddedEvent(userId, productId)
 		);
+	}
+
+	@Transactional
+	public void removeWishlist(Long userId, Long productId) {
+		if (!wishlistRepository.existsByUserIdAndProductId(userId, productId)) {
+			throw new CustomException(ErrorCode.NOT_FOUND_WISHLIST);
+		}
+
+		wishlistRepository.deleteByUserIdAndProductId(userId, productId);
+	}
+
+	public void removeAllWishlist(Long userId) {
+		wishlistRepository.deleteByUserId(userId);
 	}
 }
