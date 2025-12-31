@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kt.common.ratelimit.annotation.KeyType;
+import com.kt.common.ratelimit.annotation.RateLimit;
 import com.kt.common.response.ApiResult;
 import com.kt.common.request.Paging;
 import com.kt.common.support.SwaggerAssistance;
@@ -47,6 +49,12 @@ public class ReviewController extends SwaggerAssistance {
 		return ApiResult.ok(reviewService.create(currentUser.getId(), orderProductId, request));
 	}
 
+
+	@RateLimit(
+		capacity = 1,
+		refillTokens = 1,
+		keyType = KeyType.USER_ID
+	)
 	@GetMapping("/reviews/me")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "내 리뷰 목록 조회")
