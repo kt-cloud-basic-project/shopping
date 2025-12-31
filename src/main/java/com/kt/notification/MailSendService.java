@@ -1,6 +1,5 @@
-package com.kt.service.notify;
+package com.kt.notification;
 
-import com.kt.dto.notify.MailSendRequest;
 import jakarta.validation.Valid;
 
 public interface MailSendService {
