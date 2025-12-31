@@ -39,5 +39,15 @@ slack:
   bot-token: ${slack.token}
   log-channel: ${slack.channel}
 
+ai:
+  model:
+    embedding: text-embedding-3-small
+  openai:
+    api-key: ${OPENAI_API_KEY}
+    chat:
+      options:
+        temperature: 1
+        model: o4-mini
+
 server:
   port: 8080

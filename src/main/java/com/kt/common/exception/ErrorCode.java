@@ -104,7 +104,13 @@ public enum ErrorCode {
 	//wishlist
 	ALREADY_WISHLISTED(HttpStatus.BAD_REQUEST, "이미 찜한 상품입니다."),
 	WISHLIST_ADD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "찜 추가에 실패했습니다."),
-	NOT_FOUND_WISHLIST(HttpStatus.BAD_REQUEST, "찜하지 않은 상품입니다.")
+	NOT_FOUND_WISHLIST(HttpStatus.BAD_REQUEST, "찜하지 않은 상품입니다."),
+
+	//vector
+	NOT_FOUND_VECTOR_STORE(HttpStatus.BAD_REQUEST, "존재하지 않는 벡터 스토어입니다."),
+
+	//FAQ
+	NOT_FOUND_FAQ(HttpStatus.BAD_REQUEST, "존재하지 않는 자주 찾는 질문입니다.")
 	;
 
 	private final HttpStatus status;
