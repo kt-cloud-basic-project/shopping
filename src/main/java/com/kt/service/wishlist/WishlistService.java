@@ -9,7 +9,7 @@ import com.kt.domain.product.Product;
 import com.kt.domain.user.User;
 import com.kt.domain.wishlist.Wishlist;
 import com.kt.event.WishlistAddedEvent;
-import com.kt.repository.WishlistRepository;
+import com.kt.repository.wishlist.WishlistRepository;
 import com.kt.repository.product.ProductRepository;
 import com.kt.repository.user.UserRepository;
 
