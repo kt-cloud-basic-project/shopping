@@ -25,6 +25,7 @@ import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
+import com.kt.domain.shoppingaddress.ShoppingAddress;
 import com.kt.domain.user.User;
 import com.kt.dto.discount.response.DiscountResult;
 import com.kt.dto.order.OrderCreateRequest;
@@ -62,7 +63,18 @@ public class OrderService {
 
 	public Long create(Long userId, OrderCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
-		var address = shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
+		ShoppingAddress address;
+
+		if (request.receiverAddressId() != null) {
+			address = shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(),
+				ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
+
+			// 사용자 본인이 등록한 배송지인지 검증
+			Preconditions.validate(address.getUser().getId().equals(userId), ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
+		} else {
+			address = shoppingAddressRepository.findFirstByUserIdAndIsDefaultTrueOrderByIdDesc(userId)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SHOPPING_ADDRESS));
+		}
 
 		// 1. 주문 생성
 		var newOrder = new Order(
@@ -76,13 +88,16 @@ public class OrderService {
 
 		// 2. 전체 product 검증
 		request.products().forEach(product -> {
-			var targetProduct = productRepository.findByIdOrThrow(product.productId(),  ErrorCode.NOT_FOUND_PRODUCT);
+			var targetProduct = productRepository.findByIdOrThrow(product.productId(), ErrorCode.NOT_FOUND_PRODUCT);
 
-			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CANNOT_PURCHASE_PRODUCT);
+			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED),
+				ErrorCode.CANNOT_PURCHASE_PRODUCT);
 			Preconditions.validate(targetProduct.getStock() >= product.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
 			//선택한 상품의 옵션이 맞는지 검증
-			var variant = variantRepository.findByIdAndDeletedFalseOrThrow(product.productVariantId(), ErrorCode.NOT_FOUND_VARIANT);
-			Preconditions.validate(variant.getProduct().getId().equals(targetProduct.getId()), ErrorCode.INVALID_VARIANT);
+			var variant = variantRepository.findByIdAndDeletedFalseOrThrow(product.productVariantId(),
+				ErrorCode.NOT_FOUND_VARIANT);
+			Preconditions.validate(variant.getProduct().getId().equals(targetProduct.getId()),
+				ErrorCode.INVALID_VARIANT);
 
 			// OrderProduct 생성
 			var newOrderProduct = new OrderProduct(
