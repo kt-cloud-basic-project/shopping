@@ -1,8 +1,8 @@
 package com.kt.integration.eventlistener;
 
 import com.kt.event.ProductDiscountEvent;
-import com.kt.notification.EMailSendService;
 import com.kt.notification.MailSendRequest;
+import com.kt.notification.MailSendService;
 import com.kt.repository.cart.CartRepository;
 import com.kt.repository.wishlist.WishlistRepository;
 import com.kt.service.discount.DiscountService;
@@ -18,27 +18,33 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class DiscountEventListener {
+
     private final DiscountService discountService;
-    private final EMailSendService eMailSendService;
+    private final MailSendService mailSendService;
     private final WishlistRepository wishlistRepository;
     private final CartRepository cartRepository;
 
     @EventListener
-    public void sendMail(ProductDiscountEvent event){
-        List<String> wishlistEmails = wishlistRepository.findDistinctEmailsByProductId(event.productId());
-        List<String> cartEmails = cartRepository.findDistinctEmailsByProductId(event.productId());
+    public void sendMail(ProductDiscountEvent event) {
 
-        Set<String> distinct_emails = new HashSet<>(wishlistEmails);
-        distinct_emails.addAll(cartEmails);
+        List<String> wishlistEmails =
+                wishlistRepository.findDistinctEmailsByProductId(event.productId());
+        List<String> cartEmails =
+                cartRepository.findDistinctEmailsByProductId(event.productId());
 
-        if (distinct_emails.isEmpty()) return;
+        Set<String> distinct_Emails = new HashSet<>(wishlistEmails);
+        distinct_Emails.addAll(cartEmails);
 
-        for(String email : distinct_emails){
-            String title = "현재 상품" + event.productName() + " 이(가) 할인중입니다.";
-            String content = "상품명: " + event.productName() + "\n할인: " + event.discountValue() + "\n할인가: 289,000원\n링크: https://your-shop.com/products/" + event.productId() + "\n\n지금 구매하면 혜택 적용됩니다.";
-            MailSendRequest request = new MailSendRequest(email,title,content);
-            eMailSendService.sendEmail(request);
+        if (distinct_Emails.isEmpty()) return;
+
+        for (String email : distinct_Emails) {
+            MailSendRequest request = new MailSendRequest(
+                    email,
+                    "현재 상품 " + event.productName() + " 이(가) 할인중입니다.",
+                    "상품명: " + event.productName() + "\n할인금액: " + event.discountValue() + "\n할인가: 289,000원\n링크: https://your-shop.com/products/" + event.productId() + "\n\n지금 구매하면 혜택 적용됩니다."
+            );
+            mailSendService.sendEmail(request);
         }
-
     }
 }
+
