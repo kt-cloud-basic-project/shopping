@@ -23,8 +23,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist,Long> {
         select distinct u.email
         from Wishlist w
         join w.user u
-        where w.productId = :productId
-          and w.isDeleted = false
+        where w.product.id = :productId
           and u.isDeleted = false
           and u.email is not null
     """)
