@@ -2,7 +2,7 @@ package com.kt.integration.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "ai")
+@ConfigurationProperties(prefix = "spring.ai")
 public record OpenAIProperties(
 	OpenAI openai,
 	Model model

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-@Profile("!test")
+// @Profile("!test")
 public class DefaultChatApi implements OpenAIChatApi {
 	private final ChatClient clientClient;
 

@@ -19,13 +19,13 @@
         </customFields>
     </appender>
 
-<!--    <springProfile name="local">-->
-<!--        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">-->
-<!--            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
-<!--                <pattern>${CONSOLE_LOG_PATTERN}</pattern>-->
-<!--            </encoder>-->
-<!--        </appender>-->
-<!--    </springProfile>-->
+    <!--    <springProfile name="local">-->
+    <!--        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">-->
+    <!--            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+    <!--                <pattern>${CONSOLE_LOG_PATTERN}</pattern>-->
+    <!--            </encoder>-->
+    <!--        </appender>-->
+    <!--    </springProfile>-->
 
     <root level="INFO">
         <appender-ref ref="LOGSTASH"/>

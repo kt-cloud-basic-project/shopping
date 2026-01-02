@@ -20,6 +20,15 @@ spring:
   autoconfigure:
     exclude:
       - org.redisson.spring.starter.RedissonAutoConfigurationV2
+  ai:
+    model:
+      embedding: text-embedding-3-small
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          temperature: 1
+          model: o4-mini
 #  data:
 #    redis:
 #      host: ${redis.host:localhost}

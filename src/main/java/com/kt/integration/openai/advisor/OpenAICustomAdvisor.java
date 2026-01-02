@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-@Profile("!test")
+// @Profile("!test")
 public class OpenAICustomAdvisor implements BaseAdvisor {
 	private static final SearchData EMPTY_SEARCH_DATA =
 		new SearchData("", "", 0.0, null, null);

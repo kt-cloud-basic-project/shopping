@@ -14,7 +14,7 @@ import com.kt.integration.openai.dto.request.VectorUploadFileRequest;
 import com.kt.integration.properties.OpenAIProperties;
 
 @Component
-@Profile("local")
+// @Profile("local")
 public class DefaultVectorApi implements VectorApi {
 	private final OpenAIClient openAIClient;
 	private final OpenAIProperties openAIProperties;
@@ -23,7 +23,7 @@ public class DefaultVectorApi implements VectorApi {
 	public DefaultVectorApi(OpenAIClient openAIClient, OpenAIProperties openAIProperties) {
 		this.openAIClient = openAIClient;
 		this.openAIProperties = openAIProperties;
-		this.token = openAIProperties.openai().apiKey();
+		this.token = "Bearer " + openAIProperties.openai().apiKey();
 	}
 
 	@Override
