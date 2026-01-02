@@ -3,17 +3,30 @@ package com.kt.repository.wishlist;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.kt.domain.wishlist.Wishlist;
 
 @Repository
 public interface WishlistRepository extends JpaRepository<Wishlist,Long> {
-		boolean existsByUserIdAndProductId(Long userId, Long productId);
-		List<Wishlist> findByUserId(Long userId);
-		List<Wishlist> findByProductId(Long productId);
+    boolean existsByUserIdAndProductId(Long userId, Long productId);
+    List<Wishlist> findByUserId(Long userId);
+    List<Wishlist> findByProductId(Long productId);
 
-		void deleteByUserIdAndProductId(Long userId, Long productId);
+    void deleteByUserIdAndProductId(Long userId, Long productId);
 
-		void deleteByUserId(Long userId);
+    void deleteByUserId(Long userId);
+
+    //상품을 찜한 유저 이메일만 뽑는 쿼리, jpa는 비효율적이라 사용x
+    @Query("""
+        select distinct u.email
+        from Wishlist w
+        join w.user u
+        where w.productId = :productId
+          and w.isDeleted = false
+          and u.isDeleted = false
+          and u.email is not null
+    """)
+    List<String> findDistinctEmailsByProductId(Long productId);
 }
