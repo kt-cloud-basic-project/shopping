@@ -2,6 +2,7 @@ package com.kt.integration.openai.api;
 
 import java.util.UUID;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ import com.kt.integration.openai.dto.request.VectorUploadFileRequest;
 import com.kt.integration.properties.OpenAIProperties;
 
 @Component
-// @Profile("local")
+@Profile("!test")
 public class DefaultVectorApi implements VectorApi {
 	private final OpenAIClient openAIClient;
 	private final OpenAIProperties openAIProperties;

@@ -24,6 +24,7 @@ spring:
     model:
       embedding: text-embedding-3-small
     openai:
+      enabled: false
       api-key: ${OPENAI_API_KEY}
       chat:
         options:
