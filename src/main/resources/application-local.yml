@@ -26,5 +26,11 @@ slack:
   bot-token: ${slack.token}
   log-channel: ${slack.channel}
 
+toss:
+  payments:
+    client-key: ${toss.payments.client-key}
+    secret-key: ${toss.payments.secret-key}
+    api-url: ${toss.payments.api-url}
+
 server:
   port: 8080
