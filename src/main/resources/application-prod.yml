@@ -32,6 +32,6 @@ server:
 
 toss:
   payments:
-    client-key: ${toss.payments.client-key}
-    secret-key: ${toss.payments.secret-key}
-    api-url: ${toss.payments.api-url}
+    client-key: ${payment.client.key}
+    secret-key: ${payments.secret-key}
+    api-url: ${payments.api-url}
