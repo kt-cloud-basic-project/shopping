@@ -19,6 +19,7 @@ public enum ErrorCode {
 	ERROR_SYSTEM(HttpStatus.INTERNAL_SERVER_ERROR, "시스템 오류가 발생했습니다."),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     INVALID_FORMAT(HttpStatus.BAD_REQUEST,"잘못된 형식의 값입니다."),
+    ACCESS_TOKEN_BLACKLISTED(HttpStatus.BAD_REQUEST,"이미 로그아웃 한 유저입니다"),
 
 	//user
 	NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."),
@@ -94,6 +95,11 @@ public enum ErrorCode {
 	//payment
 	NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제 정보를 찾을 수 없습니다"),
 	NOT_FOUND_PAYMENT_TYPE(HttpStatus.BAD_REQUEST, "결제수단을 찾을 수 없습니다"),
+
+	//rate limit
+	GLOBAL_EXCEED_REQUEST_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "요청 횟수 제한을 초과했습니다."),
+	API_EXCEED_REQUEST_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "API 요청 횟수 제한을 초과했습니다."),
+	NO_HTTP_REQUEST(HttpStatus.BAD_REQUEST, "HTTP 요청 정보를 가져올 수 없습니다."),
 
 	//wishlist
 	ALREADY_WISHLISTED(HttpStatus.BAD_REQUEST, "이미 찜한 상품입니다."),
