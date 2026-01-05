@@ -1,13 +1,19 @@
 package com.kt.controller.wishlist;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.response.ApiResult;
+import com.kt.dto.wishlist.WishlistResponse;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.wishlist.WishlistService;
 
@@ -24,12 +30,12 @@ public class WishlistController {
 
 	@PostMapping("/{productId}")
 	@Operation(summary = "찜 추가")
-	public ApiResult<Void> addWishlist(
+	public ApiResult<Long> addWishlist(
 		@AuthenticationPrincipal CustomUserDetails currentUser,
 		@PathVariable Long productId
 	) {
-		wishlistService.addWishlist(currentUser.getId(), productId);
-		return ApiResult.ok();
+		Long wishlistId = wishlistService.addWishlist(currentUser.getId(), productId);
+		return ApiResult.ok(wishlistId);
 	}
 
 	@DeleteMapping("/{productId}")
@@ -50,6 +56,18 @@ public class WishlistController {
 		wishlistService.removeAllWishlist(currentUser.getId());
 		return ApiResult.ok();
 	}
+
+	@GetMapping
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "찜 목록 조회")
+	public ApiResult<List<WishlistResponse>> getWishlists(
+		@AuthenticationPrincipal CustomUserDetails currentUser
+	) {
+		List<WishlistResponse> wishlists = wishlistService.getWishlists(currentUser.getId());
+		return ApiResult.ok(wishlists);
+	}
+
+
 
 
 

@@ -1,5 +1,9 @@
 package com.kt.service.wishlist;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,6 +12,7 @@ import com.kt.common.exception.ErrorCode;
 import com.kt.domain.product.Product;
 import com.kt.domain.user.User;
 import com.kt.domain.wishlist.Wishlist;
+import com.kt.dto.wishlist.WishlistResponse;
 import com.kt.event.WishlistAddedEvent;
 import com.kt.repository.wishlist.WishlistRepository;
 import com.kt.repository.product.ProductRepository;
@@ -27,7 +32,7 @@ public class WishlistService {
 	private final ProductRepository productRepository;
 	private final ApplicationEventPublisher eventPublisher;
 
-	public void addWishlist(Long userId, Long productId) {
+	public Long addWishlist(Long userId, Long productId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
@@ -39,11 +44,12 @@ public class WishlistService {
 		}
 
 		Wishlist wishlist = new Wishlist(user, product);
-		wishlistRepository.save(wishlist);
+		Wishlist saveWishlist = wishlistRepository.save(wishlist);
 
 		eventPublisher.publishEvent(
 			new WishlistAddedEvent(userId, productId)
 		);
+		return saveWishlist.getId();
 	}
 
 	@Transactional
@@ -58,4 +64,20 @@ public class WishlistService {
 	public void removeAllWishlist(Long userId) {
 		wishlistRepository.deleteByUserId(userId);
 	}
+
+	@Transactional(readOnly = true)
+	public List<WishlistResponse> getWishlists(Long userId) {
+		var wishlists = wishlistRepository.findByUserId(userId);
+
+		return wishlists.stream()
+			.map(wishlist -> new WishlistResponse(
+				wishlist.getId(),
+				wishlist.getProduct().getId(),
+				wishlist.getProduct().getName(),
+				wishlist.getProduct().getPrice(),
+				wishlist.getCreatedAt()
+			)).toList();
+	}
 }
+
+
