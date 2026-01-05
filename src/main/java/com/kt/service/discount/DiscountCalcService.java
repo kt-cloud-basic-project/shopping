@@ -13,6 +13,7 @@ import com.kt.domain.discount.policy.DiscountPolicy;
 import com.kt.domain.discount.policy.DiscountPolicyFactory;
 import com.kt.domain.discountMembership.DiscountMembership;
 import com.kt.domain.discountProduct.DiscountProduct;
+import com.kt.dto.discount.response.DiscountInfo;
 import com.kt.dto.discount.response.DiscountResult;
 import com.kt.repository.discountmembership.DiscountMembershipRepository;
 import com.kt.repository.discountproduct.DiscountProductRepository;
@@ -94,6 +95,84 @@ public class DiscountCalcService {
 		for (DiscountProduct dp : discountProducts) {
 			result.computeIfAbsent(dp.getProduct().getId(), k -> new ArrayList<>())
 				.add(dp.getDiscount());
+		}
+
+		return result;
+	}
+
+	public List<DiscountInfo> getDiscountsInfoList(Long originalPrice,
+		Discount membershipDiscount,
+		List<Discount> productDiscounts) {
+		List<DiscountInfo> result = new ArrayList<>();
+
+		long maxDiscountPrice = 0L;
+		String selectedCase = "";
+		Discount selectedProductDiscount = null;
+
+		if (membershipDiscount != null) {
+			long membershipOnly = calcDiscount(originalPrice, membershipDiscount);
+			if (membershipOnly > maxDiscountPrice) {
+				maxDiscountPrice = membershipOnly;
+				selectedCase = "MEMBERSHIP_ONLY";
+			}
+		}
+
+		if (productDiscounts != null && !productDiscounts.isEmpty()) {
+			for (Discount productDiscount : productDiscounts) {
+				long productOnly = calcDiscount(originalPrice, productDiscount);
+				if (productOnly > maxDiscountPrice) {
+					maxDiscountPrice = productOnly;
+					selectedCase = "PRODUCT_ONLY";
+					selectedProductDiscount = productDiscount;
+				}
+			}
+		}
+
+		if (membershipDiscount != null && productDiscounts != null) {
+			for (Discount productDiscount : productDiscounts) {
+				if (membershipDiscount.isCombinable() && productDiscount.isCombinable()) {
+					long combined = calcCombined(originalPrice, membershipDiscount, productDiscount);
+					if (combined > maxDiscountPrice) {
+						maxDiscountPrice = combined;
+						selectedCase = "COMBINED";
+						selectedProductDiscount = productDiscount;
+					}
+				}
+			}
+		}
+
+		switch (selectedCase) {
+			case "MEMBERSHIP_ONLY":
+				result.add(new DiscountInfo(
+					membershipDiscount.getName(),
+					"MEMBERSHIP",
+					calcDiscount(originalPrice, membershipDiscount)
+				));
+				break;
+			case "PRODUCT_ONLY":
+				if (selectedProductDiscount != null) {
+					result.add(new DiscountInfo(
+						selectedProductDiscount.getName(),
+						"PRODUCT",
+						calcDiscount(originalPrice, selectedProductDiscount)
+					));
+				}
+				break;
+			case "COMBINED":
+				result.add(new DiscountInfo(
+					membershipDiscount.getName(),
+					"MEMBERSHIP",
+					calcDiscount(originalPrice, membershipDiscount)
+				));
+
+				result.add(new DiscountInfo(
+					selectedProductDiscount.getName(),
+					"PRODUCT",
+					calcDiscount(originalPrice, selectedProductDiscount)
+				));
+				break;
+			default:
+				break;
 		}
 
 		return result;
