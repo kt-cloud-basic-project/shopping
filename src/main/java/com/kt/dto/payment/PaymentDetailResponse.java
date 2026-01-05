@@ -7,6 +7,7 @@ import com.kt.domain.order.OrderStatus;
 public record PaymentDetailResponse(
 	Long id, // 결제 ID
 	Long orderId, // 주문 ID
+	String paymentKey, // 결제 고유 키
 	String userLoginId, // 결제자 아이디(직접 결제한 유저는 로그인한 유저)
 	String userName, // 결제자 이름
 	OrderStatus orderStatus, // 주문 상태
