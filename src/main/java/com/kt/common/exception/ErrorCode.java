@@ -95,6 +95,10 @@ public enum ErrorCode {
 	//payment
 	NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제 정보를 찾을 수 없습니다"),
 	NOT_FOUND_PAYMENT_TYPE(HttpStatus.BAD_REQUEST, "결제수단을 찾을 수 없습니다"),
+	FAIL_PAYMENT(HttpStatus.BAD_REQUEST, "결제에 실패했습니다."),
+	ALREADY_PAID_ORDER(HttpStatus.BAD_REQUEST, "이미 결제가 완료된 주문입니다."),
+	CANNOT_CANCEL_PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제 취소 금액이 결제 금액과 일치하지 않습니다."),
+	PAYMENT_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "결제 취소에 실패했습니다."),
 
 	//rate limit
 	GLOBAL_EXCEED_REQUEST_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "요청 횟수 제한을 초과했습니다."),
