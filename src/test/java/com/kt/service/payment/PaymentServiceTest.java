@@ -108,7 +108,7 @@ class PaymentServiceTest {
 
 	@Test
 	void 주문에_대한_결제_생성_가능() {
-		paymentService.create(토스_결제_응답(), user.getId());
+		paymentService.create(토스_결제_응답(), user.getId(), order.getId());
 
 		Payment payment = paymentRepository.findAll().get(0);
 
@@ -133,7 +133,7 @@ class PaymentServiceTest {
 			new DiscountMembership(membershipDiscount, membership)
 		);
 
-		paymentService.create(토스_결제_응답(), user.getId());
+		paymentService.create(토스_결제_응답(), user.getId(), order.getId());
 
 		Payment payment = paymentRepository.findAll().get(0);
 

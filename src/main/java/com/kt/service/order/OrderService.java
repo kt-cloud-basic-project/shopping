@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.common.exception.CustomException;
@@ -131,6 +132,12 @@ public class OrderService {
 		order.updateStatus(OrderStatus.PAID);
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void rollback(Long orderId){
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
+		order.failPayment();
+	}
+
 	public Page<OrderListResponse> getOrderList(Long userId, Paging paging) {
 		Page<Order> orders = orderRepositoryCustom.getOrders(userId, paging.toPageable());
 
@@ -176,7 +183,8 @@ public class OrderService {
 		Preconditions.validate(order.getUser().getId().equals(userId), ErrorCode.NOT_ORDER_OWNER);
 
 		// 주문 취소 가능 여부 검증
-		Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED ||
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.PENDING_PAYMENT ||
+			order.getOrderStatus() == OrderStatus.PAYMENT_FAILED ||
 			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_CANCEL_ORDER);
 
 		order.cancel();
@@ -224,8 +232,9 @@ public class OrderService {
 
 		Preconditions.validate(order.getUser().getId().equals(userId), ErrorCode.NOT_ORDER_OWNER);
 
-		Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED ||
-			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_UPDATE_ORDER_INFO);
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.PENDING_PAYMENT ||
+			order.getOrderStatus() == OrderStatus.PAID ||
+			order.getOrderStatus() == OrderStatus.PAYMENT_FAILED , ErrorCode.CANNOT_UPDATE_ORDER_INFO);
 
 		String updatedAddress = request.receiverAddressId() != null
 			? shoppingAddressRepository.findByIdAndUserIdOrThrow(request.receiverAddressId(), userId, ErrorCode.NOT_SHOPPING_ADDRESS_OWNER).getAddress()
@@ -243,7 +252,8 @@ public class OrderService {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
 		// 주문 취소 가능 여부 검증
-		Preconditions.validate(order.getOrderStatus() == OrderStatus.ORDERED ||
+		Preconditions.validate(order.getOrderStatus() == OrderStatus.PENDING_PAYMENT ||
+			order.getOrderStatus() == OrderStatus.PAYMENT_FAILED ||
 			order.getOrderStatus() == OrderStatus.PAID, ErrorCode.CANNOT_CANCEL_ORDER);
 
 		order.cancel();

@@ -91,15 +91,16 @@ public class PaymentController extends SwaggerAssistance {
 	public ResponseEntity<?> confirmPayment(@RequestBody PaymentTossConfirmRequest request,
 		@AuthenticationPrincipal CustomUserDetails currentUser
 	) {
+		String orderId = request.orderId().split("-")[0];
+		Long orderIdLong = Long.parseLong(orderId);
+
 		try {
 			String url = tossPaymentsProperties.getApiUrl() + "/confirm";
 			String auth = tossPaymentsProperties.getSecretKey() + ":";
 			String encodedAuth = java.util.Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
 
-			String orderId = request.orderId().split("-")[0];
-			Long orderIdLong = Long.parseLong(orderId);
-			var order = orderService.getOrderDetail(orderIdLong, currentUser.getId());
-			if (order.orderStatus() != OrderStatus.ORDERED) {
+			var order = orderService.getOrderDetail(currentUser.getId(), orderIdLong);
+			if (order.orderStatus() != OrderStatus.PENDING_PAYMENT) {
 				return ResponseEntity
 					.status(HttpStatus.BAD_REQUEST)
 					.body(Map.of(
@@ -141,7 +142,7 @@ public class PaymentController extends SwaggerAssistance {
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			//TODO order 생성 기록 rollback
+			orderService.rollback(orderIdLong);
 			return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(Map.of(

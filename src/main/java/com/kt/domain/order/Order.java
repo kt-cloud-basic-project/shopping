@@ -52,7 +52,7 @@ public class Order extends BaseEntity {
 		this.receiverName = receiverName;
 		this.receiverPhone = receiverPhone;
 		this.receiverAddress = receiverAddress;
-		this.orderStatus = OrderStatus.ORDERED;
+		this.orderStatus = OrderStatus.PENDING_PAYMENT;
 		this.isDeleted = false;
 
 		this.user = user;
@@ -84,6 +84,8 @@ public class Order extends BaseEntity {
 	public void approveReturn() {
 		this.orderStatus = OrderStatus.RETURNED;
 	}
+
+	public void failPayment() {	this.orderStatus = OrderStatus.PAYMENT_FAILED;	}
 
 	public void updateStatus(OrderStatus newStatus) {
 		this.orderStatus = newStatus;
