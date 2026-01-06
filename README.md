@@ -135,6 +135,8 @@
 전체 API 명세 및 상세 스펙은 아래 링크에서 확인할 수 있습니다.
 
 [📄 Full API Documentation (Notion)](https://www.notion.so/API-2ae9e3e335cc8097988ffe2a0e982fec?source=copy_link)
+<br>
+[📄 Swagger Documentation](http://shoppingfouru.ap-northeast-2.elasticbeanstalk.com/swagger-ui/index.html)
 <br><br><br>
 
 ## 🔥 Troubleshooting
