@@ -15,10 +15,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "payment")
 public class Payment extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
 	@Column(nullable = false)
 	private Long totalPrice;    // 총 상품 금액
 
