@@ -6,8 +6,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum OrderStatus {
-	ORDERED("주문 완료"),
+	// ORDERED("주문 완료"),
+	PENDING_PAYMENT("결제 대기"),
+	PAYMENT_FAILED("결제 실패"),
 	PAID("결제 완료"),
+
 	PROCESSING("배송 전"),
 	SHIPPED("배송 중"),
 	DELIVERED("배송 완료"),
@@ -16,10 +19,7 @@ public enum OrderStatus {
 	RETURN_REQUESTED("반품 요청"),
 	RETURNED("반품 완료"),
 	REFUND_REQUESTED("환불 요청"),
-	REFUNDED("환불 완료"),
-
-	PENDING_PAYMENT("결제 대기"),
-	PAYMENT_FAILED("결제 실패");
+	REFUNDED("환불 완료");
 
 	private final String description;
 }

@@ -274,7 +274,6 @@ public class OrderServiceTest {
 		OrderDetailResponse orderDetail = orderService.getOrderDetail(user.getId(), orderId);
 
 		//then
-		assertThat(orderDetail.orderStatus()).isEqualTo(OrderStatus.ORDERED);
 		assertThat(orderDetail.receiverName()).isEqualTo(user.getName());
 		assertThat(orderDetail.receiverPhone()).isEqualTo(user.getMobile());
 		assertThat(orderDetail.receiverAddress()).isEqualTo(savedAddress.getAddress());

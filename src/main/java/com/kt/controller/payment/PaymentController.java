@@ -99,7 +99,7 @@ public class PaymentController extends SwaggerAssistance {
 			String orderId = request.orderId().split("-")[0];
 			Long orderIdLong = Long.parseLong(orderId);
 			var order = orderService.getOrderDetail(orderIdLong, currentUser.getId());
-			if (order.orderStatus() != OrderStatus.ORDERED) {
+			if (order.orderStatus() != OrderStatus.PENDING_PAYMENT) {
 				return ResponseEntity
 					.status(HttpStatus.BAD_REQUEST)
 					.body(Map.of(
