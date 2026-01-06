@@ -92,4 +92,9 @@ public class Order extends BaseEntity {
 			this.deliveredAt = LocalDate.now();
 		}
 	}
+
+	public void addOrderProduct(OrderProduct orderProduct) {
+		orderProducts.add(orderProduct);
+		orderProduct.assignOrder(this);
+	}
 }

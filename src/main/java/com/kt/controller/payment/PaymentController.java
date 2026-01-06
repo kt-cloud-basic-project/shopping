@@ -38,6 +38,7 @@ import com.kt.dto.payment.PaymentTossConfirmRequest;
 import com.kt.properties.TossPaymentsProperties;
 import com.kt.security.CustomUserDetails;
 import com.kt.service.order.OrderService;
+import com.kt.service.payment.PaymentFacade;
 import com.kt.service.payment.PaymentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,6 +54,7 @@ public class PaymentController extends SwaggerAssistance {
 
 	private final PaymentService paymentService;
 	private final OrderService orderService;
+	private final PaymentFacade paymentFacade;
 	private final TossPaymentsProperties tossPaymentsProperties;
 	private final RestTemplate restTemplate = new RestTemplate();
 
@@ -121,7 +123,7 @@ public class PaymentController extends SwaggerAssistance {
 
 			if (response.getStatusCode() == HttpStatus.OK) {
 				Map<String, Object> tossPayment = response.getBody();
-				Long paymentId = paymentService.create(tossPayment, currentUser.getId());
+				Long paymentId = paymentFacade.completePayment(tossPayment, currentUser.getId(), orderIdLong);
 
 				Map<String, Object> responseBody = new HashMap<>(tossPayment);
 				responseBody.put("paymentId", paymentId);
@@ -138,6 +140,8 @@ public class PaymentController extends SwaggerAssistance {
 				.body(e.getResponseBodyAsString());
 		} catch (Exception e) {
 			e.printStackTrace();
+
+			//TODO order 생성 기록 rollback
 			return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(Map.of(

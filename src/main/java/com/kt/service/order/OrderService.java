@@ -2,12 +2,10 @@ package com.kt.service.order;
 
 import static com.kt.common.support.ObjectUtils.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -18,24 +16,19 @@ import com.kt.common.exception.ErrorCode;
 import com.kt.common.request.Paging;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.discount.Discount;
-import com.kt.domain.discount.policy.DiscountPolicy;
-import com.kt.domain.discount.policy.DiscountPolicyFactory;
-import com.kt.domain.membership.Membership;
 import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.product.ProductStatus;
 import com.kt.domain.shoppingaddress.ShoppingAddress;
-import com.kt.domain.user.User;
 import com.kt.dto.discount.response.DiscountResult;
 import com.kt.dto.order.OrderCreateRequest;
+import com.kt.dto.order.OrderProductRequest;
 import com.kt.dto.order.OrderStatusUpdateRequest;
 import com.kt.dto.order.OrderUpdateRequest;
 import com.kt.dto.order.response.OrderListResponse;
 import com.kt.dto.order.response.OrderDetailResponse;
 import com.kt.dto.order.response.OrderProductResponse;
-import com.kt.repository.discount.DiscountRepository;
-import com.kt.repository.discountmembership.DiscountMembershipRepository;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.order.OrderRepositoryCustom;
 import com.kt.repository.orderproduct.OrderProductRepository;
@@ -48,7 +41,6 @@ import com.kt.service.discount.DiscountCalcService;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class OrderService {
 	private final UserRepository userRepository;
@@ -58,15 +50,37 @@ public class OrderService {
 	private final OrderProductRepository orderProductRepository;
 	private final VariantRepository variantRepository;
 	private final OrderRepositoryCustom orderRepositoryCustom;
-	private final DiscountMembershipRepository discountMembershipRepository;
 	private final DiscountCalcService discountCalcService;
 
+	@Transactional
 	public Long create(Long userId, OrderCreateRequest request) {
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);
+
+		// 1. 주소, 상품 유효성 검증
+		var address = validateAddress(userId, request.receiverAddressId());
+		var orderProducts = createOrderProducts(request.products());
+
+		// 2. 주문 생성
+		var newOrder = new Order(
+			request.receiverName(),
+			request.receiverPhone(),
+			address.getAddress(),
+			user
+		);
+
+		orderProducts.forEach(newOrder::addOrderProduct);
+
+		// 4. 저장
+		orderRepository.save(newOrder);
+		orderProductRepository.saveAll(orderProducts);
+		return newOrder.getId();
+	}
+
+	private ShoppingAddress validateAddress(Long userId, Long receiverAddressId) {
 		ShoppingAddress address;
 
-		if (request.receiverAddressId() != null) {
-			address = shoppingAddressRepository.findByIdOrThrow(request.receiverAddressId(),
+		if (receiverAddressId != null) {
+			address = shoppingAddressRepository.findByIdOrThrow(receiverAddressId,
 				ErrorCode.NOT_FOUND_SHOPPING_ADDRESS);
 
 			// 사용자 본인이 등록한 배송지인지 검증
@@ -76,51 +90,45 @@ public class OrderService {
 				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_SHOPPING_ADDRESS));
 		}
 
-		// 1. 주문 생성
-		var newOrder = new Order(
-			request.receiverName(),
-			request.receiverPhone(),
-			address.getAddress(),
-			user
+		return address;
+	}
+
+	private List<OrderProduct> createOrderProducts(List<OrderProductRequest> products) {
+		return products.stream()
+			.map(this::validateAndCreateOrderProduct)
+			.toList();
+	}
+
+	private OrderProduct validateAndCreateOrderProduct(OrderProductRequest productRequest) {
+		var product = productRepository.findByIdOrThrow(productRequest.productId(), ErrorCode.NOT_FOUND_PRODUCT);
+
+		//상품 상태 검증
+		Preconditions.validate(product.getStatus().equals(ProductStatus.ACTIVATED), ErrorCode.CANNOT_PURCHASE_PRODUCT);
+		//상품 재고 검증
+		Preconditions.validate(product.getStock() >= productRequest.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
+
+		//선택한 상품의 옵션이 맞는지 검증
+		var variant = variantRepository.findByIdAndDeletedFalseOrThrow(productRequest.productVariantId(), ErrorCode.NOT_FOUND_VARIANT);
+		Preconditions.validate(variant.getProduct().getId().equals(product.getId()), ErrorCode.INVALID_VARIANT);
+
+		return new OrderProduct(
+			productRequest.productCount(),
+			productRequest.productVariantId(),
+			product
 		);
+	}
 
-		List<OrderProduct> orderProducts = new ArrayList<>();
+	@Transactional
+	public void save(Long orderId){
+		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
-		// 2. 전체 product 검증
-		request.products().forEach(product -> {
-			var targetProduct = productRepository.findByIdOrThrow(product.productId(), ErrorCode.NOT_FOUND_PRODUCT);
-
-			Preconditions.validate(targetProduct.getStatus().equals(ProductStatus.ACTIVATED),
-				ErrorCode.CANNOT_PURCHASE_PRODUCT);
-			Preconditions.validate(targetProduct.getStock() >= product.productCount(), ErrorCode.NOT_ENOUGH_STOCK);
-			//선택한 상품의 옵션이 맞는지 검증
-			var variant = variantRepository.findByIdAndDeletedFalseOrThrow(product.productVariantId(),
-				ErrorCode.NOT_FOUND_VARIANT);
-			Preconditions.validate(variant.getProduct().getId().equals(targetProduct.getId()),
-				ErrorCode.INVALID_VARIANT);
-
-			// OrderProduct 생성
-			var newOrderProduct = new OrderProduct(
-				product.productCount(),
-				product.productVariantId(),
-				targetProduct,
-				newOrder
-			);
-
-			orderProducts.add(newOrderProduct);
-		});
-
-		// 3. stock 차감
-		orderProducts.forEach(newProduct -> {
+		// stock 차감
+		order.getOrderProducts().forEach(newProduct -> {
 			var product = newProduct.getProduct();
 			product.updateStock(product.getStock() - newProduct.getCount());
 		});
 
-		// 4. 저장
-		orderRepository.save(newOrder);
-		orderProductRepository.saveAll(orderProducts);
-
-		return newOrder.getId();
+		order.updateStatus(OrderStatus.PAID);
 	}
 
 	public Page<OrderListResponse> getOrderList(Long userId, Paging paging) {
@@ -159,6 +167,7 @@ public class OrderService {
 		});
 	}
 
+	@Transactional
 	public void cancel(Long orderId, Long userId) {
 		// orderId 존재 여부 검증
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
@@ -209,6 +218,7 @@ public class OrderService {
 		return OrderDetailResponse.from(order, products);
 	}
 
+	@Transactional
 	public void update(OrderUpdateRequest request, Long orderId, Long userId) {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
@@ -228,6 +238,7 @@ public class OrderService {
 		);
 	}
 
+	@Transactional
 	public void cancelByAdmin(Long orderId) {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
@@ -238,6 +249,7 @@ public class OrderService {
 		order.cancel();
 	}
 
+	@Transactional
 	public void requestRefund(Long orderId, Long userId) {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
@@ -249,6 +261,7 @@ public class OrderService {
 		order.requestRefund();
 	}
 
+	@Transactional
 	public void requestReturn(Long orderId, Long userId) {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
@@ -259,6 +272,7 @@ public class OrderService {
 		order.requestReturn();
 	}
 
+	@Transactional
 	public void approveRefund(Long orderId) {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
@@ -267,6 +281,7 @@ public class OrderService {
 		order.approveRefund();
 	}
 
+	@Transactional
 	public void approveReturn(Long orderId) {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
@@ -275,6 +290,7 @@ public class OrderService {
 		order.approveReturn();
 	}
 
+	@Transactional
 	public void updateStatus(OrderStatusUpdateRequest request, Long orderId) {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
