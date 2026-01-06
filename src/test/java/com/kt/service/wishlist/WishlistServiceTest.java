@@ -78,10 +78,10 @@ public class WishlistServiceTest {
 			membership
 		));
 
-		Category category = categoryRepository.saveAndFlush(new Category("전자제품"));
+		Category category = categoryRepository.saveAndFlush(new Category("의류"));
 
 		savedProduct = productRepository.saveAndFlush(
-			new Product("iPhone 15", "최신 아이폰", 1000000L, 50L, category)
+			new Product("오프화이트 티셔츠", "오프화이트 로고 티셔츠", 120000L, 100L, category)
 		);
 	}
 
@@ -187,11 +187,12 @@ public class WishlistServiceTest {
 		// given
 		Category category2 = categoryRepository.saveAndFlush(new Category("의류"));
 		Product product2 = productRepository.saveAndFlush(
-			new Product("나이키 신발", "운동화", 150000L, 30L, category2)
+			new Product("오프화이트 후드티", "오프화이트 후드 스웻셔츠", 350000L, 40L, category2)
 		);
 		Product product3 = productRepository.saveAndFlush(
-			new Product("아디다스 신발", "운동화", 180000L, 25L, category2)
+			new Product("오프화이트 자켓", "오프화이트 아우터 자켓", 890000L, 15L, category2)
 		);
+
 
 		wishlistService.addWishlist(savedUser.getId(), savedProduct.getId());
 		wishlistService.addWishlist(savedUser.getId(), product2.getId());
@@ -218,10 +219,11 @@ public class WishlistServiceTest {
 			.toList();
 
 		assertThat(productNames).containsExactlyInAnyOrder(
-			"iPhone 15",
-			"나이키 신발",
-			"아디다스 신발"
+			"오프화이트 티셔츠",
+			"오프화이트 후드티",
+			"오프화이트 자켓"
 		);
+
 	}
 
 	@Test
