@@ -54,5 +54,4 @@ public interface OpenAIClient {
 		@RequestHeader("Authorization") String authorization,
 		@RequestBody VectorSearchRequest request
 	);
-
 }
