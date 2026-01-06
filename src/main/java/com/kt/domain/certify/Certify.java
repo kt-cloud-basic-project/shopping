@@ -70,7 +70,7 @@ public class Certify extends BaseEntity {
     }
 
     public boolean isVerified() {
-        if(this.expiresAt.equals(CertifyStatus.VERIFIED)){
+        if(this.codeStatus.equals(CertifyStatus.VERIFIED)){
             this.verifiedAt = LocalDateTime.now();
             return true;
         }

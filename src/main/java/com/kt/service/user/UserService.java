@@ -18,6 +18,7 @@ import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.CustomUserDetails;
 import com.kt.security.JwtTokenProvider;
+import com.kt.service.certify.CertifyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +43,7 @@ public class UserService {
     private static final String DEFAULT_MEMBERSHIP_LEVEL = "BRONZE";
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String AUTH_HEADER = "Authorization";
-    private final Certify certify;
+    private final CertifyService certifyService;
 
     public boolean checkLoginIdDuplicated(String loginId) {
         return userRepository.existsByLoginIdAndIsDeletedFalse(loginId);
@@ -54,7 +55,7 @@ public class UserService {
         if (checkLoginIdDuplicated(request.loginId())) {
             throw new CustomException(ErrorCode.DUPLICATED_LOGIN_ID);
         }
-        if(!certify.isVerified()){
+        if(!certifyService.validateEmailVerified(request.email())){
             throw new CustomException(ErrorCode.NOT_VERIFIED_EMAIL);
         }
         Membership defaultMembership = membershipRepository.findByLevel(DEFAULT_MEMBERSHIP_LEVEL)

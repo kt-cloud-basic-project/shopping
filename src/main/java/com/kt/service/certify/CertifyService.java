@@ -75,4 +75,15 @@ public class CertifyService {
         mailSendService.sendEmail(request);
     }
 
+    public boolean validateEmailVerified(String email) {
+        Certify certify = certifyRepository.findTopByEmailOrderByCreatedAtDesc(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.CERTIFICATION_CODE_NOT_FOUND));
+
+        if (certify.isVerified()) {
+            return true;
+        }
+        return false;
+    }
+
+
 }
