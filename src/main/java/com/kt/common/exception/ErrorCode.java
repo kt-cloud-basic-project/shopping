@@ -50,6 +50,8 @@ public enum ErrorCode {
 	CANNOT_REFUND_ORDER(HttpStatus.BAD_REQUEST, "주문 환불이 불가능합니다."),
 	CANNOT_RETURN_ORDER(HttpStatus.BAD_REQUEST, "주문 반품이 불가능합니다."),
 	CANNOT_UPDATE_ORDER_STATUS(HttpStatus.BAD_REQUEST, "주문 상태 변경이 불가능합니다."),
+	CONCURRENT_RESERVATION(HttpStatus.CONFLICT, "다시 시도해주세요"),
+
 
 	//shoppingaddress
 	NOT_SHOPPING_ADDRESS_OWNER(HttpStatus.FORBIDDEN, "본인의 배송지만 수정/삭제할 수 있습니다."),

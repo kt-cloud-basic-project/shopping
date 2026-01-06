@@ -14,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +34,9 @@ public class Product extends BaseEntity {
 	private ProductStatus status;
 
 	private boolean deleted;
+
+	@Version
+	private Long version;
 
 	@ManyToOne
 	@JoinColumn(name = "category_id")

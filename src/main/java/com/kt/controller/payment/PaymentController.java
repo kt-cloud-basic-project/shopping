@@ -134,8 +134,6 @@ public class PaymentController extends SwaggerAssistance {
 					return ResponseEntity.ok(responseBody);
 
 				} catch (Exception e) {
-					System.out.println("결제 실패sdlkjfnmalskdmfklamsdklfmaklsdmfklamsdflkmasdklf");
-
 					cancelTossPayment(paymentKey, "시스템 오류로 인한 자동 취소");
 
 					orderService.rollback(orderIdLong);
@@ -242,7 +240,7 @@ public class PaymentController extends SwaggerAssistance {
 		return ApiResult.ok(Map.of("clientKey", tossPaymentsProperties.getClientKey()));
 	}
 
-	/* 이 코드 service로 빼야하는지 등 검토좀 한번 ㅂ부탁드릴게요!*/
+
 	private void cancelTossPayment(String paymentKey, String cancelReason) {
 		String url = tossPaymentsProperties.getApiUrl() + "/" + paymentKey + "/cancel";
 		String auth = tossPaymentsProperties.getSecretKey() + ":";
