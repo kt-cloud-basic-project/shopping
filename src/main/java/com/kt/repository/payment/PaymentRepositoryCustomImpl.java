@@ -5,11 +5,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import com.kt.domain.discount.QDiscount;
+import com.kt.domain.membership.QMembership;
 import com.kt.domain.order.QOrder;
+import com.kt.domain.orderproduct.QOrderProduct;
 import com.kt.domain.payment.QPayment;
 import com.kt.domain.paymenttype.QPaymentType;
 import com.kt.domain.user.QUser;
 import com.kt.dto.payment.PaymentListResponse;
+import com.kt.dto.payment.PaymentOrderInfoResponse;
 import com.kt.dto.payment.QPaymentListResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -23,6 +27,9 @@ public class PaymentRepositoryCustomImpl implements  PaymentRepositoryCustom {
 	private final QOrder order = QOrder.order;
 	private final QPaymentType paymentType = QPaymentType.paymentType;
 	private final QUser user = QUser.user;
+	private final QOrderProduct orderProduct = QOrderProduct.orderProduct;
+	private final QMembership membership = QMembership.membership;
+	private final QDiscount discount = QDiscount.discount;
 
 	@Override
 	public Page<PaymentListResponse> getMyAllPayment(Long userId, Pageable pageable) {
@@ -66,6 +73,11 @@ public class PaymentRepositoryCustomImpl implements  PaymentRepositoryCustom {
 			.fetch().size();
 
 		return new PageImpl<>(content, pageable, total);
+	}
+
+	@Override
+	public PaymentOrderInfoResponse getPaymentDetailByOrderId(Long orderId) {
+		return null;
 	}
 
 }

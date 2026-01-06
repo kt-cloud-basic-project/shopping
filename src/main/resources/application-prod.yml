@@ -29,3 +29,9 @@ slack:
 
 server:
   port: ${shopping.server.port}
+
+toss:
+  payments:
+    client-key: ${payment.client.key}
+    secret-key: ${payments.secret-key}
+    api-url: ${payments.api-url}

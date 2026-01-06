@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="order.css" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toss 결제 테스트</title>
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+<div class="wrapper">
+    <!-- 주문 정보 입력 섹션 -->
+    <div class="box_section" style="padding: 40px 30px; margin-top: 30px;">
+        <h2 style="margin-top: 0; color: #333D4B;">📦 주문 정보 조회</h2>
+
+        <div class="input-group">
+            <label for="orderId">주문 ID</label>
+            <input type="number" id="orderId" placeholder="DB에 생성된 Order ID를 입력하세요 (예: 123)" />
+        </div>
+
+        <div class="input-group">
+            <label for="accessToken">Token</label>
+            <input type="text" id="accessToken" placeholder="JWT Token을 입력하세요" />
+        </div>
+
+        <button class="button" onclick="fetchOrderInfo()" style="width: 100%; padding: 15px; font-size: 16px;">
+            🔍 정보 가져오기
+        </button>
+    </div>
+    <!-- 주문 상세 정보 섹션 (초기에는 숨김) -->
+    <div id="order-details">
+        <!-- 주문 정보 -->
+        <div class="box_section" style="padding: 40px 30px; margin-top: 20px;">
+            <div class="order-summary">
+                <h3>📋 주문 정보</h3>
+                <p><b>주문번호:</b> <span id="display-order-id">-</span></p>
+                <p><b>주문일시:</b> <span id="display-order-date">-</span></p>
+                <p><b>주문상태:</b> <span id="display-order-status" class="status-badge">-</span></p>
+            </div>
+
+            <!-- 배송지 정보 -->
+            <div class="delivery-info">
+                <h3>🚚 배송지 정보</h3>
+                <p><b>수령인:</b> <span id="display-receiver-name">-</span></p>
+                <p><b>연락처:</b> <span id="display-receiver-phone">-</span></p>
+                <p><b>배송주소:</b> <span id="display-receiver-address">-</span></p>
+            </div>
+
+            <!-- 주문자 정보 -->
+            <div class="customer-info">
+                <h3>👤 주문자 정보</h3>
+                <p><b>이름:</b> <span id="display-user-name">-</span></p>
+                <p><b>이메일:</b> <span id="display-user-email">-</span></p>
+                <p><b>휴대폰:</b> <span id="display-user-mobile">-</span></p>
+                <p><b>회원등급:</b> <span id="display-user-membership">-</span></p>
+                <p><b>보유금액:</b> <span id="display-user-money">-</span>원</p>
+            </div>
+
+            <!-- 주문 상품 목록 -->
+            <div class="product-list">
+                <h3>🛍️ 주문 상품 목록</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>상품명</th>
+                        <th style="text-align: center;">수량</th>
+                        <th style="text-align: right;">단가</th>
+                        <th style="text-align: right;">합계</th>
+                        <th style="text-align: right;">최종가</th>
+                    </tr>
+                    </thead>
+                    <tbody id="product-table-body">
+                    <tr>
+                        <td colspan="4" class="loading">주문 정보를 불러오는 중...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 결제 금액 요약 -->
+            <div class="payment-summary">
+                <h3>💰 결제 금액 요약</h3>
+                <div class="price-row">
+                    <span>총 상품 금액:</span>
+                    <span id="display-total-product-price">0원</span>
+                </div>
+                <div class="price-row discount">
+                    <span>총 할인 금액:</span>
+                    <span id="display-total-discount">0원</span>
+                </div>
+                <div class="price-row">
+                    <span>배송비:</span>
+                    <span id="display-delivery-fee">0원</span>
+                </div>
+                <div class="price-row final">
+                    <span><b>최종 결제 금액:</b></span>
+                    <span id="display-final-price"><b>0원</b></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box_section" id="payment-section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px; display: none;">
+
+        <div id="payment-widget-area">
+            <h2>결제 테스트</h2>
+
+            <!-- 결제 UI -->
+            <div id="payment-method"></div>
+
+            <!-- 이용약관 -->
+            <div id="agreement"></div>
+
+            <!-- 결제하기 버튼 -->
+            <div class="result wrapper">
+                <button class="button" id="payment-button" style="margin-top: 30px; padding: 15px 30px;">
+                    결제하기
+                </button>
+            </div>
+        </div>
+
+        <div id="cancel-payment-area" style="display: none;">
+            <h2>결제 취소</h2>
+
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="margin: 0; color: #666;">
+                    <strong>결제 정보</strong><br>
+                    결제 금액: <span id="cancel-payment-amount" style="font-size: 18px; color: #333; font-weight: bold;">0원</span><br>
+                    결제 일시: <span id="cancel-payment-date">-</span>
+                </p>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label for="cancelReason">취소 사유 <span style="color: red;">*</span></label>
+                <textarea
+                        id="cancelReason"
+                        placeholder="취소 사유를 입력해주세요 (필수)"
+                        rows="4"
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"
+                ></textarea>
+            </div>
+
+            <div class="result wrapper">
+                <button class="button" id="cancel-button" onclick="cancelPayment()"
+                        style="margin-top: 10px; padding: 15px 30px; background-color: #dc3545;">
+                    결제 취소하기
+                </button>
+            </div>
+
+            <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                ⚠️ 결제 취소는 배송 준비 중까지만 가능합니다.<br>
+                배송이 시작된 이후에는 반품/환불 절차를 이용해주세요.
+            </p>
+        </div>
+
+        <!-- 취소 불가 안내 영역 (CANCELLED, REFUNDED 등) -->
+        <div id="cannot-action-area" style="display: none; text-align: center; padding: 40px 20px;">
+            <h2 style="color: #666;">주문 처리 완료</h2>
+            <p id="cannot-action-message" style="color: #999; font-size: 16px;"></p>
+        </div>
+
+    </div>
+
+    <script>
+        let orderData = null;
+        let paymentData = null;
+
+        async function fetchOrderInfo() {
+            const orderId = document.getElementById('orderId').value.trim();
+            const accessToken = document.getElementById('accessToken').value.trim();
+
+            if (!orderId) {
+                alert('주문 ID를 입력해주세요.');
+                return;
+            }
+
+            if (!accessToken) {
+                alert('Access Token을 입력해주세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/payments/order/${orderId}/info`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        alert('인증에 실패했습니다. Token을 확인해주세요.');
+                        return;
+                    }
+                    if (response.status === 403) {
+                        alert('접근 권한이 없습니다.');
+                        return;
+                    }
+                    if (response.status === 404) {
+                        alert('주문을 찾을 수 없습니다.');
+                        return;
+                    }
+                    throw new Error('주문 정보를 가져올 수 없습니다.');
+                }
+
+                const result = await response.json();
+                orderData = result.data;
+
+                // 화면에 주문 정보 표시
+                displayOrderInfo(orderData);
+
+                // 주문 상세 섹션 표시
+                document.getElementById('order-details').style.display = 'block';
+
+                // 결제 위젯 초기화
+                await handlePaymentSection(orderData);
+
+                // 스크롤 이동
+                setTimeout(() => {
+                    document.getElementById('order-details').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+
+            } catch (error) {
+                // 로직상 errorcode가 모두 400이고 customcode가 없으므로 일반 오류로 처리
+                console.error('주문 정보 조회 실패:', error);
+                alert('결제가 이미 완료되었거나 결제를 진행할 수 없는 주문입니다.');
+            }
+        }
+
+        async function handlePaymentSection(data) {
+            const paymentSection = document.getElementById('payment-section');
+            const paymentWidgetArea = document.getElementById('payment-widget-area');
+            const cancelPaymentArea = document.getElementById('cancel-payment-area');
+            const cannotActionArea = document.getElementById('cannot-action-area');
+
+            // 모든 영역 초기화
+            paymentWidgetArea.style.display = 'none';
+            cancelPaymentArea.style.display = 'none';
+            cannotActionArea.style.display = 'none';
+            paymentSection.style.display = 'block';
+
+            const orderStatus = data.orderStatus;
+
+            // ORDERED 상태: 결제 위젯 표시
+            if (orderStatus === 'ORDERED') {
+                paymentWidgetArea.style.display = 'block';
+                await initPaymentWidget(data);
+            }
+            // PAID, PROCESSING, SHIPPED, DELIVERED: 결제 취소 버튼 표시
+            else if (['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(orderStatus)) {
+                cancelPaymentArea.style.display = 'block';
+                await loadPaymentInfo(data.orderId);
+            }
+            // CANCELLED, REFUNDED 등: 안내 메시지만 표시
+            else if (['CANCELLED', 'REFUNDED', 'RETURN_REQUESTED', 'RETURNED', 'REFUND_REQUESTED'].includes(orderStatus)) {
+                cannotActionArea.style.display = 'block';
+                const messageElement = document.getElementById('cannot-action-message');
+
+                if (orderStatus === 'CANCELLED') {
+                    messageElement.textContent = '이 주문은 취소되었습니다.';
+                } else if (orderStatus === 'REFUNDED') {
+                    messageElement.textContent = '이 주문은 환불 완료되었습니다.';
+                } else {
+                    messageElement.textContent = `주문 상태: ${data.orderStatusDescription}`;
+                }
+            }
+        }
+
+        async function loadPaymentInfo(orderId) {
+            try {
+                const accessToken = document.getElementById('accessToken').value.trim();
+
+                // 결제 목록 조회 후 해당 주문의 결제 정보 찾기
+                const response = await fetch(`/api/payments/order/${orderId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    console.error('결제 정보 조회 실패');
+                    return;
+                }
+
+                const result = await response.json();
+                paymentData = result.data;
+
+                if (paymentData) {
+                    // 결제 정보 표시
+                    document.getElementById('cancel-payment-amount').textContent =
+                        paymentData.totalPrice.toLocaleString() + '원';
+                    document.getElementById('cancel-payment-date').textContent =
+                        new Date(paymentData.createdAt).toLocaleString('ko-KR');
+                }
+            } catch (error) {
+                console.error('결제 정보 로딩 실패:', error);
+            }
+        }
+
+        async function cancelPayment() {
+            const cancelReason = document.getElementById('cancelReason').value.trim();
+            const accessToken = document.getElementById('accessToken').value.trim();
+
+            if (!cancelReason) {
+                alert('취소 사유를 입력해주세요.');
+                return;
+            }
+
+            if (!paymentData) {
+                alert('결제 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            if (!confirm(`정말로 결제를 취소하시겠습니까?\n\n취소 금액: ${paymentData.totalPrice.toLocaleString()}원\n취소 사유: ${cancelReason}`)) {
+                return;
+            }
+
+            try {
+                console.log(paymentData.totalPrice);
+                console.log(cancelReason);
+                const response = await fetch(`/api/payments/${paymentData.id}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        cancelReason: cancelReason,
+                        cancelAmount: paymentData.totalPrice
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert('결제 취소 실패: ' + (errorData.message || '오류가 발생했습니다.'));
+                    return;
+                }
+
+                const result = await response.json();
+                alert('✅ 결제가 성공적으로 취소되었습니다.');
+
+                // 페이지 새로고침하여 최신 상태 반영
+                location.reload();
+
+            } catch (error) {
+                console.error('결제 취소 중 오류:', error);
+                alert('결제 취소 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 주문 정보 화면에 표시
+        function displayOrderInfo(data) {
+            // 주문 정보
+            document.getElementById('display-order-id').textContent = data.orderId;
+            document.getElementById('display-order-date').textContent =
+                new Date(data.createdAt).toLocaleString('ko-KR');
+            document.getElementById('display-order-status').textContent =
+                `${data.orderStatus} (${data.orderStatusDescription})`;
+
+            // 배송지 정보
+            document.getElementById('display-receiver-name').textContent = data.receiverName;
+            document.getElementById('display-receiver-phone').textContent = data.receiverPhone;
+            document.getElementById('display-receiver-address').textContent = data.receiverAddress;
+
+            // 주문자 정보
+            document.getElementById('display-user-name').textContent = data.user.name;
+            document.getElementById('display-user-email').textContent = data.user.email;
+            document.getElementById('display-user-mobile').textContent = data.user.mobile;
+            document.getElementById('display-user-membership').textContent = data.user.membership.level;
+            document.getElementById('display-user-money').textContent = data.user.money.toLocaleString();
+
+            // 주문 상품 목록
+            const tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = '';
+
+            data.orderProducts.forEach(product => {
+                console.log(product);
+                // 상품 기본 정보 행
+                const productRow = tbody.insertRow();
+                productRow.className = 'product-row';
+                productRow.innerHTML = `
+                            <td>${product.productName}</td>
+                            <td style="text-align: center;">${product.productCount}개</td>
+                            <td style="text-align: right;">${product.price.toLocaleString()}원</td>
+                            <td style="text-align: right;"><b>${product.totalPrice.toLocaleString()}원</b></td>
+                            <td style="text-align: right;">${product.discountedPrice.toLocaleString()}원</td>
+                        `;
+
+                // 할인 상세 정보 행
+                const discountRow = tbody.insertRow();
+                discountRow.className = 'discount-row';
+                const discountCell = discountRow.insertCell(0);
+                discountCell.colSpan = 5;
+
+                if (product.appliedDiscounts && product.appliedDiscounts.length > 0) {
+                    let discountHtml = '<div class="discount-details">';
+                    discountHtml += '<div style="font-weight: 700; margin-bottom: 5px; color: #333;">🏷️ 적용된 할인:</div>';
+
+                    product.appliedDiscounts.forEach(discount => {
+                        const typeLabel = discount.discountType === 'MEMBERSHIP' ? '🎖️ 멤버십' : '🎁 상품';
+                        discountHtml += `
+                                    <div class="discount-item">
+                                        <span class="discount-name">${typeLabel} ${discount.discountName}</span>
+                                        <span class="discount-amount">-${discount.discountAmount.toLocaleString()}원</span>
+                                    </div>
+                                `;
+                    });
+
+                    // 총 할인 금액
+                    discountHtml += `
+                                <div class="discount-item" style="border-top: 1px solid #ffc107; margin-top: 5px; padding-top: 5px;">
+                                    <span class="discount-name">총 할인</span>
+                                    <span class="discount-amount">-${product.discountPrice.toLocaleString()}원</span>
+                                </div>
+                            `;
+                    discountHtml += '</div>';
+                    discountCell.innerHTML = discountHtml;
+                } else {
+                    discountCell.innerHTML = '<div class="no-discount-info">적용된 할인이 없습니다.</div>';
+                }
+            });
+
+            // 결제 금액 요약
+            document.getElementById('display-total-product-price').textContent =
+                data.priceInfo.totalProductPrice.toLocaleString() + '원';
+            document.getElementById('display-total-discount').textContent =
+                '-' + data.priceInfo.totalDiscountPrice.toLocaleString() + '원';
+            document.getElementById('display-delivery-fee').textContent =
+                data.priceInfo.deliveryFee.toLocaleString() + '원';
+            document.getElementById('display-final-price').innerHTML =
+                '<b>' + data.priceInfo.finalPrice.toLocaleString() + '원</b>';
+        }
+
+        async function initPaymentWidget() {
+            try {
+                const keyResponse = await fetch("/api/payments/client-key");
+                if (!keyResponse.ok) {
+                    throw new Error("클라이언트 키를 가져올 수 없습니다.");
+                }
+
+                const keyData = await keyResponse.json();
+                const clientKey = keyData.data.clientKey;
+                const customerKey = generateRandomString();
+
+                // Toss Payments 초기화
+                const tossPayments = TossPayments(clientKey);
+                const widgets = tossPayments.widgets({ customerKey });
+
+                // 결제 금액 설정
+                await widgets.setAmount({
+                    currency: "KRW",
+                    value: orderData.priceInfo.finalPrice
+                });
+
+                // 결제 UI 렌더링
+                await widgets.renderPaymentMethods({
+                    selector: "#payment-method",
+                    variantKey: "DEFAULT"
+                });
+
+                // 이용약관 렌더링
+                await widgets.renderAgreement({
+                    selector: "#agreement",
+                    variantKey: "AGREEMENT"
+                });
+
+                // 결제하기 버튼
+                const button = document.getElementById("payment-button");
+                button.onclick = null; // 기존 이벤트 제거
+                button.addEventListener("click", async function () {
+                    try {
+
+                        const accessToken = document.getElementById('accessToken').value.trim();
+                        sessionStorage.setItem('paymentAccessToken', accessToken);
+
+                        await widgets.requestPayment({
+                            orderId: orderData.orderId.toString() + "-" + generateRandomString(),
+                            orderName: `주문 ${orderData.orderId}번`,
+                            successUrl: window.location.origin + "/payment-success.html",
+                            failUrl: window.location.origin + "/payment-fail.html",
+                            customerEmail: orderData.user.email,
+                            customerName: orderData.user.name,
+                            customerMobilePhone: orderData.user.mobile.replace(/-/g, "")
+                        });
+                    } catch (error) {
+                        console.error("결제 요청 실패:", error);
+                        alert("결제 요청을 취소하였습니다.");
+                    }
+                });
+            } catch (error) {
+                console.error("결제 위젯 초기화 실패:", error);
+                //alert("결제 위젯 초기화 중 오류가 발생했습니다.");
+            }
+        }
+
+        function generateRandomString() {
+            return window.btoa(Math.random()).slice(0, 20);
+        }
+    </script>
+</div>
+</body>
+</html>

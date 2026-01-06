@@ -38,3 +38,9 @@ jwt:
 
 server:
   port: ${shopping.server.port:8080}
+
+toss:
+  payments:
+    client-key: ${payment.client.key:test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm}
+    secret-key: ${payments.secret-key:test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6}
+    api-url: ${payments.api-url:https://api.tosspayments.com/v1/payments}
