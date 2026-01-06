@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 public class PaymentTypeService {
 
 	private final PaymentTypeRepository paymentTypeRepository;
-	private final UserRepository userRepository;
 
 	public void create(PaymentTypeCreateRequest request) {
 		PaymentType paymentType = new PaymentType(
