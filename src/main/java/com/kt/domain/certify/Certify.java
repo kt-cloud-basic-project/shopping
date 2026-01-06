@@ -76,5 +76,18 @@ public class Certify extends BaseEntity {
         }
         return false;
     }
+    public void markVerifiedForTest(LocalDateTime expiresAt) {
+        this.codeStatus = CertifyStatus.VERIFIED;
+        this.expiresAt = expiresAt;
+    }
+    public static Certify TestVerify(String email, String code, LocalDateTime expiresAt) {
+        Certify c = new Certify();
+        c.email = email;
+        c.certifyCode = code;
+        c.codeStatus = CertifyStatus.PENDING;
+        c.expiresAt = expiresAt;
+        return c;
+    }
+
 
 }
