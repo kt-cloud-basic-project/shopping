@@ -93,6 +93,7 @@ public class PaymentController extends SwaggerAssistance {
 	) {
 		String orderId = request.orderId().split("-")[0];
 		Long orderIdLong = Long.parseLong(orderId);
+		String paymentKey = request.paymentKey();
 
 		try {
 			String url = tossPaymentsProperties.getApiUrl() + "/confirm";
@@ -124,12 +125,29 @@ public class PaymentController extends SwaggerAssistance {
 
 			if (response.getStatusCode() == HttpStatus.OK) {
 				Map<String, Object> tossPayment = response.getBody();
-				Long paymentId = paymentFacade.completePayment(tossPayment, currentUser.getId(), orderIdLong);
+				try {
+					Long paymentId = paymentFacade.completePayment(tossPayment, currentUser.getId(), orderIdLong);
 
-				Map<String, Object> responseBody = new HashMap<>(tossPayment);
-				responseBody.put("paymentId", paymentId);
+					Map<String, Object> responseBody = new HashMap<>(tossPayment);
+					responseBody.put("paymentId", paymentId);
 
-				return ResponseEntity.ok(responseBody);
+					return ResponseEntity.ok(responseBody);
+
+				} catch (Exception e) {
+					System.out.println("결제 실패sdlkjfnmalskdmfklamsdklfmaklsdmfklamsdflkmasdklf");
+
+					cancelTossPayment(paymentKey, "시스템 오류로 인한 자동 취소");
+
+					orderService.rollback(orderIdLong);
+
+					return ResponseEntity
+						.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body(Map.of(
+							"code", ErrorCode.PAYMENT_CANCEL_FAILED,
+							"message", "결제는 승인되었으나 처리 중 오류가 발생하여 자동 취소"
+						));
+				}
+
 			}
 
 			return ResponseEntity.ok(response.getBody());
@@ -224,6 +242,22 @@ public class PaymentController extends SwaggerAssistance {
 		return ApiResult.ok(Map.of("clientKey", tossPaymentsProperties.getClientKey()));
 	}
 
+	/* 이 코드 service로 빼야하는지 등 검토좀 한번 ㅂ부탁드릴게요!*/
+	private void cancelTossPayment(String paymentKey, String cancelReason) {
+		String url = tossPaymentsProperties.getApiUrl() + "/" + paymentKey + "/cancel";
+		String auth = tossPaymentsProperties.getSecretKey() + ":";
+		String encodedAuth = java.util.Base64.getEncoder()
+			.encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic " + encodedAuth);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		Map<String, Object> body = Map.of("cancelReason", cancelReason);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+		restTemplate.postForEntity(url, entity, Map.class);
+	}
 
 }
 

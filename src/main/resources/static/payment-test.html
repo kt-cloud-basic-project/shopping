@@ -244,8 +244,8 @@
 
             const orderStatus = data.orderStatus;
 
-            // ORDERED 상태: 결제 위젯 표시
-            if (orderStatus === 'ORDERED') {
+            // PENDING_PAYMENT 상태: 결제 위젯 표시
+            if (orderStatus === 'PENDING_PAYMENT') {
                 paymentWidgetArea.style.display = 'block';
                 await initPaymentWidget(data);
             }
@@ -255,7 +255,7 @@
                 await loadPaymentInfo(data.orderId);
             }
             // CANCELLED, REFUNDED 등: 안내 메시지만 표시
-            else if (['CANCELLED', 'REFUNDED', 'RETURN_REQUESTED', 'RETURNED', 'REFUND_REQUESTED'].includes(orderStatus)) {
+            else if (['PENDING_PAYMENT ', 'CANCELLED', 'REFUNDED', 'RETURN_REQUESTED', 'RETURNED', 'REFUND_REQUESTED'].includes(orderStatus)) {
                 cannotActionArea.style.display = 'block';
                 const messageElement = document.getElementById('cannot-action-message');
 
