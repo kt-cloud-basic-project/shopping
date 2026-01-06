@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.data.domain.Page;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,10 +125,16 @@ public class OrderService {
 		var order = orderRepository.findByIdOrThrow(orderId, ErrorCode.NOT_FOUND_ORDER);
 
 		// stock 차감
-		order.getOrderProducts().forEach(newProduct -> {
+		for (OrderProduct newProduct : order.getOrderProducts()) {
 			var product = newProduct.getProduct();
-			product.updateStock(product.getStock() - newProduct.getCount());
-		});
+
+			try {
+				product.updateStock(product.getStock() - newProduct.getCount());
+				productRepository.saveAndFlush(product); // 버전 체크
+			} catch (ObjectOptimisticLockingFailureException e) {
+				throw new CustomException(ErrorCode.CONCURRENT_RESERVATION);
+			}
+		}
 
 		order.updateStatus(OrderStatus.PAID);
 	}
