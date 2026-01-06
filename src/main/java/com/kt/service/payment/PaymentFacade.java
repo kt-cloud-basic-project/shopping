@@ -18,7 +18,7 @@ public class PaymentFacade {
 	@Transactional
 	public Long completePayment(Map<String, Object> tossResponse, Long userId, Long orderId) {
 		try {
-			var paymentId = paymentService.create(tossResponse, userId);
+			var paymentId = paymentService.create(tossResponse, userId, orderId);
 			orderService.save(orderId);
 			return paymentId;
 		} catch (Exception e) {

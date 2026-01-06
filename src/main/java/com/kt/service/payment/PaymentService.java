@@ -51,10 +51,8 @@ public class PaymentService {
 	private final OrderRepositoryCustom orderRepositoryCustom;
 	private final OrderProductRepositoryCustom orderProductRepositoryCustom;
 
-	public Long create(Map<String, Object> tossResponse, Long userId) {
-		String orderId = tossResponse.get("orderId").toString().split("-")[0];
-
-		var order = orderRepository.findByIdAndUserIdOrThrow(Long.parseLong(orderId), userId, ErrorCode.NOT_FOUND_ORDER);
+	public Long create(Map<String, Object> tossResponse, Long userId, Long orderId) {
+		var order = orderRepository.findByIdAndUserIdOrThrow(orderId, userId, ErrorCode.NOT_FOUND_ORDER);
 
 		var paymentType = paymentTypeRepository.findByName(tossResponse.get("method").toString()).orElseThrow();
 
