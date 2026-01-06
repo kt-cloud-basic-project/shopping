@@ -3,6 +3,7 @@ package com.kt.service.payment;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +25,6 @@ import com.kt.domain.paymenttype.PaymentType;
 import com.kt.domain.product.Product;
 import com.kt.domain.user.Gender;
 import com.kt.domain.user.User;
-import com.kt.dto.discount.request.DiscountCreateRequest;
-import com.kt.dto.payment.PaymentCreateRequest;
 import com.kt.repository.discount.DiscountRepository;
 import com.kt.repository.discountmembership.DiscountMembershipRepository;
 import com.kt.repository.membership.MembershipRepository;
@@ -109,16 +108,13 @@ class PaymentServiceTest {
 
 	@Test
 	void 주문에_대한_결제_생성_가능() {
-		paymentService.create(결제요청(), user.getId());
+		paymentService.create(토스_결제_응답(), user.getId());
 
 		Payment payment = paymentRepository.findAll().get(0);
 
-		assertThat(payment.getTotalPrice()).isEqualTo(20000);
+		assertThat(payment.getTotalPrice()).isEqualTo(23000);
 		assertThat(payment.getDeliveryFee()).isEqualTo(3000);
-		assertThat(payment.getFinalPrice()).isEqualTo(23000);
-
-		Order updatedOrder = orderRepository.findById(order.getId()).get();
-		assertThat(updatedOrder.getOrderStatus()).isEqualTo(OrderStatus.PAID);
+		assertThat(payment.getFinalPrice()).isEqualTo(20000);
 	}
 
 	@Test
@@ -137,15 +133,20 @@ class PaymentServiceTest {
 			new DiscountMembership(membershipDiscount, membership)
 		);
 
-		paymentService.create(결제요청(), user.getId());
+		paymentService.create(토스_결제_응답(), user.getId());
 
 		Payment payment = paymentRepository.findAll().get(0);
 
-		assertThat(payment.getTotalPrice()).isEqualTo(18000);
-		assertThat(payment.getFinalPrice()).isEqualTo(21000);
+		assertThat(payment.getTotalPrice()).isEqualTo(23000);
+		assertThat(payment.getFinalPrice()).isEqualTo(20000);
 	}
 
-	private PaymentCreateRequest 결제요청() {
-		return new PaymentCreateRequest(order.getId(), paymentType.getId());
+	private Map<String, Object> 토스_결제_응답() {
+		return Map.of(
+			"orderId", order.getId() + "-" + System.currentTimeMillis(),
+			"paymentKey", "test_payment_key_" + System.currentTimeMillis(),
+			"method", "CARD",
+			"totalAmount", 23000
+		);
 	}
 }

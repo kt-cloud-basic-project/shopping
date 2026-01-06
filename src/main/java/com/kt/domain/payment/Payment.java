@@ -29,6 +29,9 @@ public class Payment extends BaseEntity {
 	private Long finalPrice;    // 총 결제 금액 (상품금액 + 배송비)
 
 	@Column(nullable = false)
+	private String paymentKey;
+
+	@Column(nullable = false)
 	private boolean isDeleted = false;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -44,13 +47,15 @@ public class Payment extends BaseEntity {
 		PaymentType paymentType,
 		Long totalPrice,
 		Long deliveryFee,
-		Long finalPrice
+		Long finalPrice,
+		String paymentKey
 	) {
 		this.order = order;
 		this.paymentType = paymentType;
 		this.totalPrice = totalPrice;
 		this.deliveryFee = deliveryFee;
 		this.finalPrice = finalPrice;
+		this.paymentKey = paymentKey;
 		this.isDeleted = false;
 	}
 

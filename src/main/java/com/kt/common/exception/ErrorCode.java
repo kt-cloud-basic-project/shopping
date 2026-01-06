@@ -95,6 +95,10 @@ public enum ErrorCode {
 	//payment
 	NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제 정보를 찾을 수 없습니다"),
 	NOT_FOUND_PAYMENT_TYPE(HttpStatus.BAD_REQUEST, "결제수단을 찾을 수 없습니다"),
+	FAIL_PAYMENT(HttpStatus.BAD_REQUEST, "결제에 실패했습니다."),
+	ALREADY_PAID_ORDER(HttpStatus.BAD_REQUEST, "이미 결제가 완료된 주문입니다."),
+	CANNOT_CANCEL_PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "결제 취소 금액이 결제 금액과 일치하지 않습니다."),
+	PAYMENT_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "결제 취소에 실패했습니다."),
 
 	//rate limit
 	GLOBAL_EXCEED_REQUEST_LIMIT(HttpStatus.TOO_MANY_REQUESTS, "요청 횟수 제한을 초과했습니다."),
@@ -104,7 +108,13 @@ public enum ErrorCode {
 	//wishlist
 	ALREADY_WISHLISTED(HttpStatus.BAD_REQUEST, "이미 찜한 상품입니다."),
 	WISHLIST_ADD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "찜 추가에 실패했습니다."),
-	NOT_FOUND_WISHLIST(HttpStatus.BAD_REQUEST, "찜하지 않은 상품입니다.")
+	NOT_FOUND_WISHLIST(HttpStatus.BAD_REQUEST, "찜하지 않은 상품입니다."),
+
+	//vector
+	NOT_FOUND_VECTOR_STORE(HttpStatus.BAD_REQUEST, "존재하지 않는 벡터 스토어입니다."),
+
+	//FAQ
+	NOT_FOUND_FAQ(HttpStatus.BAD_REQUEST, "존재하지 않는 자주 찾는 질문입니다.")
 	;
 
 	private final HttpStatus status;

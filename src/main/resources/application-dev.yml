@@ -17,6 +17,11 @@ spring:
       cluster:
         nodes: ${redis.host}
         max-redirects: 3
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail-username}
+    password: ${mail-password}
 
 jwt:
   secret: ${kt.jwt.secret}
@@ -33,3 +38,9 @@ server:
 logstash:
   host: ${logstashhost:localhost}
   port: ${logstashport:9601}
+
+toss:
+  payments:
+    client-key: ${payment.client.key:test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm}
+    secret-key: ${payments.secret-key:test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6}
+    api-url: ${payments.api-url:https://api.tosspayments.com/v1/payments}

@@ -15,7 +15,14 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 		return findByIdAndOrderUserIdAndIsDeletedFalse(paymentId, userId).orElseThrow(() -> new CustomException(errorCode));
 	}
 
+	default Payment findByOrderIdAndIsDeletedFalseOrThorw(Long orderId, ErrorCode errorCode) {
+		return findByOrderIdAndIsDeletedFalse(orderId).orElseThrow(() -> new CustomException(errorCode));
+	}
+
 	@EntityGraph(attributePaths = {"order", "paymentType"})
 	Optional<Payment> findByIdAndOrderUserIdAndIsDeletedFalse(Long paymentId, Long userId);
+
+	@EntityGraph(attributePaths = {"order", "paymentType"})
+	Optional<Payment> findByOrderIdAndIsDeletedFalse(Long orderId);
 }
 

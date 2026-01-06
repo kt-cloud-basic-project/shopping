@@ -38,4 +38,14 @@ public class OrderProduct {
 		this.product = product;
 		this.order = order;
 	}
+
+	public OrderProduct(Long count, Long variantId, Product product) {
+		this.count = count;
+		this.variantId = variantId;
+		this.product = product;
+	}
+
+	public void assignOrder(Order order) {
+		this.order = order;
+	}
 }
