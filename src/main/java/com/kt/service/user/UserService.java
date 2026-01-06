@@ -3,6 +3,7 @@ package com.kt.service.user;
 import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.domain.auth.RefreshToken;
+import com.kt.domain.certify.Certify;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.shoppingaddress.ShoppingAddress;
 import com.kt.domain.user.Role;
@@ -17,21 +18,13 @@ import com.kt.repository.shoppingaddress.ShoppingAddressRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.CustomUserDetails;
 import com.kt.security.JwtTokenProvider;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static com.kt.common.support.ObjectUtils.orElseIfEmpty;
 
@@ -49,6 +42,7 @@ public class UserService {
     private static final String DEFAULT_MEMBERSHIP_LEVEL = "BRONZE";
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String AUTH_HEADER = "Authorization";
+    private final Certify certify;
 
     public boolean checkLoginIdDuplicated(String loginId) {
         return userRepository.existsByLoginIdAndIsDeletedFalse(loginId);
@@ -59,6 +53,9 @@ public class UserService {
 
         if (checkLoginIdDuplicated(request.loginId())) {
             throw new CustomException(ErrorCode.DUPLICATED_LOGIN_ID);
+        }
+        if(!certify.isVerified()){
+            throw new CustomException(ErrorCode.NOT_VERIFIED_EMAIL);
         }
         Membership defaultMembership = membershipRepository.findByLevel(DEFAULT_MEMBERSHIP_LEVEL)
                 .orElseThrow(() -> new IllegalStateException("기본 멤버십이 설정되어 있지 않습니다."));
@@ -233,11 +230,4 @@ public class UserService {
         user.changeRole(request.role());
     }
 
-    private String resolveBearer(String request) {
-        if (request == null || !request.startsWith("Bearer ")) {
-            throw new CustomException(ErrorCode.INVALID_JWT_TOKEN);
-        }
-
-        return request.substring(BEARER_PREFIX.length());
-    }
 }

@@ -30,4 +30,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 		return findById(id).orElseThrow(() -> new CustomException(errorCode));
 	}
     Optional<User> findByLoginId(String loginId);
+    Boolean existsByEmailAndIsDeletedFalse(String email);
 }
