@@ -16,7 +16,10 @@ public enum OrderStatus {
 	RETURN_REQUESTED("반품 요청"),
 	RETURNED("반품 완료"),
 	REFUND_REQUESTED("환불 요청"),
-	REFUNDED("환불 완료");
+	REFUNDED("환불 완료"),
+
+	PENDING_PAYMENT("결제 대기"),
+	PAYMENT_FAILED("결제 실패");
 
 	private final String description;
 }

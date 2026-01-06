@@ -4,34 +4,26 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
 import com.kt.common.support.Preconditions;
 import com.kt.domain.discount.Discount;
-import com.kt.domain.discount.policy.DiscountPolicy;
-import com.kt.domain.discount.policy.DiscountPolicyFactory;
 import com.kt.domain.order.Order;
 import com.kt.domain.order.OrderStatus;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.payment.Payment;
 import com.kt.dto.discount.response.DiscountInfo;
 import com.kt.dto.discount.response.DiscountResult;
-import com.kt.dto.order.response.OrderProductResponse;
-import com.kt.dto.payment.PaymentCreateRequest;
 import com.kt.dto.payment.PaymentDetailResponse;
 import com.kt.dto.payment.PaymentListResponse;
 import com.kt.dto.payment.PaymentOrderInfoResponse;
 import com.kt.dto.payment.PaymentTossCancelRequest;
 import com.kt.dto.payment.PaymentTossCancelResponse;
-import com.kt.dto.payment.PaymentTossConfirmRequest;
 import com.kt.repository.order.OrderRepository;
 import com.kt.repository.order.OrderRepositoryCustom;
 import com.kt.repository.orderproduct.OrderProductRepositoryCustom;
@@ -40,6 +32,7 @@ import com.kt.repository.payment.PaymentRepositoryCustom;
 import com.kt.repository.paymenttype.PaymentTypeRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.service.discount.DiscountCalcService;
+import com.kt.service.order.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -77,8 +70,6 @@ public class PaymentService {
 		);
 
 		Payment savedPayment = paymentRepository.save(payment);
-
-		order.updateStatus(OrderStatus.PAID);
 
 		return savedPayment.getId();
 	}

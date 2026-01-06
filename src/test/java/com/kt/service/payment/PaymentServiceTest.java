@@ -115,9 +115,6 @@ class PaymentServiceTest {
 		assertThat(payment.getTotalPrice()).isEqualTo(23000);
 		assertThat(payment.getDeliveryFee()).isEqualTo(3000);
 		assertThat(payment.getFinalPrice()).isEqualTo(20000);
-
-		Order updatedOrder = orderRepository.findById(order.getId()).get();
-		assertThat(updatedOrder.getOrderStatus()).isEqualTo(OrderStatus.PAID);
 	}
 
 	@Test
