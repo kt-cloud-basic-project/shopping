@@ -14,3 +14,10 @@ logstash:
   host: ${logstashhost:localhost}
   port: ${logstashport:9601}
 
+
+slack:
+  bot-token: ${slack.token}
+  log-channel: ${slack.channel}
+
+server:
+  port: 8080

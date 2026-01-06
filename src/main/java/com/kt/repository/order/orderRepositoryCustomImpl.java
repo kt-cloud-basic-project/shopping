@@ -1,6 +1,7 @@
 package com.kt.repository.order;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -60,5 +61,21 @@ public class orderRepositoryCustomImpl implements OrderRepositoryCustom {
 			.fetch().size();
 
 		return new PageImpl<>(content, pageable, total);
+	}
+
+	@Override
+	public Order getOrderDetailById(Long userId, Long orderId) {
+
+		return queryFactory
+			.select(order)
+			.from(order)
+			.join(order.user, user).fetchJoin()
+			.join(user.membership, membership).fetchJoin()
+			.where(
+				order.id.eq(orderId),
+				order.user.id.eq(userId),
+				order.isDeleted.eq(false)
+			)
+			.fetchOne();
 	}
 }
