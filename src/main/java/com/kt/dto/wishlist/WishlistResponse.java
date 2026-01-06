@@ -4,21 +4,15 @@ import java.time.LocalDateTime;
 
 import com.kt.domain.wishlist.Wishlist;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+public record WishlistResponse(
+	Long id,
+	Long productId,
+	String productName,
+	Long price,
+	LocalDateTime createdAt
+) {
 
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class WishlistResponse {
-	private Long id;
-	private Long productId;
-	private String productName;
-	private Long price;
-	private LocalDateTime createdAt;
-
-	public static WishlistResponse from(Wishlist wishlist){
+	public static WishlistResponse from(Wishlist wishlist) {
 		return new WishlistResponse(
 			wishlist.getId(),
 			wishlist.getProduct().getId(),
