@@ -15,6 +15,32 @@
 ![Swagger UI](https://img.shields.io/badge/Swagger_UI-85EA2D?style=flat&logo=swagger&logoColor=black)
 <br><br>
 
+## 📑 Table of Contents
+
+- [ShoppingFourU](#shoppingfouru)
+- [👥 Team Member](#-team-member)
+- [🏛 Architecture](#-architecture)
+- [📌 Convention](#-convention)
+- [📡 API Documentation](#-api-documentation)
+- [🔥 Troubleshooting](#-troubleshooting)
+  - [불필요한 쿼리 생성 문제]
+  - [JWT 필터 예외 처리 문제]
+- [🚀 기본 프로젝트 이후 보완점](#-기본-프로젝트-이후-보완점)
+  - [Git · Slack 알림 & Bot 에러 연동]
+  - [API 접근 제한 (Rate Limiting)]
+  - [Domain Refactoring]
+    - [할인 · 멤버십 정책 모듈화]
+    - [주문 시 배송지 검증 강화]
+  - [주문–결제 프로세스 리팩토링 & 동시성 제어]
+  - [낙관적 락 (Optimistic Lock) 도입]
+  - [재고 예약 시스템 도입]
+  - [찜 (Wishlist) 도메인 추가]
+- [🚀 새로운 기술 도입 사항 및 선정 이유](#-새로운-기술-도입-사항-및-선정-이유)
+  - [상품 할인 시 이메일 알림 시스템 도입]
+  - [OpenAI 기반 FAQ 챗봇 도입]
+  - [ELK + 모니터링 시스템 도입]
+
+
 # ShoppingFourU
 `ShoppingFourU` 는 온라인 쇼핑몰 운영에 필요한 기능들을 완전하게 구현한 E-commerce 플랫폼입니다.<br>
 회원 관리부터 상품 등록, 장바구니, 주문/결제까지 실제 서비스와 동일한 흐름을 제공하며<br>
@@ -35,100 +61,13 @@
 ## 🏛 Architecture
 
 📜 ERD 설계도
-<img width="1902" height="858" alt="image" src="https://github.com/user-attachments/assets/b8cd6585-15a3-4266-a9c0-eae0f79661f1" />
+<img width="2398" height="1454" alt="basic-project-shopping_last_last_copy" src="https://github.com/user-attachments/assets/ad08aeba-4c13-4351-b23e-630429d8f662" />
 <br>
 
-## 📌 Naming Rules
+## 📌 Convention
+자세한 컨벤션사항은 노션을 통해 확인 해주세요!
+https://vivid-thyme-ac6.notion.site/Commit-Convention-2e19e3e335cc80d7bf16c7377e4ddeac?source=copy_link
 
-| 항목        | 규칙           |
-| --------- | ------------ |
-| Package   | `kebab-case` |
-| Class     | `PascalCase` |
-| Constant  | `UPPERCASE`  |
-| Method    | `camelCase`  |
-| Variables | `camelCase`  |
-<br>
-
-
-## 📁 Commit Convention
-
-| Header       | 기능                   |
-| ------------ | -------------------- |
-| **Update**   | 변경 사항 업데이트           |
-| **feat**     | 새로운 기능 추가            |
-| **fix**      | 버그 수정                |
-| **docs**     | 문서 수정                |
-| **style**    | 코드 포맷팅               |
-| **refactor** | 코드 리팩토링              |
-| **test**     | 테스트 코드               |
-| **chore**    | 빌드 업무 수정, 패키지 매니저 수정 |
-| **comment**  | 주석 추가 및 변경           |
-| **remove**   | 파일, 폴더 삭제            |
-| **rename**   | 파일, 폴더명 수정           |
-<br>
-
-
-✔ 커밋 메시지 형식<br>
-
-[티켓 번호] 작업 유형: 작업 내용<br><br>
-
-✔ 예시<br>
-
-[TKT-15] feat: 로그인 시 잠금 검증 기능 추가<br>
-
-[TKT-17] chore: 라이브러리 추가<br>
-
-[TKT-23] feat: 인증/인가 기능 추가<br>
-<br>
-
-
-## 🐬 Git Flow
-
-<img width="1476" height="1038" alt="image" src="https://github.com/user-attachments/assets/4c56ca48-d36b-4132-a545-30960f410f0b" />
-
-- **main** : 출시 가능한 프로덕션 코드의 브랜치
-
-- **dev** : 다음 버전을 개발하는 브랜치
-
-- **feat** : 이슈 단위로 기능을 개발하는 브랜치  
-  - 브랜치 네이밍: `feat/#이슈번호/[topic]`
-
-- **fix** : 이슈 단위로 버그를 수정하는 브랜치  
-  - 브랜치 네이밍: `fix/#이슈번호/[topic]`
-
-*브랜치명은 Jira 작업을 생성하면 자동으로 생성됩니다.
-<br>
-<br>
-
-
-## 🧩 Issue Template
-
-✨이슈 설명
-<br><br>
-
-
-🔥투두리스트
-<br><br>
-
-
-🔖기타 사항
-<br><br>
-<br>
-
-## 🔀 PR Template
-
-📝요약(Summary)<br>
-이슈 번호 : #
-<br><br>
-
-
-🔨변경 사항(Changes)
-<br><br>
-
-
-😉리뷰 요구사항
-<br><br>
-<br>
 
 ## 📡 API Documentation
 
@@ -138,6 +77,7 @@
 <br>
 [📄 Swagger Documentation](http://shoppingfouru.ap-northeast-2.elasticbeanstalk.com/swagger-ui/index.html)
 <br><br><br>
+
 
 ## 🔥 Troubleshooting
 
@@ -155,7 +95,6 @@
 - 쿼리 횟수 50% 감소 (2회 → 1회)
 <br>
 
----
 
 ### JWT 필터 예외 처리 문제
 
@@ -190,3 +129,136 @@ return header.substring(BEARER_PREFIX.length());
 예외를 던지지 않고 null 반환<br>
 - 이렇게 하면 Security에서 인증없이 통과시키고
 Controller 로직까지 정상적으로 전달됨
+<br><br>
+
+## 🚀 기본 프로젝트 이후 보완점
+
+기본 프로젝트 구현 이후,  
+실제 운영 환경에서 발생할 수 있는 문제들을 가정하고 **안정성과 확장성**을 중심으로 구조를 보완했습니다.  
+단순 기능 구현을 넘어서 **운영 관점의 품질 개선**에 초점을 맞췄습니다.
+
+### 1. Git · Slack 알림 & Bot 에러 연동
+
+
+### 2. API 접근 제한 (Rate Limiting)
+#### 설계 목표
+
+**1차 방어**
+- Global Filter 기반 IP 단위 제한
+- 초당 100회 / 최대 10,000 IP 기준
+
+**2차 방어**
+- AOP 기반 Controller 단위 접근 제어
+- API 특성에 따라 IP / 사용자별 제한 정책 분리 적용
+
+#### Bucket4j 선택 이유
+- 메서드별로 서로 다른 제한 정책 적용 가능
+- Redis 사용이 제한적인 환경 고려
+- Caffeine 기반 캐시로 **경량 · 고성능 · 동시성 안정성 확보**
+
+
+### 3. Domain Refactoring
+
+#### 1️⃣ 할인 · 멤버십 정책 모듈화
+
+#### 2️⃣ 주문 시 배송지 검증 강화
+
+
+### 4. 주문–결제 프로세스 리팩토링 & 동시성 제어
+#### 개선된 프로세스
+
+**주문 생성 API**
+- 상품 구매 가능 여부 확인
+- 주문 정보 저장  
+  👉 상태: `PENDING_PAYMENT`
+
+**결제 생성 API**
+- 외부 결제 모듈 호출
+- **(Transaction)**
+  - 결제 정보 저장
+  - 상품 재고 차감
+  - 주문 상태 변경 → `PAID`
+
+> 💡  
+> 외부 결제 API 호출은 트랜잭션에 포함하지 않고,  
+> DB 변경 로직만 원자적으로 묶어 **락 점유 및 성능 저하를 방지**
+
+
+### 5. 낙관적 락 (Optimistic Lock) 도입
+
+- 상품 엔티티에 `@Version` 필드 추가
+- 동시 재고 차감 시 커밋 시점에 충돌 감지
+- 충돌 발생 시 예외 처리 후 재시도 전략 적용
+
+
+### 6. 재고 예약 시스템 도입
+
+#### 도입 이유
+- 동시 주문 환경에서 초과 판매 방지
+- 결제 완료 전 구매 권한 선점 필요
+
+#### 프로세스
+
+**주문 생성 시**
+- 재고 차감
+- 재고 예약 정보 저장
+- 주문 상태: `PENDING_PAYMENT`
+
+**결제 성공 시**
+- 재고 예약 해제
+- 주문 상태 변경: `PAID`
+
+**결제 실패 / 예약 만료 시**
+- 예약 정보 삭제
+- 재고 복구
+
+### 7. 찜 (Wishlist) 도메인 추가
+
+<br>
+
+##  🚀 새로운 기술 도입 사항 및 선정 이유
+
+### 1. 상품 할인 시 이메일 알림 시스템 도입
+
+
+#### 이메일 선정 이유
+- 대부분의 사용자가 이메일을 보유하고 있어 접근성이 높음
+- 회원가입 시 이미 이메일 정보를 수집하므로  
+  추가 정보 입력이나 외부 서비스 참여를 요구하지 않아도 됨
+- Slack, Discord 등은 별도의 프로그램 사용 및 공간 참여가 필요하여  
+  사용자 알림 목적과 맞지 않아 제외
+- 카카오톡 채널의 경우
+  - 사업자 등록 필수
+  - 유료 메시지 발송
+  - 카카오 계정 관련 정보 추가 관리 필요  
+  → 운영 비용 및 복잡성 증가로 인해 제외
+
+### 2. OpenAI 기반 FAQ 챗봇 도입
+
+#### 데이터 구성
+- 도메인별 자주 묻는 질문과 답변을 **JSON 파일로 정리**
+- 해당 데이터를 기반으로 **벡터 스토어(Vector Store) 연동**
+
+#### 기능 범위
+- FAQ JSON 데이터 기반 질의응답 제공
+- 서비스 담당 도메인 외 질문에 대해서는  
+  응답을 제한하여 **비의도적 답변 방지**
+
+### 3. ELK + 모니터링 시스템 도입
+
+#### 역할 분리 및 활용
+
+**ELK Stack**
+- 에러 로그 수집
+- 요청 흐름 및 장애 원인 추적
+
+**Prometheus + Grafana**
+- EC2 및 Docker 컨테이너 리소스 모니터링
+- CPU / 메모리 / 서비스 부하 상태 실시간 시각화
+
+#### 도입 효과
+- 로그와 메트릭을 분리하여 분석 가능
+- 서비스 장애 발생 시 원인 파악 속도 향상
+- 운영 관점에서 시스템 상태를 한눈에 파악 가능
+
+
