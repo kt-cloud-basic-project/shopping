@@ -23,22 +23,22 @@
 - [📌 Convention](#-convention)
 - [📡 API Documentation](#-api-documentation)
 - [🔥 Troubleshooting](#-troubleshooting)
-  - [불필요한 쿼리 생성 문제](#불필요한-쿼리-생성-문제)
-  - [JWT 필터 예외 처리 문제](#jwt-필터-예외-처리-문제)
+  - [불필요한 쿼리 생성 문제]
+  - [JWT 필터 예외 처리 문제]
 - [🚀 기본 프로젝트 이후 보완점](#-기본-프로젝트-이후-보완점)
-  - [Git · Slack 알림 & Bot 에러 연동](#-git--slack-알림--bot-에러-연동)
-  - [API 접근 제한 (Rate Limiting)](#-api-접근-제한-rate-limiting)
-  - [Domain Refactoring](#-domain-refactoring)
-    - [할인 · 멤버십 정책 모듈화](#-할인--멤버십-정책-모듈화)
-    - [주문 시 배송지 검증 강화](#-주문-시-배송지-검증-강화)
-  - [주문–결제 프로세스 리팩토링 & 동시성 제어](#-주문결제-프로세스-리팩토링--동시성-제어)
-  - [낙관적 락 (Optimistic Lock) 도입](#-낙관적-락-optimistic-lock-도입)
-  - [재고 예약 시스템 도입](#-재고-예약-시스템-도입)
-  - [찜 (Wishlist) 도메인 추가](#-찜-wishlist-도메인-추가)
+  - [Git · Slack 알림 & Bot 에러 연동]
+  - [API 접근 제한 (Rate Limiting)]
+  - [Domain Refactoring]
+    - [할인 · 멤버십 정책 모듈화]
+    - [주문 시 배송지 검증 강화]
+  - [주문–결제 프로세스 리팩토링 & 동시성 제어]
+  - [낙관적 락 (Optimistic Lock) 도입]
+  - [재고 예약 시스템 도입]
+  - [찜 (Wishlist) 도메인 추가]
 - [🚀 새로운 기술 도입 사항 및 선정 이유](#-새로운-기술-도입-사항-및-선정-이유)
-  - [상품 할인 시 이메일 알림 시스템 도입](#상품-할인-시-이메일-알림-시스템-도입)
-  - [OpenAI 기반 FAQ 챗봇 도입](#openai-기반-faq-챗봇-도입)
-  - [ELK + 모니터링 시스템 도입](#elk--모니터링-시스템-도입)
+  - [상품 할인 시 이메일 알림 시스템 도입]
+  - [OpenAI 기반 FAQ 챗봇 도입]
+  - [ELK + 모니터링 시스템 도입]
 
 
 # ShoppingFourU
