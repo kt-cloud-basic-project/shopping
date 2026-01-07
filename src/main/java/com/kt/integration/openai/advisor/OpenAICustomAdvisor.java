@@ -82,34 +82,30 @@ public class OpenAICustomAdvisor implements BaseAdvisor {
 		String answer = "";
 		if (topScoreSearchData.content() != null) {
 			answer = topScoreSearchData.content().stream()
-				.map(c -> extractAnswerFromVectorResult(c.text()))
+				.map(OpenAIResponse.Content::text)
 				.filter(s -> s != null && !s.isBlank())
-				.findFirst()
-				.orElse("");
+				.collect(java.util.stream.Collectors.joining("\n"));
 		}
-
 		String contextText;
 
 		// FAQ가 없으면 안내, 있으면 FAQ JSON 기반 답변
 		if (answer.isBlank()) {
 			contextText = "죄송하지만, 현재 FAQ에 등록된 정보 외에는 답변할 수 없습니다.";
+		} else {
+			contextText = """
+
+            [참고 정보]
+            %s
+            """.formatted(answer);
 		}
-
 		// FAQ가 있을 경우 기존 로직 그대로
-		contextText = """
-        다음은 참고 정보이다.
-        아래 내용을 기반으로 사용자의 질문에 답변하되,
-        최종 답변 문장만 출력하라.
-
-        [참고 정보]
-        %s
-        """.formatted(answer);
 
 		var newPrompt = prompt.augmentSystemMessage(contextText);
 
 		return chatClientRequest.mutate()
 			.prompt(newPrompt)
 			.build();
+
 	}
 
 	@Override
