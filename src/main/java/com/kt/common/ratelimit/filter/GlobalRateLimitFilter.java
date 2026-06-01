@@ -19,9 +19,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "ratelimit.enabled", havingValue = "true", matchIfMissing = true)
 public class GlobalRateLimitFilter extends OncePerRequestFilter {
 
 	private static final int MAX_REQUEST_SECONDS = 100;

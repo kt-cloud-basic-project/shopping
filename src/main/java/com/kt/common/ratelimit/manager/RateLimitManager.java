@@ -12,10 +12,12 @@ import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@ConditionalOnProperty(name = "ratelimit.enabled", havingValue = "true", matchIfMissing = true)
 public class RateLimitManager {
 
 	private final ProxyManager<String> proxyManager;
