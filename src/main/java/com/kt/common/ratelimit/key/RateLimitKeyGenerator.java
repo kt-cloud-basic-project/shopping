@@ -12,9 +12,11 @@ import com.kt.security.CustomUserDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Component
 @Slf4j
+@ConditionalOnProperty(name = "ratelimit.enabled", havingValue = "true", matchIfMissing = true)
 public class RateLimitKeyGenerator {
 
 	public String generateKey(KeyType keyType, HttpServletRequest request, String httpMethod, String path) {

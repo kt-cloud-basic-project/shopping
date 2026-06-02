@@ -3,9 +3,9 @@ package com.kt.config;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 
@@ -13,7 +13,7 @@ import io.github.bucket4j.caffeine.CaffeineProxyManager;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 
 @Configuration
-@EnableAspectJAutoProxy
+@ConditionalOnProperty(name = "ratelimit.enabled", havingValue = "true", matchIfMissing = true)
 public class RateLimitConfiguration {
 
 	private static final int CACHE_MAX_SIZE = 100000;
