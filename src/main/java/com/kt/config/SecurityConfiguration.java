@@ -18,13 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfiguration {
 
 	private static final String[] GET_PERMIT_ALL = {"/api/health/**", "/swagger-ui.html","/swagger-ui/**", "/v3/api-docs/**", "/actuator/**", "/payment-*.html", "/api/payments/client-key", "/*.css", "/api/chats", "/api/chats/**"};
@@ -35,6 +34,16 @@ public class SecurityConfiguration {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final ObjectMapper objectMapper;
 	private final GlobalRateLimitFilter globalRateLimitFilter;
+
+	public SecurityConfiguration(
+		JwtTokenProvider jwtTokenProvider,
+		ObjectMapper objectMapper,
+		@Autowired(required = false) GlobalRateLimitFilter globalRateLimitFilter
+	) {
+		this.jwtTokenProvider = jwtTokenProvider;
+		this.objectMapper = objectMapper;
+		this.globalRateLimitFilter = globalRateLimitFilter;
+	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -69,7 +78,9 @@ public class SecurityConfiguration {
                 .logout(logout -> logout.disable())
                 .csrf(AbstractHttpConfigurer::disable);
 
-		http.addFilterBefore(globalRateLimitFilter, UsernamePasswordAuthenticationFilter.class);
+		if (globalRateLimitFilter != null) {
+			http.addFilterBefore(globalRateLimitFilter, UsernamePasswordAuthenticationFilter.class);
+		}
 
 		http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,objectMapper), UsernamePasswordAuthenticationFilter.class);
 

@@ -21,3 +21,6 @@ slack:
 
 server:
   port: 8080
+
+ratelimit:
+  enabled: true
