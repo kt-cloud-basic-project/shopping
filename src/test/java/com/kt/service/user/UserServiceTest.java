@@ -2,6 +2,8 @@ package com.kt.service.user;
 
 import com.kt.common.exception.CustomException;
 import com.kt.common.exception.ErrorCode;
+import com.kt.domain.certify.Certify;
+import com.kt.domain.certify.CertifyStatus;
 import com.kt.domain.membership.Membership;
 import com.kt.domain.user.Gender;
 import com.kt.domain.user.Role;
@@ -9,6 +11,7 @@ import com.kt.domain.user.User;
 import com.kt.dto.user.request.UserAdminUpdateRequest;
 import com.kt.dto.user.request.UserCreateRequest;
 import com.kt.dto.user.request.UserUpdateRequest;
+import com.kt.repository.certify.CertifyRepository;
 import com.kt.repository.membership.MembershipRepository;
 import com.kt.repository.user.UserRepository;
 import com.kt.security.CustomUserDetails;
@@ -19,11 +22,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,6 +36,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserServiceTest {
+
+    private void givenVerifiedEmail(String email) {
+        Certify certify = Certify.TestVerify(email, "000000", LocalDateTime.now().plusMinutes(10));
+        certify.markVerifiedForTest(LocalDateTime.now().plusMinutes(10));
+        certifyRepository.save(certify);
+    }
 
     // 유저 유닛 테스트 작성
 
@@ -42,6 +52,8 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Autowired
     private MembershipRepository membershipRepository;
+    @Autowired
+    private CertifyRepository certifyRepository;
 
     @BeforeEach
     void setUp(){
@@ -66,7 +78,9 @@ class UserServiceTest {
                 "BRONZE"
         );
 
+        givenVerifiedEmail(request.email());
         userService.create(request);
+
 
         User savedUser = userRepository.findByLoginIdAndIsDeletedFalse(request.loginId())
                 .orElseThrow(() -> new IllegalStateException("유저가 저장되지 않았습니다."));
@@ -122,6 +136,7 @@ class UserServiceTest {
                 "BRONZE"
         );
 
+        givenVerifiedEmail(request.email());
         userService.create(request);
 
         // 같은 loginId로 또 가입 시도하면 CustomException 발생
@@ -462,6 +477,7 @@ class UserServiceTest {
                 LocalDate.of(2000, 1, 1),
                 "BRONZE"
         );
+        givenVerifiedEmail(request1.email());
         userService.create(request1);
 
         User savedUser = userRepository.findByLoginIdAndIsDeletedFalse("rejoin_user")
@@ -491,6 +507,7 @@ class UserServiceTest {
         );
 
 
+        givenVerifiedEmail(request2.email());
         userService.create(request2);
 
 

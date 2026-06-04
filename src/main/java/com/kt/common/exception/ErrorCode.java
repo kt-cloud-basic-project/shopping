@@ -27,6 +27,7 @@ public enum ErrorCode {
 	DUPLICATED_LOGIN_ID(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다."),
 	DOES_NOT_MATCH_OLD_PASSWORD(HttpStatus.BAD_REQUEST, "기존 비밀번호가 일치하지 않습니다."),
 	CAN_NOT_ALLOWED_SAME_PASSWORD(HttpStatus.BAD_REQUEST, "기존 비밀번호와 동일한 비밀번호로 변경할 수 없습니다."),
+    DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "중복되는 이메일입니다."),
 
 	//product
 	NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "상품을 찾을 수 없습니다."),
@@ -111,6 +112,13 @@ public enum ErrorCode {
 	ALREADY_WISHLISTED(HttpStatus.BAD_REQUEST, "이미 찜한 상품입니다."),
 	WISHLIST_ADD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "찜 추가에 실패했습니다."),
 	NOT_FOUND_WISHLIST(HttpStatus.BAD_REQUEST, "찜하지 않은 상품입니다."),
+
+    //certify
+    EXPIRED_CERTIFICATION_CODE(HttpStatus.BAD_REQUEST,"만료된 코드입니다."),
+    FAILED_MORE_THAN_FIVE_TIMES(HttpStatus.BAD_REQUEST,"5회이상 시도하여 잠금상태입니다."),
+    CERTIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST,"인증코드를 찾을 수 없습니다."),
+    INVALID_CERTIFICATION_CODE(HttpStatus.BAD_REQUEST,"틀린 코드입니다."),
+    NOT_VERIFIED_EMAIL(HttpStatus.BAD_REQUEST,"인증되지않은 이메일입니다."),
 
 	//vector
 	NOT_FOUND_VECTOR_STORE(HttpStatus.BAD_REQUEST, "존재하지 않는 벡터 스토어입니다."),
