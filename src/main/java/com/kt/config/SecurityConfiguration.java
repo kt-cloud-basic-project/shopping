@@ -27,7 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
 	private static final String[] GET_PERMIT_ALL = {"/api/health/**", "/swagger-ui.html","/swagger-ui/**", "/v3/api-docs/**", "/actuator/**", "/payment-*.html", "/api/payments/client-key", "/*.css", "/api/chats", "/api/chats/**"};
-	private static final String[] POST_PERMIT_ALL = {"/api/users/auth/signup", "/api/users/auth/login","/api/admin/users/auth/signup", "/api/admin/users/auth/login","/api/users/reissue", "/api/payments/confirm"};
+	private static final String[] POST_PERMIT_ALL = {"/api/users/auth/signup", "/api/users/auth/login","/api/admin/users/auth/signup", "/api/admin/users/auth/login","/api/users/reissue", "/api/payments/confirm", "/api/mock/**"};
 	private static final String[] PUT_PERMIT_ALL = {"/api/v1/public/**"};
 	private static final String[] PATCH_PERMIT_ALL = {"/api/v1/public/**"};
 	private static final String[] DELETE_PERMIT_ALL = {"/api/v1/public/**"};

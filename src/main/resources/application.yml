@@ -23,4 +23,8 @@ server:
   port: 8080
 
 ratelimit:
-  enabled: true
+  enabled: false
+
+mock:
+  payment:
+    enabled: false
